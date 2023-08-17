@@ -16,6 +16,7 @@ window.addEventListener("resize", () => {
 
 window.zoomLevel = 1;
 window.pan = [0, 0];
+window.zoomPan = [0, 0];
 window.cursor = [0, 0];
 window.gameCursor = [0, 0];
 let isPanning = false;
@@ -99,17 +100,34 @@ const makePlayers = () => {
     window.players = Object.values(players);
 };
 
-const setupGame = () => {
-    makeRegions();
-    makePlayers();
+const addMovementListeners = () => {
     uiCanvas.addEventListener('wheel', (e) => {
         e.preventDefault();
         window.zoomLevel = Math.max(1, window.zoomLevel - (e.deltaY / 100));
+        window.zoomPan = [e.offsetX, e.offsetY];
     });
+    uiCanvas.addEventListener('mousedown', (e) => {
+        if (e.which == 2 || e.shiftKey) {
+            updateCursor([e.offsetX / window.zoomLevel, e.offsetX / window.zoomLevel]);
+            isPanning = true;
+            panStart = [e.offsetX - window.pan[0], e.offsetY - window.pan[1]];
+            e.preventDefault();
+        }
+    });
+    uiCanvas.addEventListener('mouseup', (e) => {
+        if (isPanning) {
+            isPanning = false;
+            e.preventDefault();
+        }
+    });
+};
+
+const addSharedListeners = () => {
     uiCanvas.addEventListener('mousemove', (e) => {
         updateCursor([e.offsetX / window.zoomLevel, e.offsetY / window.zoomLevel]);
         if (isPanning) {
             window.pan = [e.offsetX - panStart[0], e.offsetY - panStart[1]];
+            // panStart = [e.offsetX, e.offsetY];
         } else {
             // console.log(window.cursor);
             let selectedShape = null;
@@ -124,20 +142,9 @@ const setupGame = () => {
             }
         }
     });
-    uiCanvas.addEventListener('mousedown', (e) => {
-        if (e.which == 2 || e.shiftKey) {
-            updateCursor([e.offsetX / window.zoomLevel, e.offsetX / window.zoomLevel]);
-            isPanning = true;
-            panStart = [e.offsetX + window.cursor[0], e.offsetY + window.cursor[1]];
-            e.preventDefault();
-        }
-    });
-    uiCanvas.addEventListener('mouseup', (e) => {
-        if (isPanning) {
-            isPanning = false;
-            e.preventDefault();
-        }
-    });
+};
+
+const addGenericShapeListeners = (shape) => {
     uiCanvas.addEventListener('click', (e) => {
         updateCursor([e.offsetX / window.zoomLevel, e.offsetY / window.zoomLevel]);
         // console.log(window.cursor);
@@ -174,10 +181,18 @@ const setupGame = () => {
     });
 };
 
+const setupGame = () => {
+    makeRegions();
+    makePlayers();
+    addMovementListeners();
+    addSharedListeners();
+    addGenericShapeListeners();
+};
+
 const updateGame = () => {
     ctx.save();
     ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-    ctx.translate(...window.pan);
+    ctx.translate(window.pan[0] / window.zoomLevel, window.pan[1] / window.zoomLevel);
     ctx.scale(window.zoomLevel, window.zoomLevel);
     drawMap();
     ctx.restore();

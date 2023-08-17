@@ -12,4 +12,4 @@ cd "${CURRENT_DIR}"
 
 ./build.sh
 ./build.sh --dev > /dev/null
-python -m http.server --directory app
+python3 -m http.server --directory app
