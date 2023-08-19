@@ -1,16 +1,4 @@
-const segmentIntersection = (A, B, C) => {
-    return (C[1] - A[1]) * (B[0] - A[0]) > (B[1] - A[1]) * (C[0] - A[0]);
-};
-
-const isIntersecting = (A, B, C, D) => {
-    return segmentIntersection(A, C, D) != segmentIntersection(B, C, D) && segmentIntersection(A, B, C) != segmentIntersection(A, B, D);
-};
-
-const raycast = (cursor, edges) => {
-    return !!(edges.map(edge => isIntersecting(cursor, [cursor[0] + 10000, cursor[1]], edge[0], edge[1])).filter(intersecting => intersecting).length % 2);
-};
-
-const inside = (point, vs) => {
+const raycast = (point, vs) => {
     // ray-casting algorithm based on
     // https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html
 
@@ -29,7 +17,17 @@ const inside = (point, vs) => {
 
     return inside;
 };
+function centroid(polygon) {
+    const [x, y] = polygon.reduce((acc, vertex) => {
+        acc[0] += vertex[0];
+        acc[1] += vertex[1];
+        return acc;
+    }, [0,0]);
+
+    return [x/polygon.length, y/polygon.length];
+}
 
 module.exports = {
-    raycast: inside
+    raycast,
+    centroid
 };
