@@ -25,24 +25,48 @@ class Tooltip {
         }
     }
 
-    set(region) {
+    set(region, force) {
+        const oldRegion = this.region;
         this.region = region;
-        tipn.innerHTML = region.owner.name !== region.owner.country ? `${region.owner.name} <br/> <small>of ${region.owner.country}</small>` : region.owner.country;
-        tipr.innerHTML = region.name + (region.isCapital ? " 👑" : "");
-        tipr.title = region.isCapital ? "Capital" : "";
-        tipi.setAttribute("d", region.d);
-        const { x, y, width, height } = tipi.getBBox();
-        tipi.setAttribute("transform", `translate(-150 -150) scale(3) translate(${(-x + 75 - (width / 2))} ${(-y + 75 - (height / 2))})`);
-        tipi.setAttribute("fill", region._colour);
-        tipi.setAttribute("stroke", region._strokeColour);
-        if (region.isCapital) {
-            tiprs2.removeAttribute("n");
-        } else {
-            tiprs2.setAttribute("n", "");
+        if (this.region !== oldRegion || force) {
+            tipn.innerHTML = region.owner.name !== region.owner.country ? `${region.owner.name} <br/> <small>of ${region.owner.country}</small>` : region.owner.country;
+            tipr.innerHTML = region.name + (region.isCapital ? " 👑" : "");
+            tipr.title = region.isCapital ? "Capital" : "";
+            tipi.setAttribute("d", region.d);
+            const { x, y, width, height } = tipi.getBBox();
+            tipi.setAttribute("transform", `translate(-150 -150) scale(3) translate(${(-x + 75 - (width / 2))} ${(-y + 75 - (height / 2))})`);
+            tipi.setAttribute("fill", region._colour);
+            tipi.setAttribute("stroke", region._strokeColour);
+            if (region.isCapital) {
+                tiprs2.removeAttribute("n");
+            } else {
+                tiprs2.setAttribute("n", "");
+            }
         }
+
+        const ambassadorSlots = [tipras0, tipras1, tipras2, tipras3];
+        const ambassadorGs = [tipras0s, tipras1s, tipras2s, tipras3s];
+        this.region.ambassadors.forEach((a, i) => {
+            if (i < this.region.maxAmbassadors) {
+                ambassadorSlots[i].setAttribute("title", `${a.name} from ${a.owner.country}`);
+                ambassadorSlots[i].drawToSvgG(ambassadorGs[i]);
+            } else {
+                ambassadorSlots[i].setAttribute("title", "");
+                ambassadorGs[i].innerHTML = "";
+            }
+        });
+        
+        ambassadorSlots.forEach((s, i) => {
+            if (i < this.region.maxAmbassadors) {
+                s.removeAttribute("n");
+            } else {
+                s.setAttribute("n", "");
+            }
+        });
 
         if (region.owner === window.player) {
             bldsc.removeAttribute("n");
+            trnc.removeAttribute("n");
             const canAffordFarm = Farm.canBeAffordedBy(window.player) && region.hasBuildingSpace;
             if (canAffordFarm) {
                 bldf.removeAttribute("disabled");
@@ -69,6 +93,7 @@ class Tooltip {
             }
         } else {
             bldsc.setAttribute("n", "");
+            trnc.setAttribute("n", "");
         }
 
 

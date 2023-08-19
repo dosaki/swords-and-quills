@@ -1,5 +1,6 @@
 const { Interactable } = require("./game-objects");
 const randomUtils = require("../../utils/random");
+const { Castle } = require('./buildings');
 
 class Region extends Interactable {
     constructor({ id, name, group, d }) {
@@ -31,8 +32,16 @@ class Region extends Interactable {
         return this.buildings.reduce((acc, b) => acc + (b.modifiers.gold || 0), 0);
     }
 
-    get ambassadorSlots() {
-        return this.buildings.reduce((acc, b) => acc + (b.modifiers.foreignAmbassadors || 0), 0) - this.ambassadors.length;
+    get freeAmbassadorSlots() {
+        return this.maxAmbassadors - this.ambassadors.length;
+    }
+
+    get hasAmbassadors() {
+        return this.ambassadors.length > 0;
+    }
+
+    get maxAmbassadors() {
+        return this.buildings.reduce((acc, b) => acc + (b.modifiers.foreignAmbassadors || 0), 0)
     }
 
     get buildingLimit() {
@@ -49,6 +58,14 @@ class Region extends Interactable {
 
     get hasBuildingSpace() {
         return this.buildings.length < this.buildingLimit;
+    }
+
+    get canTrainAmbassador() {
+        return this.buildings.some(b => b.constructor === Castle);
+    }
+
+    get canTrainSoldier() {
+        return this.buildings.some(b => b.constructor === Castle);
     }
 
 
@@ -81,7 +98,7 @@ class Region extends Interactable {
     removeBuilding(building) {
         building.onRemoval();
         this.buildings = this.buildings.filter(b => b !== building);
-        if (this.ambassadorSlots < 0) {
+        if (this.hasAmbassadors < 0) {
             this.ambassadors.slice(this.ambassadorSlots).forEach(a => a.die());
         }
     }
@@ -89,6 +106,12 @@ class Region extends Interactable {
     sellBuilding(building) {
         this.owner._gold += building.sellPrice;
         this.removeBuilding(building);
+    }
+
+    addUnit(unit) {
+        if(unit.canBeAfforded()) {
+            unit.onPlacement(this);
+        }
     }
 
     transferOwnership(player) {

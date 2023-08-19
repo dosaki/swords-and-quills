@@ -25,7 +25,10 @@ class Player {
     }
 
     get score() {
-        return this.conquestPoints + this.regions.reduce((acc, region) => acc + region.scoreValue, 0);
+        return this.conquestPoints
+            + this.regions.reduce((acc, region) => acc + region.scoreValue, 0)
+            + Math.floor(this._gold/100)
+            + Math.floor(this.units.length)/2;
     }
 
     get allianceScore() {
@@ -34,6 +37,10 @@ class Player {
 
     get hasLost() {
         return this.regions.length === 0;
+    }
+
+    get colour() {
+        return this.capital ? this.capital._colour : "#000";
     }
 
     onTick() {
@@ -72,9 +79,7 @@ class Player {
     }
 
     addUnit(unit) {
-        if (unit.canBeAfforded() && this.resources.food < 0) {
-            this.units.push(unit);
-        }
+        this.units.push(unit);
     }
 
     removeUnit(unit) {

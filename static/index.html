@@ -39,8 +39,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            /* background: #3c789b; */
-            background: #216288;;
+            background: #216288;
         }
 
         [i] {
@@ -72,10 +71,10 @@
 
         button {
             background: #2d2d69;
-            border: 2px solid #aaaa44;
+            border: 2px solid #ffd700;
             width: 120px;
             height: 50px;
-            color: #aaaa44;
+            color: #ffd700;
         }
 
         button:hover {
@@ -88,7 +87,7 @@
             color: #fff;
             font-size: 12px;
             font-family: Arial, sans-serif;
-            border-right: 2px solid #aaaa44;
+            border-right: 2px solid #ffd700;
             transition: margin 700ms;
             margin-bottom: -10000px;
             margin-top: 10000px;
@@ -125,14 +124,14 @@
             width: 150px;
             height: 150px;
             background: #0006;
-            border: 2px solid #aaaa44;
+            border: 2px solid #ffd700;
         }
 
         [tiprs] {
             width: 50px;
             height: 50px;
             background: #0006;
-            border: 2px solid #aaaa44;
+            border: 2px solid #ffd700;
             margin: 10px;
             display: flex;
             align-items: center;
@@ -147,11 +146,16 @@
 
         [disabled]:hover {
             background: #2d2d69;
-            color: #aaaa44;
+            color: #ffd700;
         }
 
         [st] {
             text-decoration: line-through 2px;
+        }
+
+        [u] {
+            width: 50px;
+            height: 50px;
         }
 
         [n] {
@@ -168,7 +172,7 @@
             <div id=tip>
                 <h1 id=tipn></h1>
                 <h2 id=tipr></h2>
-                <div fr>
+                <div fr fm>
                     <svg rc>
                         <path id=tipi d="" />
                     </svg>
@@ -177,19 +181,58 @@
                         <button id=tiprs2 tiprs n></button>
                     </div>
                 </div>
+                <h3>Ambassadors</h3>
+                <div fr fm>
+                    <button id=tipras0 tiprs n><svg u>
+                            <g id=tipras0s transform="scale(5)"></g>
+                        </svg></button>
+                    <button id=tipras1 tiprs n><svg u>
+                            <g id=tipras1s transform="scale(5)"></g>
+                        </svg></button>
+                    <button id=tipras2 tiprs n><svg u>
+                            <g id=tipras2s transform="scale(5)"></g>
+                        </svg></button>
+                    <button id=tipras3 tiprs n><svg u>
+                            <g id=tipras3s transform="scale(5)"></g>
+                        </svg></button>
+                </div>
+                <hr/>
                 <div fc id=bldsc>
-                    <div>Build</div>
+                    <h3>Build</h3>
                     <div fr fm>
-                        <div fc fm><button id=bldf bldb fc fm></button><div id=bldfc></div></div>
-                        <div fc fm><button id=bldm bldb fc fm></button><div id=bldmc></div></div>
-                        <div fc fm><button id=bldc bldb fc fm></button><div id=bldcc></div></div>
+                        <div fc fm><button id=bldf bldb fc fm></button>
+                            <div id=bldfc></div>
+                        </div>
+                        <div fc fm><button id=bldm bldb fc fm></button>
+                            <div id=bldmc></div>
+                        </div>
+                        <div fc fm><button id=bldc bldb fc fm></button>
+                            <div id=bldcc></div>
+                        </div>
+                    </div>
+                </div>
+                <div fc id=trnc>
+                    <h3>Train</h3>
+                    <div fr fm>
+                        <div fc fm>
+                            <button id=trns bldb fc fm><svg u>
+                                    <g id=trnss transform="scale(5)"></g>
+                                </svg></button>
+                            <div id=trnsc></div>
+                        </div>
+                        <div fc fm>
+                            <button id=trna bldb fc fm><svg u>
+                                    <g id=trnas transform="scale(5)"></g>
+                                </svg></button>
+                            <div id=trnac></div>
+                        </div>
                     </div>
                 </div>
             </div>
             <div id=bnrc>
                 <svg>
-                    <path id=bnr fill=#44a stroke=#aa4 stroke-width=4 d="M 0,0 h 100 v 60 C 75,115 25,115 0,60 z"
-                        transform="translate(15 -2)" />
+                    <path id=bnr fill=#44a stroke=#aa4 stroke-width=8 d="M 0,0 h 100 v 60 C 75,115 25,115 0,60 z"
+                        transform="translate(15 -4)" />
                 </svg>
             </div>
             <div id=m i>

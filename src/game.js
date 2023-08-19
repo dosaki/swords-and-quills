@@ -4,11 +4,8 @@ const ResourcesBar = require("./entities/ui/resources");
 const Tooltip = require("./entities/ui/tooltip");
 //
 const { Farm, Mine, Castle } = require("./entities/game-objects/buildings");
-const { Soldier, Citizen } = require("./entities/game-objects/units");
+const { Soldier, Ambassador } = require("./entities/game-objects/units");
 
-
-new Soldier();
-new Citizen();
 
 const mapShadow = loadJoinedRegionPaths();
 
@@ -30,34 +27,7 @@ window.addEventListener("resize", () => {
 });
 
 
-// Tooltip stuff
-bldf.innerHTML = Farm.icon;
-bldf.setAttribute("title", `${Farm.name}: ${Farm.description}`);
-bldfc.innerHTML = `${Farm.cost} 🪙`;
-bldf.addEventListener('click', () => {
-    if (window.player && !bldf.hasAttribute('disabled')) {
-        tooltip.region.addBuilding(new Farm(window.player));
-        tooltip.update();
-    }
-});
-bldm.innerHTML = Mine.icon;
-bldm.setAttribute("title", `${Mine.name}: ${Mine.description}`);
-bldmc.innerHTML = `${Mine.cost} 🪙`;
-bldm.addEventListener('click', () => {
-    if (window.player && !bldm.hasAttribute('disabled')) {
-        tooltip.region.addBuilding(new Mine(window.player));
-        tooltip.update();
-    }
-});
-bldc.innerHTML = Castle.icon;
-bldc.setAttribute("title", `${Castle.name}: ${Castle.description}`);
-bldcc.innerHTML = `${Castle.cost} 🪙`;
-bldc.addEventListener('click', () => {
-    if (window.player && !bldc.hasAttribute('disabled')) {
-        tooltip.region.addBuilding(new Castle(window.player));
-        tooltip.update();
-    }
-});
+// Tooltip - Building Slots
 tiprs1.addEventListener('click', () => {
     if (window.player && tooltip.region && window.player == tooltip.region.owner && tooltip.region.buildings[0]) {
         tooltip.region.sellBuilding(tooltip.region.buildings[0]);
@@ -67,6 +37,35 @@ tiprs1.addEventListener('click', () => {
 tiprs2.addEventListener('click', () => {
     if (window.player && tooltip.region && window.player == tooltip.region.owner && tooltip.region.buildings[1]) {
         tooltip.region.sellBuilding(tooltip.region.buildings[1]);
+        tooltip.update();
+    }
+});
+
+// Tooltip - Building Buttons
+bldf.innerHTML = Farm.icon;
+bldf.setAttribute("title", `${Farm.name}: ${Farm.description}`);
+bldfc.innerHTML = `${Farm.cost}🪙`;
+bldf.addEventListener('click', () => {
+    if (window.player && !bldf.hasAttribute('disabled')) {
+        tooltip.region.addBuilding(new Farm(window.player));
+        tooltip.update();
+    }
+});
+bldm.innerHTML = Mine.icon;
+bldm.setAttribute("title", `${Mine.name}: ${Mine.description}`);
+bldmc.innerHTML = `${Mine.cost}🪙`;
+bldm.addEventListener('click', () => {
+    if (window.player && !bldm.hasAttribute('disabled')) {
+        tooltip.region.addBuilding(new Mine(window.player));
+        tooltip.update();
+    }
+});
+bldc.innerHTML = Castle.icon;
+bldc.setAttribute("title", `${Castle.name}: ${Castle.description}`);
+bldcc.innerHTML = `${Castle.cost}🪙`;
+bldc.addEventListener('click', () => {
+    if (window.player && !bldc.hasAttribute('disabled')) {
+        tooltip.region.addBuilding(new Castle(window.player));
         tooltip.update();
     }
 });
@@ -91,12 +90,13 @@ let playerName = "Sir Teencen Tury I";
 let playerNationName = "Jascriptland";
 let isPickingNation = true;
 
+// Get player name and stuff
 bp.addEventListener('click', () => {
-    if (tt.value && tt.value) {
+    if (tt.value && tn.value) {
         playerName = `${tt.value} ${tn.value}`;
     }
-    if (tn.value) {
-        playerNationName = tn.value;
+    if (tc.value) {
+        playerNationName = tc.value;
     }
     m.setAttribute("n", "");
 });
@@ -107,6 +107,8 @@ const updateCursor = ([x, y]) => {
     window.cursor = [x, y];
     window.gameCursor = [x - window.pan[0] / window.zoomLevel, y - window.pan[1] / window.zoomLevel];
 };
+
+let placingAmbassador = null;
 
 const makeRegions = () => {
     regions = loadRegions();
@@ -122,9 +124,34 @@ const makeRegions = () => {
                 bnr.setAttribute("fill", region._colour);
                 bnr.setAttribute("stroke", region._strokeColour);
                 bnrc.style.top = 0;
+                // Tooltip - Unit Buttons - doing it here to use right colours:
+
+                Soldier.drawToSvgG(trnss, trnsc, window.player);
+                trns.addEventListener('click', () => {
+                    if (!trns.hasAttribute('disabled')) {
+                        tooltip.region.addUnit(new Soldier(window.player));
+                        tooltip.update();
+                    }
+                });
+
+                Ambassador.drawToSvgG(trnas, trnac, window.player);
+                trna.addEventListener('click', () => {
+                    if (!trna.hasAttribute('disabled')) {
+                        placingAmbassador = new Ambassador(window.player);
+                        tooltip.update();
+                    }
+                });
             }
-            window.tooltip.set(region);
-            window.tooltip.open();
+            if (placingAmbassador && region.freeAmbassadorSlots > 0) {
+                region.addUnit(placingAmbassador);
+                placingAmbassador = null;
+                tooltip.update();
+                window.tooltip.set(region);
+                window.tooltip.open();
+            } else {
+                window.tooltip.set(region);
+                window.tooltip.open();
+            }
         };
         region.onHover = (e, self) => {
             if (isPickingNation) {
@@ -153,22 +180,22 @@ let currentWaveValue = 0.8;
 let currentWaveDirection = 1;
 const drawMap = () => {
     ctx.save();
-    ctx.filter = `blur(${16*(currentWaveValue)}px)`;
+    ctx.filter = `blur(${16 * (currentWaveValue)}px)`;
     ctx.strokeStyle = "#3c789b";
-    ctx.lineWidth = 10*currentWaveValue;
+    ctx.lineWidth = 10 * currentWaveValue;
     ctx.stroke(mapShadow);
-    
-    ctx.filter = `blur(${8*(currentWaveValue)}px)`;
+
+    ctx.filter = `blur(${8 * (currentWaveValue)}px)`;
     ctx.strokeStyle = "#4f94bf";
-    ctx.lineWidth = 8*currentWaveValue;
+    ctx.lineWidth = 8 * currentWaveValue;
     ctx.stroke(mapShadow);
     ctx.restore();
 
     regions.forEach(region => region.draw(ctx));
-    currentWaveValue+=0.001*currentWaveDirection;
-    if(currentWaveValue>=1){
+    currentWaveValue += 0.001 * currentWaveDirection;
+    if (currentWaveValue >= 1) {
         currentWaveDirection = -1;
-    } else if(currentWaveValue<=0.8){
+    } else if (currentWaveValue <= 0.8) {
         currentWaveDirection = 1;
     }
 };

@@ -76,7 +76,7 @@ class Building extends Drawable {
 
 class Farm extends Building {
     static name = "Farm";
-    static description = "+2 food";
+    static description = "+2🍖";
     static cost = 100;
     static icon = "🌽";
     static modifiers = {
@@ -89,7 +89,7 @@ class Farm extends Building {
 
 class Mine extends Building {
     static name = "Mine";
-    static description = "+1 gold/day";
+    static description = "+1🪙/day";
     static cost = 70;
     static icon = "🪨";
 
@@ -100,7 +100,7 @@ class Mine extends Building {
 
 class Castle extends Building {
     static name = "Castle";
-    static description = "+2 gold/day +6 defence";
+    static description = "+2🪙/day +6🛡️";
     static cost = 500;
     static icon = "🏰";
     static modifiers = {
