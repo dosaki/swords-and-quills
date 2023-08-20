@@ -54,7 +54,9 @@ class Citizen extends Drawable {
 
     static drawToSvgG(gElement, costElement, owner) {
         this.makeSvgPaths(owner).forEach(p => gElement.appendChild(p));
-        gElement.parentElement.parentElement.setAttribute("title", `${this.name}: ${this.description}`);
+        if(costElement){
+            gElement.parentElement.parentElement.setAttribute("title", `${this.name}: ${this.description}`);
+        }
         if(costElement){
             costElement.innerHTML = `${this.cost}🪙 1🍖`;
         }
@@ -115,9 +117,9 @@ class Citizen extends Drawable {
 
 class Soldier extends Citizen {
     static name = "Soldier";
-    static description = "+1🗡️, +2🛡️";
+    static description = "+1🗡️, +1🛡️";
     static paths = soldierPaths;
-    static cost = 3;
+    static cost = 8;
 
     onPlacement(region) {
         if(this.region){
@@ -160,7 +162,7 @@ class Ambassador extends Citizen {
     static name = "Ambassador";
     static description = "+1🪶/day, -1🪙/day";
     static paths = ambassadorPaths;
-    static cost = 5;
+    static cost = 10;
 
     onPlacement(region) {
         if(this.region){

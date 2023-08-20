@@ -1,4 +1,5 @@
 const { Farm, Mine, Castle } = require('../game-objects/buildings');
+const { Ambassador, Soldier } = require('../game-objects/units');
 
 class Tooltip {
     constructor(tooltipElement) {
@@ -19,9 +20,108 @@ class Tooltip {
         tip.style.marginTop = `${cg.height}px`;
     }
 
-    update() {
+    update(force) {
         if (this.region) {
-            this.set(this.region);
+            this.set(this.region, force);
+        }
+    }
+
+    _populateSellBuildings() {
+        const slots = [tiprs1, tiprs2];
+        slots.forEach((s, i) => {
+            if (this.region.buildings[i]) {
+                s.innerHTML = this.region.buildings[i].icon;
+                if (this.region.owner === window.player) {
+                    s.setAttribute("title", `Sell ${this.region.buildings[i].name} (+${this.region.buildings[i].sellPrice}🪙)`);
+                } else {
+                    s.setAttribute("title", this.region.buildings[i].name);
+                }
+            } else {
+                s.innerHTML = "";
+                s.removeAttribute("title");
+            }
+        });
+    }
+
+    _setMakeBuildingsAndUnits() {
+        if (this.region.owner === window.player) {
+            bldsc.removeAttribute("n");
+            trnc.removeAttribute("n");
+            const canAffordFarm = Farm.canBeAffordedBy(window.player) && this.region.hasBuildingSpace;
+            if (canAffordFarm) {
+                bldf.removeAttribute("disabled");
+                bldf.parentElement.removeAttribute("st");
+            } else {
+                bldf.setAttribute("disabled", "");
+                bldf.parentElement.setAttribute("st", "");
+            }
+            const canAffordMine = Mine.canBeAffordedBy(window.player) && this.region.hasBuildingSpace;
+            if (canAffordMine) {
+                bldm.removeAttribute("disabled");
+                bldm.parentElement.removeAttribute("st");
+            } else {
+                bldm.setAttribute("disabled", "");
+                bldm.parentElement.setAttribute("st", "");
+            }
+            const canAffordCastle = Castle.canBeAffordedBy(window.player) && this.region.hasBuildingSpace;
+            if (canAffordCastle) {
+                bldc.removeAttribute("disabled");
+                bldc.parentElement.removeAttribute("st");
+            } else {
+                bldc.setAttribute("disabled", "");
+                bldc.parentElement.setAttribute("st", "");
+            }
+        } else {
+            bldsc.setAttribute("n", "");
+            trnc.setAttribute("n", "");
+        }
+    }
+
+    _populateAmbassadors() {
+        const ambassadorSlots = [tipras0, tipras1, tipras2, tipras3];
+        const ambassadorGs = [tipras0s, tipras1s, tipras2s, tipras3s];
+        ambassadorSlots.forEach((slot, i) => {
+            if (this.region.ambassadors[i]) {
+                slot.setAttribute("title", `${this.region.ambassadors[i].name} from ${this.region.ambassadors[i].owner.country}`);
+                this.region.ambassadors[i].drawToSvgG(ambassadorGs[i]);
+            } else {
+                slot.removeAttribute("title");
+                ambassadorGs[i].innerHTML = "";
+            }
+
+            if (i < this.region.maxAmbassadors) {
+                slot.removeAttribute("n");
+            } else {
+                slot.setAttribute("n", "");
+            }
+        });
+    }
+
+    _setTrainUnits() {
+        const canAffordSoldier = Soldier.canBeAffordedBy(window.player);
+        if (canAffordSoldier) {
+            trns.removeAttribute("disabled");
+            trns.parentElement.removeAttribute("st");
+        } else {
+            trns.setAttribute("disabled", "");
+            trns.parentElement.setAttribute("st", "");
+        }
+        const canAffordAmbassador = Ambassador.canBeAffordedBy(window.player);
+        if (canAffordAmbassador) {
+            trna.removeAttribute("disabled");
+            trna.parentElement.removeAttribute("st");
+        } else {
+            trna.setAttribute("disabled", "");
+            trna.parentElement.setAttribute("st", "");
+        }
+    }
+
+    _setOtherPlayerView() {
+        if(this.region.owner !== window.player){
+            dvc.removeAttribute("n");
+            dvv.innerHTML = this.region.owner.reputationWith(window.player);
+        } else {
+            dvc.setAttribute("n", "");
         }
     }
 
@@ -42,75 +142,14 @@ class Tooltip {
             } else {
                 tiprs2.setAttribute("n", "");
             }
+
+            this._populateAmbassadors();
+            this._populateSellBuildings();
         }
+        this._setMakeBuildingsAndUnits();
+        this._setTrainUnits();
 
-        const ambassadorSlots = [tipras0, tipras1, tipras2, tipras3];
-        const ambassadorGs = [tipras0s, tipras1s, tipras2s, tipras3s];
-        this.region.ambassadors.forEach((a, i) => {
-            if (i < this.region.maxAmbassadors) {
-                ambassadorSlots[i].setAttribute("title", `${a.name} from ${a.owner.country}`);
-                ambassadorSlots[i].drawToSvgG(ambassadorGs[i]);
-            } else {
-                ambassadorSlots[i].setAttribute("title", "");
-                ambassadorGs[i].innerHTML = "";
-            }
-        });
-        
-        ambassadorSlots.forEach((s, i) => {
-            if (i < this.region.maxAmbassadors) {
-                s.removeAttribute("n");
-            } else {
-                s.setAttribute("n", "");
-            }
-        });
-
-        if (region.owner === window.player) {
-            bldsc.removeAttribute("n");
-            trnc.removeAttribute("n");
-            const canAffordFarm = Farm.canBeAffordedBy(window.player) && region.hasBuildingSpace;
-            if (canAffordFarm) {
-                bldf.removeAttribute("disabled");
-                bldf.parentElement.removeAttribute("st");
-            } else {
-                bldf.setAttribute("disabled", "");
-                bldf.parentElement.setAttribute("st", "");
-            }
-            const canAffordMine = Mine.canBeAffordedBy(window.player) && region.hasBuildingSpace;
-            if (canAffordMine) {
-                bldm.removeAttribute("disabled");
-                bldm.parentElement.removeAttribute("st");
-            } else {
-                bldm.setAttribute("disabled", "");
-                bldm.parentElement.setAttribute("st", "");
-            }
-            const canAffordCastle = Castle.canBeAffordedBy(window.player) && region.hasBuildingSpace;
-            if (canAffordCastle) {
-                bldc.removeAttribute("disabled");
-                bldc.parentElement.removeAttribute("st");
-            } else {
-                bldc.setAttribute("disabled", "");
-                bldc.parentElement.setAttribute("st", "");
-            }
-        } else {
-            bldsc.setAttribute("n", "");
-            trnc.setAttribute("n", "");
-        }
-
-
-        const slots = [tiprs1, tiprs2];
-        slots.forEach((s, i) => {
-            if (region.buildings[i]) {
-                s.innerHTML = region.buildings[i].icon;
-                if (region.owner === window.player) {
-                    s.setAttribute("title", `Sell ${region.buildings[i].name} (+${region.buildings[i].sellPrice}🪙)`);
-                } else {
-                    s.setAttribute("title", region.buildings[i].name);
-                }
-            } else {
-                s.innerHTML = "";
-                s.removeAttribute("title");
-            }
-        });
+        this._setOtherPlayerView();
     }
 }
 

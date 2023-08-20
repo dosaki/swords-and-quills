@@ -41,7 +41,7 @@ class Region extends Interactable {
     }
 
     get maxAmbassadors() {
-        return this.buildings.reduce((acc, b) => acc + (b.modifiers.foreignAmbassadors || 0), 0)
+        return this.buildings.reduce((acc, b) => acc + (b.modifiers.foreignAmbassadors || 0), 0);
     }
 
     get buildingLimit() {
@@ -49,7 +49,8 @@ class Region extends Interactable {
     }
 
     get defence() {
-        return this.baseDefense + this.buildings.reduce((acc, b) => acc + (b.modifiers.defence || 0), 0);
+        return this.baseDefense
+            + this.buildings.reduce((acc, b) => acc + (b.modifiers.defence || 0), 0);
     }
 
     get siegeProgress() {
@@ -69,12 +70,11 @@ class Region extends Interactable {
     }
 
 
-    draw(ctx) {
-        ctx.shadowColor = '#000';
-        ctx.strokeStyle = '#000';
-        ctx.shadowBlur = window.shadowblur || 0;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 0;
+    draw(ctx, isPlacingAmbassador) {
+        ctx.save();
+        if (isPlacingAmbassador && !this.isCapital) {
+            ctx.filter = "grayscale(0.9) contrast(0.5) brightness(0.5)";
+        }
         super.draw(ctx);
         if (this.isCapital) {
             ctx.fillStyle = "#000";
@@ -86,6 +86,7 @@ class Region extends Interactable {
             ctx.fill();
             ctx.stroke();
         }
+        ctx.restore();
     }
 
     addBuilding(building) {
@@ -109,7 +110,7 @@ class Region extends Interactable {
     }
 
     addUnit(unit) {
-        if(unit.canBeAfforded()) {
+        if (unit.canBeAfforded()) {
             unit.onPlacement(this);
         }
     }

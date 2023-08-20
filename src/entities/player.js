@@ -87,7 +87,7 @@ class Player {
     }
 
     changeReputationWith(player, reputation) {
-        this.knownPlayers[player] = player.knownPlayers[this] = (this.knownPlayers[player] || 0) + reputation;
+        this.knownPlayers[player.name] = player.knownPlayers[this.name] = Math.max((this.knownPlayers[player.name] || 0) + reputation, 100);
     }
 
     reputationWith(player) {

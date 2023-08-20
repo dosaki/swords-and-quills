@@ -31,13 +31,13 @@ window.addEventListener("resize", () => {
 tiprs1.addEventListener('click', () => {
     if (window.player && tooltip.region && window.player == tooltip.region.owner && tooltip.region.buildings[0]) {
         tooltip.region.sellBuilding(tooltip.region.buildings[0]);
-        tooltip.update();
+        tooltip.update(true);
     }
 });
 tiprs2.addEventListener('click', () => {
     if (window.player && tooltip.region && window.player == tooltip.region.owner && tooltip.region.buildings[1]) {
         tooltip.region.sellBuilding(tooltip.region.buildings[1]);
-        tooltip.update();
+        tooltip.update(true);
     }
 });
 
@@ -48,7 +48,7 @@ bldfc.innerHTML = `${Farm.cost}🪙`;
 bldf.addEventListener('click', () => {
     if (window.player && !bldf.hasAttribute('disabled')) {
         tooltip.region.addBuilding(new Farm(window.player));
-        tooltip.update();
+        tooltip.update(true);
     }
 });
 bldm.innerHTML = Mine.icon;
@@ -57,7 +57,7 @@ bldmc.innerHTML = `${Mine.cost}🪙`;
 bldm.addEventListener('click', () => {
     if (window.player && !bldm.hasAttribute('disabled')) {
         tooltip.region.addBuilding(new Mine(window.player));
-        tooltip.update();
+        tooltip.update(true);
     }
 });
 bldc.innerHTML = Castle.icon;
@@ -66,7 +66,7 @@ bldcc.innerHTML = `${Castle.cost}🪙`;
 bldc.addEventListener('click', () => {
     if (window.player && !bldc.hasAttribute('disabled')) {
         tooltip.region.addBuilding(new Castle(window.player));
-        tooltip.update();
+        tooltip.update(true);
     }
 });
 
@@ -124,8 +124,8 @@ const makeRegions = () => {
                 bnr.setAttribute("fill", region._colour);
                 bnr.setAttribute("stroke", region._strokeColour);
                 bnrc.style.top = 0;
-                // Tooltip - Unit Buttons - doing it here to use right colours:
 
+                // Tooltip - Unit Buttons - doing it here to use right colours:
                 Soldier.drawToSvgG(trnss, trnsc, window.player);
                 trns.addEventListener('click', () => {
                     if (!trns.hasAttribute('disabled')) {
@@ -139,13 +139,16 @@ const makeRegions = () => {
                     if (!trna.hasAttribute('disabled')) {
                         placingAmbassador = new Ambassador(window.player);
                         tooltip.update();
+                        bgw.style.background = "#6a6a6a";
                     }
                 });
             }
-            if (placingAmbassador && region.freeAmbassadorSlots > 0) {
+
+            if (placingAmbassador && region.owner !== placingAmbassador.owner && region.freeAmbassadorSlots > 0) {
                 region.addUnit(placingAmbassador);
                 placingAmbassador = null;
-                tooltip.update();
+                bgw.style.background = "#216288";
+                tooltip.update(true);
                 window.tooltip.set(region);
                 window.tooltip.open();
             } else {
@@ -180,18 +183,26 @@ let currentWaveValue = 0.8;
 let currentWaveDirection = 1;
 const drawMap = () => {
     ctx.save();
-    ctx.filter = `blur(${16 * (currentWaveValue)}px)`;
+    if(placingAmbassador){
+        ctx.filter = `blur(${16 * (currentWaveValue)}px) grayscale(0.9) contrast(0.5) brightness(0.5)`;
+    } else {
+        ctx.filter = `blur(${16 * (currentWaveValue)}px)`;
+    }
     ctx.strokeStyle = "#3c789b";
     ctx.lineWidth = 10 * currentWaveValue;
     ctx.stroke(mapShadow);
 
-    ctx.filter = `blur(${8 * (currentWaveValue)}px)`;
+    if(placingAmbassador){
+        ctx.filter = `blur(${8 * (currentWaveValue)}px) grayscale(0.9) contrast(0.5) brightness(0.5)`;
+    } else {
+        ctx.filter = `blur(${8 * (currentWaveValue)}px)`;
+    }
     ctx.strokeStyle = "#4f94bf";
     ctx.lineWidth = 8 * currentWaveValue;
     ctx.stroke(mapShadow);
     ctx.restore();
 
-    regions.forEach(region => region.draw(ctx));
+    regions.forEach(region => region.draw(ctx, placingAmbassador));
     currentWaveValue += 0.001 * currentWaveDirection;
     if (currentWaveValue >= 1) {
         currentWaveDirection = -1;
@@ -296,6 +307,10 @@ const addGenericShapeListeners = (shape) => {
         });
         if (selectedShape) {
             selectedShape.rightClick(e);
+        }
+        if(placingAmbassador){
+            placingAmbassador = null;
+            bgw.style.background = "#216288";
         }
     });
 };
