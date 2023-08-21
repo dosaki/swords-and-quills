@@ -61,22 +61,11 @@ class Building extends Drawable {
         this.region = null;
         this.owner = null;
     }
-
-    // _verticesByShape() {
-    //     const [x, y] = this.region.centroid;
-    //     const radius = 2;
-    //     const vertices = [];
-    //     for (let i = 0; i < this.sides; i++) {
-    //         const angle = Math.PI * 2 * (i / this.sides);
-    //         vertices.push([x + radius * Math.cos(angle), y + radius * Math.sin(angle)]);
-    //     }
-    //     return [vertices];
-    // }
 }
 
 class Farm extends Building {
     static name = "Farm";
-    static description = "+2🍖";
+    static description = "+3🍖";
     static cost = 100;
     static icon = "🌽";
     static modifiers = {

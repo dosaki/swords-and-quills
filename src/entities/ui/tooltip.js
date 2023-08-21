@@ -1,5 +1,5 @@
 const { Farm, Mine, Castle } = require('../game-objects/buildings');
-const { Ambassador, Soldier } = require('../game-objects/units');
+const { Ambassador, Army } = require('../game-objects/units');
 
 class Tooltip {
     constructor(tooltipElement) {
@@ -38,7 +38,7 @@ class Tooltip {
                 }
             } else {
                 s.innerHTML = "";
-                s.removeAttribute("title");
+                s.setAttribute("title", "Building plot");
             }
         });
     }
@@ -85,7 +85,7 @@ class Tooltip {
                 slot.setAttribute("title", `${this.region.ambassadors[i].name} from ${this.region.ambassadors[i].owner.country}`);
                 this.region.ambassadors[i].drawToSvgG(ambassadorGs[i]);
             } else {
-                slot.removeAttribute("title");
+                slot.setAttribute("title", "Ambassador seat");
                 ambassadorGs[i].innerHTML = "";
             }
 
@@ -98,8 +98,8 @@ class Tooltip {
     }
 
     _setTrainUnits() {
-        const canAffordSoldier = Soldier.canBeAffordedBy(window.player);
-        if (canAffordSoldier) {
+        const canAffordArmy = Army.canBeAffordedBy(window.player);
+        if (canAffordArmy) {
             trns.removeAttribute("disabled");
             trns.parentElement.removeAttribute("st");
         } else {
@@ -117,12 +117,35 @@ class Tooltip {
     }
 
     _setOtherPlayerView() {
-        if(this.region.owner !== window.player){
+        if (this.region.owner !== window.player) {
             dvc.removeAttribute("n");
             dvv.innerHTML = this.region.owner.reputationWith(window.player);
         } else {
             dvc.setAttribute("n", "");
         }
+    }
+
+    _populateArmies() {
+        while (ald.firstChild) {
+            ald.removeChild(ald.lastChild);
+        }
+        while (ala.firstChild) {
+            ala.removeChild(ala.lastChild);
+        }
+        this.region.defenders.forEach(d => {
+            const button = document.createElement("button");
+            button.innerHTML = d.number;
+            button.setAttribute("style", `width: 35px; height: 35px; background: ${d.owner.colour}`);
+            button.setAttribute("title", `${d.number} Armies from ${d.owner.country}`);
+            ald.appendChild(button);
+        });
+        this.region.attackers.forEach(a => {
+            const button = document.createElement("button");
+            button.innerHTML = a.number;
+            button.setAttribute("style", `width: 35px; height: 35px; background: ${a.owner.colour}`);
+            button.setAttribute("title", `${a.number} Armies from ${a.owner.country}`);
+            ala.appendChild(button);
+        });
     }
 
     set(region, force) {
@@ -146,6 +169,7 @@ class Tooltip {
             this._populateAmbassadors();
             this._populateSellBuildings();
         }
+        this._populateArmies();
         this._setMakeBuildingsAndUnits();
         this._setTrainUnits();
 

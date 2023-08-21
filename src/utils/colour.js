@@ -93,8 +93,8 @@ const hsvToRgb = (h, s, v) => {
     return [r * 255, g * 255, b * 255];
 };
 
-const newColour = (s,v) => {
-    return "#" + hsvToRgb(int(0, 360) / 360, s || 0.5, v || 1).map(c => Math.floor(c).toString(16).padStart(2, "0")).join("");
+const newColour = (h, s, v) => {
+    return "#" + hsvToRgb(h !== null ? h : int(0, 360) / 360, s || 0.5, v || 1).map(c => Math.floor(c).toString(16).padStart(2, "0")).join("");
 };
 
 // const newColour = () => {

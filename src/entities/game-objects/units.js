@@ -1,27 +1,34 @@
 const { Drawable } = require('./game-objects');
 const ambassadorPaths = require('../../config/ambassador.json');
 const soldierPaths = require('../../config/knight.json');
+const { pick } = require('../../utils/random');
 
 class Citizen extends Drawable {
     static name = "Citizen";
     static description = "";
     static icon = "";
     static cost = 0;
+    static foodCost = 1;
     static paths = {};
 
     constructor(owner) {
         super();
         this.owner = owner;
         this.region = null;
+        this.targetRegion = null;
+        this.routeToRegion = [];
+        this.currentCoordinates = [];
+        this._bounceNumber = 0;
     }
 
     static canBeAffordedBy(player) {
-        return player.resources.gold >= this.cost && player.resources.food > 0;
+        return player.resources.gold >= this.cost && player.resources.food - this.foodCost >= 0;
     }
 
     static draw(ctx, x, y, owner) {
         ctx.save();
-        ctx.translate(x||0, y||0);
+        ctx.translate(x||0, (y||0));
+        ctx.scale(0.3, 0.3);
         Object.keys(this.paths).forEach(p => {
             const path = new Path2D(p);
             const [fill, stroke] = this.paths[p];
@@ -58,7 +65,7 @@ class Citizen extends Drawable {
             gElement.parentElement.parentElement.setAttribute("title", `${this.name}: ${this.description}`);
         }
         if(costElement){
-            costElement.innerHTML = `${this.cost}🪙 1🍖`;
+            costElement.innerHTML = `${this.cost}🪙 ${this.foodCost}🍖`;
         }
     }
 
@@ -82,8 +89,13 @@ class Citizen extends Drawable {
         return this.constructor.canBeAffordedBy(this.owner);
     }
 
-    draw(ctx, x, y) {
-        this.constructor.draw(ctx, x, y, this.owner);
+    drawAt(ctx, x, y) {
+        this._bounceNumber += 0.1;
+        this.constructor.draw(ctx, x, y + (Math.sin(this._bounceNumber))/4, this.owner);
+    }
+
+    draw(ctx) {
+        this.drawAt(ctx, ...this.currentCoordinates);
     }
 
     drawToSvgG(gElement) {
@@ -98,6 +110,7 @@ class Citizen extends Drawable {
 
     onArrival(region) {
         this.region = region;
+        this.currentCoordinates = pick(...this.region.largestShape).map((v, i) => (v + this.region.centroid[i]) / 2 + Math.random());
     }
 
     onLeave() {
@@ -115,11 +128,36 @@ class Citizen extends Drawable {
     }
 }
 
-class Soldier extends Citizen {
-    static name = "Soldier";
-    static description = "+1🗡️, +1🛡️";
+class Army extends Citizen {
+    static name = "Army";
+    static description = "+10🗡️, +10🛡️";
     static paths = soldierPaths;
-    static cost = 8;
+    static cost = 80;
+    static foodCost = 10;
+
+    constructor(owner) {
+        super(owner);
+        this.number = 10;
+    }
+
+    get description() {
+        return `${this.number}🗡️, ${this.number}🛡️`;
+    }
+
+    draw(ctx) {
+        super.draw(ctx);
+        ctx.save();
+        ctx.translate(...this.currentCoordinates);
+        // show number of soldiers
+        ctx.fillStyle = "#fff";
+        ctx.strokeStyle = "#000";
+        ctx.lineWidth = 0.1;
+        ctx.font = "2px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(this.number, 1.5, 5);
+        ctx.strokeText(this.number, 1.5, 5);
+        ctx.restore();
+    }
 
     onPlacement(region) {
         if(this.region){
@@ -138,6 +176,18 @@ class Soldier extends Citizen {
         }
     }
 
+    clone() {
+        const thisClone = new this.constructor(this.owner);
+        thisClone.number = this.number;
+        thisClone.region = this.region;
+        thisClone.targetRegion = this.targetRegion;
+        thisClone.routeToRegion = this.routeToRegion;
+        thisClone.currentCoordinates = pick(...this.region.largestShape).map((v, i) => (v + this.region.centroid[i]) / 2 + Math.random());
+        thisClone._bounceNumber = 0;
+        this.owner.addUnit(thisClone);
+        return thisClone;
+    }
+
     onLeave() {
         if (region.owner === this.owner) {
             region.defenders.push(this);
@@ -150,8 +200,6 @@ class Soldier extends Citizen {
     onTick() {
         if (this.region.owner !== this.owner) {
             if (this.region.defenders.length === 0) {
-                this.region.baseDefense += 2;
-                this.owner._gold--;
                 this.region._siegeProgress++;
             }
         }
@@ -197,6 +245,6 @@ class Ambassador extends Citizen {
 
 module.exports = {
     Citizen,
-    Soldier,
+    Army,
     Ambassador
 };

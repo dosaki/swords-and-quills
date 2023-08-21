@@ -65,10 +65,9 @@ class Region extends Interactable {
         return this.buildings.some(b => b.constructor === Castle);
     }
 
-    get canTrainSoldier() {
+    get canTrainArmy() {
         return this.buildings.some(b => b.constructor === Castle);
     }
-
 
     draw(ctx, isPlacingAmbassador) {
         ctx.save();
@@ -129,16 +128,76 @@ class Region extends Interactable {
         oldDefenders.forEach(d => d.onDie()); // in case there's any left
     }
 
+    hasArmiesOfPlayer(player) {
+        return this.defenders.some(d => d.owner === player) || this.attackers.some(a => a.owner === player);
+    }
+
+    mergeArmies(player) {
+        const defenders = this.defenders.filter(d => d.owner === player);
+        const attackers = this.attackers.filter(a => a.owner === player);
+        
+        if(defenders.length > 1){
+            this.defenders = this.defenders.filter(d => d.owner !== player);
+            defenders[0].number = defenders.reduce((acc, d) => acc + d.number, 0);
+            this.defenders.push(defenders[0]);
+            defenders.slice(1).forEach(d => d.onDie());
+        }
+        if(attackers.length > 1){
+            this.attackers = this.attackers.filter(a => a.owner !== player);
+            attackers[0].number = attackers.reduce((acc, a) => acc + a.number, 0);
+            this.attackers.push(attackers[0]);
+            attackers.slice(1).forEach(a => a.onDie());
+        }
+    }
+
+    splitArmies(player) {
+        const defenders = this.defenders.filter(d => d.owner === player);
+        const attackers = this.attackers.filter(a => a.owner === player);
+        
+        if(defenders.length > 0){
+            defenders.forEach(d => {
+                const half = d.number / 2;
+                d.number = Math.ceil(half);
+                const newArmy = d.clone();
+                newArmy.number = Math.floor(half);
+                this.defenders.push(newArmy);
+            });
+        }
+        if(attackers.length > 0){
+            attackers.forEach(a => {
+                const half = a.number / 2;
+                a.number = Math.ceil(half);
+                const newArmy = a.clone();
+                newArmy.number = Math.floor(half);
+                this.attackers.push(newArmy);
+            });
+        }
+    }
+
     onTick() {
         this.buildings.forEach(b => b.onTick());
-        const defenderPower = this.defenders.length;
-        const attackerPower = this.attackers.length;
-        const defendersToDie = this.defenders.slice(0, attackerPower);
-        const attackersToDie = this.attackers.slice(0, defenderPower);
-        this.defenders = this.defenders.slice(attackerPower);
-        this.attackers = this.attackers.slice(defenderPower);
-        defendersToDie.forEach(d => d.onDie());
-        attackersToDie.forEach(a => a.onDie());
+        const defenderPower = this.defenders.reduce((acc, da) => acc + da.number, 0);
+        const attackerPower = this.attackers.reduce((acc, aa) => acc + aa.number, 0);
+        let defendersLeftToKill = randomUtils.int(0, attackerPower);
+        let attackersLeftToKill = randomUtils.int(0, defenderPower);
+        this.defenders.forEach(d => {
+            const actualKilled = Math.min(defendersLeftToKill, d.number);
+            d.number = d.number - actualKilled;
+            defendersLeftToKill = defendersLeftToKill - actualKilled;
+            if (d.number <= 0) {
+                d.onDie();
+            }
+        });
+        this.attackers.forEach(a => {
+            const actualKilled = Math.min(attackersLeftToKill, a.number);
+            a.number = a.number - actualKilled;
+            attackersLeftToKill = attackersLeftToKill - actualKilled;
+            if (a.number <= 0) {
+                a.onDie();
+            }
+        });
+        this.defenders = this.defenders.filter(d => d.number > 0);
+        this.attackers = this.attackers.filter(a => a.number > 0);
         if (!defenderPower && this.siegeProgress <= 0) {
             this.transferOwnership(this.attackers[0].owner);
         }

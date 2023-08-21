@@ -4,7 +4,7 @@ const ResourcesBar = require("./entities/ui/resources");
 const Tooltip = require("./entities/ui/tooltip");
 //
 const { Farm, Mine, Castle } = require("./entities/game-objects/buildings");
-const { Soldier, Ambassador } = require("./entities/game-objects/units");
+const { Army, Ambassador } = require("./entities/game-objects/units");
 
 
 const mapShadow = loadJoinedRegionPaths();
@@ -70,6 +70,22 @@ bldc.addEventListener('click', () => {
     }
 });
 
+// Tooltip - Army merge/split
+bmow.addEventListener('click', () => {
+    if (window.player && tooltip.region && tooltip.region.hasArmiesOfPlayer(window.player)) {
+        tooltip.region.mergeArmies(window.player);
+        tooltip.update(true);
+    }
+});
+bsow.addEventListener('click', () => {
+    if (window.player && tooltip.region && tooltip.region.hasArmiesOfPlayer(window.player)) {
+        tooltip.region.splitArmies(window.player);
+        tooltip.update(true);
+    }
+});
+
+
+
 const ctx = cg.getContext('2d');
 const uictx = cui.getContext('2d');
 
@@ -126,10 +142,10 @@ const makeRegions = () => {
                 bnrc.style.top = 0;
 
                 // Tooltip - Unit Buttons - doing it here to use right colours:
-                Soldier.drawToSvgG(trnss, trnsc, window.player);
+                Army.drawToSvgG(trnss, trnsc, window.player);
                 trns.addEventListener('click', () => {
                     if (!trns.hasAttribute('disabled')) {
-                        tooltip.region.addUnit(new Soldier(window.player));
+                        tooltip.region.addUnit(new Army(window.player));
                         tooltip.update();
                     }
                 });
@@ -330,6 +346,7 @@ const updateGame = (now) => {
     ctx.translate(window.pan[0], window.pan[1]);
     ctx.scale(window.zoomLevel, window.zoomLevel);
     drawMap(now);
+    window.players.forEach(p => p.units.forEach(u => u.draw(ctx)));
     // uictx.fillStyle = "#000";
     // uictx.fillRect(...window.gameCursor.map(c=>c*window.zoomLevel), 2, 2);
     ctx.restore();
@@ -348,9 +365,9 @@ const onTick = () => {
         const originalMonth = resourcesBar.currentDate.getMonth();
         resourcesBar.nextDay();
         if (originalMonth !== resourcesBar.currentDate.getMonth()) {
-            window.player.onMonth();
+            window.players.forEach(p => p.onMonth());
         }
-        window.player.onTick();
+        window.players.forEach(p => p.onTick());
         window.tooltip.update();
     }
 };

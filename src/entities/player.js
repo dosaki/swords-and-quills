@@ -15,8 +15,8 @@ class Player {
 
     get resources() {
         return {
-            food: this.regions.reduce((acc, region) => acc + region.food, 0) - (this.units.length + this.ambassadors), // maintenance for units, works as a cap
-            gold: this._gold // buy units and buildings
+            food: 500, //this.regions.reduce((acc, region) => acc + region.food, 0) - (this.units.reduce((acc, u) => acc + (u.number || 1), 0) + this.ambassadors), // maintenance for units, works as a cap
+            gold: 500, //this._gold // buy units and buildings
         };
     }
 
@@ -25,10 +25,10 @@ class Player {
     }
 
     get score() {
-        return this.conquestPoints
+        return Math.floor(this.conquestPoints
             + this.regions.reduce((acc, region) => acc + region.scoreValue, 0)
-            + Math.floor(this._gold/100)
-            + Math.floor(this.units.length)/2;
+            + Math.floor(this._gold / 100)
+            + Math.floor(this.units.length) / 2);
     }
 
     get allianceScore() {

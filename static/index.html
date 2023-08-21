@@ -40,6 +40,7 @@
             align-items: center;
             justify-content: center;
             background: #216288;
+            transition: background-color 700ms;
         }
 
         [i] {
@@ -88,11 +89,11 @@
             font-size: 12px;
             font-family: Arial, sans-serif;
             border-right: 2px solid #ffd700;
-            transition: margin 700ms;
             margin-bottom: -10000px;
             margin-top: 10000px;
             padding: 0 20px;
             filter: drop-shadow(0px 4px 8px #0006);
+            transition: margin 700ms;
         }
 
         #tipn {
@@ -158,6 +159,11 @@
             height: 50px;
         }
 
+        #ald>button,
+        #ala>button {
+            color: #000;
+        }
+
         [n] {
             display: none;
         }
@@ -177,23 +183,33 @@
                         <path id=tipi d="" />
                     </svg>
                     <div fc fm>
-                        <button id=tiprs1 tiprs></button>
-                        <button id=tiprs2 tiprs n></button>
+                        <button id=tiprs1 tiprs title="Building plot"></button>
+                        <button id=tiprs2 tiprs title="Building plot" n></button>
                     </div>
                 </div>
                 <div fr fm>
-                    <button id=tipras0 tiprs n><svg u>
+                    <button id=tipras0 title="Ambassador seat" tiprs n><svg u>
                             <g id=tipras0s transform="scale(4.5)"></g>
                         </svg></button>
-                    <button id=tipras1 tiprs n><svg u>
+                    <button id=tipras1 title="Ambassador seat" tiprs n><svg u>
                             <g id=tipras1s transform="scale(4.5)"></g>
                         </svg></button>
-                    <button id=tipras2 tiprs n><svg u>
+                    <button id=tipras2 title="Ambassador seat" tiprs n><svg u>
                             <g id=tipras2s transform="scale(4.5)"></g>
                         </svg></button>
-                    <button id=tipras3 tiprs n><svg u>
+                    <button id=tipras3 title="Ambassador seat" tiprs n><svg u>
                             <g id=tipras3s transform="scale(4.5)"></g>
                         </svg></button>
+                </div>
+                <hr />
+                <div fc>
+                    <h3>Armies</h3>
+                    <div fr fm>
+                        <div id=ald></div>
+                        <div id=ala></div>
+                    </div>
+                    <button id=bmow>Merge own Armies</button>
+                    <button id=bsow>Split own Armies</button>
                 </div>
                 <hr />
                 <div fc id=bldsc>
@@ -232,10 +248,10 @@
                     <div fr>
                         🪶 <div id=dvv></div>
                     </div>
-                    <!-- TODO
-                    Do/Cancel Alliance button
-                    Declare war button
-                    -->
+
+                    <button id=btnpa>Propose Alliance</button>
+                    <button id=btndw>Declare War</button>
+                    <button id=btnpl>Purchase land <div id=btnplc></div></button>
                 </div>
             </div>
             <div id=bnrc>
