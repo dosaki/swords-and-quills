@@ -286,7 +286,7 @@ const addSharedListeners = () => {
             // For hovering
             let selectedShape = null;
             shapes.forEach(shape => {
-                if (shape.intersectedBy(window.gameCursor)) {
+                if (shape.intersectedBy(window.gameCursor, ctx)) {
                     selectedShape = shape;
                 }
                 shape.mouseOut(e);
@@ -319,7 +319,7 @@ const addGenericShapeListeners = (shape) => {
         } else {
             let selectedShape = null;
             shapes.forEach(shape => {
-                if (shape.intersectedBy(window.gameCursor)) {
+                if (shape.intersectedBy(window.gameCursor, ctx)) {
                     selectedShape = shape;
                 }
                 shape.unClick(e);
@@ -338,7 +338,7 @@ const addGenericShapeListeners = (shape) => {
         // console.log(window.cursor);
         let selectedShape = null;
         shapes.forEach(shape => {
-            if (shape.intersectedBy(window.gameCursor)) {
+            if (shape.intersectedBy(window.gameCursor, ctx)) {
                 selectedShape = shape;
             }
             shape.rightUnClick(e);

@@ -1,7 +1,7 @@
 const regionConfig = require("../config/british-isles-simple.json");
 const { newColour } = require("../utils/colour");
 const Region = require("../entities/game-objects/region");
-const { centroid } = require('../utils/raycaster');
+const { centroid } = require('../utils/polygons');
 const Graph = require('../utils/dijkstra');
 
 const colours = {};

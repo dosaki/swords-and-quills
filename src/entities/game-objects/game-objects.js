@@ -1,4 +1,3 @@
-const { raycast } = require("../../utils/raycaster");
 const { adjust } = require("../../utils/colour");
 const { uuidv4 } = require("../../utils/uuid");
 
@@ -70,6 +69,7 @@ class Interactable extends Drawable {
         super();
         this.uuid = uuidv4();
         this.d = d;
+        this.dPath = new Path2D(this.d);
         this.onHover = () => { };
         this.onMouseOut = () => { };
         this.onClick = () => { };
@@ -116,15 +116,13 @@ class Interactable extends Drawable {
         ctx.strokeStyle = this._strokeColour;
         ctx.fillStyle = this.colour;
         ctx.lineWidth = 1;
-        const d = new Path2D(this.d);
-        ctx.fill(d);
-        ctx.stroke(d);
+        ctx.fill(this.dPath);
+        ctx.stroke(this.dPath);
         ctx.restore();
     }
 
-    intersectedBy(cursor) {
-        return this.vertices.map(points => raycast(cursor, points))
-            .filter(intersected => intersected).length > 0;
+    intersectedBy(cursor, ctx) {
+        return ctx.isPointInPath(this.dPath, ...cursor);
     }
 
     hover(e) {
