@@ -27,16 +27,16 @@ class Citizen extends Drawable {
 
     static draw(ctx, x, y, owner) {
         ctx.save();
-        ctx.translate(x||0, (y||0));
+        ctx.translate((x || 0) - 3, ((y || 0) - 3));
         ctx.scale(0.3, 0.3);
         Object.keys(this.paths).forEach(p => {
             const path = new Path2D(p);
             const [fill, stroke] = this.paths[p];
-            if(fill){
+            if (fill) {
                 ctx.fillStyle = fill === "-" ? owner.colour : fill;
                 ctx.fill(path);
             }
-            if(stroke){
+            if (stroke) {
                 ctx.strokeStyle = stroke === "-" ? owner.colour : stroke;
                 ctx.stroke(path);
             }
@@ -49,22 +49,22 @@ class Citizen extends Drawable {
             const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
             path.setAttribute("d", p);
             const [fill, stroke] = this.paths[p];
-            if(fill){
+            if (fill) {
                 path.setAttribute("fill", fill === "-" ? owner.colour : fill);
             }
-            if(stroke){
+            if (stroke) {
                 path.setAttribute("stroke", stroke === "-" ? owner.colour : stroke);
             }
-            return path
+            return path;
         });
     }
 
     static drawToSvgG(gElement, costElement, owner) {
         this.makeSvgPaths(owner).forEach(p => gElement.appendChild(p));
-        if(costElement){
+        if (costElement) {
             gElement.parentElement.parentElement.setAttribute("title", `${this.name}: ${this.description}`);
         }
-        if(costElement){
+        if (costElement) {
             costElement.innerHTML = `${this.cost}🪙 ${this.foodCost}🍖`;
         }
     }
@@ -91,7 +91,7 @@ class Citizen extends Drawable {
 
     drawAt(ctx, x, y) {
         this._bounceNumber += 0.1;
-        this.constructor.draw(ctx, x, y + (Math.sin(this._bounceNumber))/4, this.owner);
+        this.constructor.draw(ctx, x, y + (Math.sin(this._bounceNumber)) / 4, this.owner);
     }
 
     draw(ctx) {
@@ -108,18 +108,53 @@ class Citizen extends Drawable {
         this.owner.addUnit(this);
     }
 
-    onArrival(region) {
+    onArrival(region, stayInOriginalCoords) {
         this.region = region;
-        this.currentCoordinates = pick(...this.region.largestShape).map((v, i) => (v + this.region.centroid[i]) / 2 + Math.random());
+        if(!stayInOriginalCoords){
+            this.currentCoordinates = pick(...this.region.largestShape).map((v, i) => (v + this.region.centroid[i]) / 2 + Math.random());
+        }
     }
 
     onLeave() {
         this.region = null;
     }
 
-    onTick() { }
+    moveUnit() {
+        if (this.routeToRegion.length > 0) {
+            if (this.region) {
+                this.onLeave();
+            }
+            const targetRegion = window.regionLookup[this.routeToRegion[this.routeToRegion.length - 1]];
+            const [targetX, targetY] = targetRegion.centroid;
 
-    onMonth() { }
+            // let dx = targetX - this.currentCoordinates[0];
+            // let dy = targetY - this.currentCoordinates[1];
+            // const angle = Math.atan2(dy, dx);
+
+            // this.currentCoordinates = [Math.sin(angle), Math.cos(angle)].map((v, i) => v + this.currentCoordinates[i]);
+            // console.log(this.currentCoordinates);
+
+
+            var tx = targetX - this.currentCoordinates[0],
+                ty = targetY - this.currentCoordinates[1],
+                dist = Math.sqrt(tx * tx + ty * ty);
+
+            let velX = (tx / dist) * 0.05;
+            let velY = (ty / dist) * 0.05;
+
+            this.currentCoordinates[0] += velX;
+            this.currentCoordinates[1] += velY;
+
+            const [x0, y0] = this.currentCoordinates.map(c => Math.floor(c * 10));
+            const [x1, y1] = targetRegion.centroid.map(c => Math.floor(c * 10));
+            if (x0 === x1 && y0 === y1) {
+                this.routeToRegion.pop();
+                this.onArrival(targetRegion, !this.routeToRegion.length);
+            }
+        }
+    }
+
+    onTick() { }
 
     onDie() {
         this.owner.removeUnit(this);
@@ -154,13 +189,13 @@ class Army extends Citizen {
         ctx.lineWidth = 0.1;
         ctx.font = "2px sans-serif";
         ctx.textAlign = "center";
-        ctx.fillText(this.number, 1.5, 5);
-        ctx.strokeText(this.number, 1.5, 5);
+        ctx.fillText(this.number, -1.5, 2);
+        ctx.strokeText(this.number, -1.5, 2);
         ctx.restore();
     }
 
     onPlacement(region) {
-        if(this.region){
+        if (this.region) {
             this.onLeave();
         }
         super.onPlacement(region);
@@ -169,7 +204,7 @@ class Army extends Citizen {
 
     onArrival(region) {
         super.onArrival(region);
-        if (region.owner === this.owner) {
+        if (region.owner === this.owner || region.owner.isAlliedWith(this.owner)) {
             region.defenders.push(this);
         } else {
             region.attackers.push(this);
@@ -189,16 +224,16 @@ class Army extends Citizen {
     }
 
     onLeave() {
-        if (region.owner === this.owner) {
-            region.defenders.push(this);
+        if (this.region.owner === this.owner) {
+            this.region.defenders = this.region.defenders.filter(d => d !== this);
         } else {
-            region.attackers.push(this);
+            this.region.attackers = this.region.attackers.filter(a => a !== this);
         }
         super.onLeave();
     }
 
     onTick() {
-        if (this.region.owner !== this.owner) {
+        if (this.region && this.region.owner !== this.owner) {
             if (this.region.defenders.length === 0) {
                 this.region._siegeProgress++;
             }
@@ -213,7 +248,7 @@ class Ambassador extends Citizen {
     static cost = 10;
 
     onPlacement(region) {
-        if(this.region){
+        if (this.region) {
             this.onLeave();
         }
         super.onPlacement(region);
@@ -235,7 +270,7 @@ class Ambassador extends Citizen {
     }
 
     onTick() {
-        if (this.region.ambassadors.includes(this)) {
+        if (this.region && this.region.ambassadors.includes(this)) {
             this.owner._gold--;
             this.region.owner._gold++;
             this.owner.changeReputationWith(this.region.owner, 1);

@@ -5,6 +5,7 @@ const Tooltip = require("./entities/ui/tooltip");
 //
 const { Farm, Mine, Castle } = require("./entities/game-objects/buildings");
 const { Army, Ambassador } = require("./entities/game-objects/units");
+const Region = require('./entities/game-objects/region');
 
 
 const mapShadow = loadJoinedRegionPaths();
@@ -125,6 +126,7 @@ const updateCursor = ([x, y]) => {
 };
 
 let placingAmbassador = null;
+window.placingArmy = null;
 
 const makeRegions = () => {
     regions = loadRegions();
@@ -167,6 +169,11 @@ const makeRegions = () => {
                 tooltip.update(true);
                 window.tooltip.set(region);
                 window.tooltip.open();
+            } else if (window.placingArmy) {
+                window.placingArmy.targetRegion = region;
+                window.placingArmy.routeToRegion = window.regionGraph.findShortestPath(window.placingArmy.region.id, region.id);
+                window.placingArmy.routeToRegion.pop();
+                window.placingArmy = null;
             } else {
                 window.tooltip.set(region);
                 window.tooltip.open();
@@ -199,7 +206,8 @@ let currentWaveValue = 0.8;
 let currentWaveDirection = 1;
 const drawMap = () => {
     ctx.save();
-    if(placingAmbassador){
+    // Shores
+    if (placingAmbassador) {
         ctx.filter = `blur(${16 * (currentWaveValue)}px) grayscale(0.9) contrast(0.5) brightness(0.5)`;
     } else {
         ctx.filter = `blur(${16 * (currentWaveValue)}px)`;
@@ -207,8 +215,7 @@ const drawMap = () => {
     ctx.strokeStyle = "#3c789b";
     ctx.lineWidth = 10 * currentWaveValue;
     ctx.stroke(mapShadow);
-
-    if(placingAmbassador){
+    if (placingAmbassador) {
         ctx.filter = `blur(${8 * (currentWaveValue)}px) grayscale(0.9) contrast(0.5) brightness(0.5)`;
     } else {
         ctx.filter = `blur(${8 * (currentWaveValue)}px)`;
@@ -216,6 +223,7 @@ const drawMap = () => {
     ctx.strokeStyle = "#4f94bf";
     ctx.lineWidth = 8 * currentWaveValue;
     ctx.stroke(mapShadow);
+    // End Shores
     ctx.restore();
 
     regions.forEach(region => region.draw(ctx, placingAmbassador));
@@ -265,6 +273,8 @@ const addMovementListeners = () => {
     });
 };
 
+
+let moveLineColour = "#333";
 const addSharedListeners = () => {
     cui.addEventListener('mousemove', (e) => {
         updateCursor([e.offsetX / window.zoomLevel, e.offsetY / window.zoomLevel]);
@@ -281,8 +291,20 @@ const addSharedListeners = () => {
                 }
                 shape.mouseOut(e);
             });
+            moveLineColour = "#333";
             if (selectedShape) {
                 selectedShape.hover(e);
+                if (window.player && selectedShape instanceof Region) {
+                    if (selectedShape.owner === window.player) {
+                        moveLineColour = "#090";
+                    } else if (window.player.isAlliedWith(selectedShape.owner)) {
+                        moveLineColour = "#009";
+                    } else if (window.player.isAtWarWith(selectedShape.owner)) {
+                        moveLineColour = "#900";
+                    } else {
+                        moveLineColour = "#990";
+                    }
+                }
             }
         }
     });
@@ -324,9 +346,12 @@ const addGenericShapeListeners = (shape) => {
         if (selectedShape) {
             selectedShape.rightClick(e);
         }
-        if(placingAmbassador){
+        if (placingAmbassador) {
             placingAmbassador = null;
             bgw.style.background = "#216288";
+        }
+        if (window.placingArmy) {
+            window.placingArmy = null;
         }
     });
 };
@@ -352,11 +377,47 @@ const updateGame = (now) => {
     ctx.restore();
 };
 
+const findD = (A, B, dist) => { // if left = 1 the D is left of the line AB 
+    const nx = B[0] - A[0];
+    const ny = B[1] - A[1];
+    const d = dist / (Math.sqrt(nx * nx + ny * ny) * (A[0] < B[0] ? -1 : 1));
+    return [A[0] + nx / 2 - ny * d, A[1] + ny / 2 + nx * d];
+};
+
+const distance = (A, B) => {
+    const nx = B[0] - A[0];
+    const ny = B[1] - A[1];
+    return Math.sqrt(nx * nx + ny * ny);
+};
+
+let lineAnim = 0;
 const updateUi = () => {
     uictx.save();
     uictx.clearRect(0, 0, cg.width, cg.height);
-    // uictx.fillStyle = "#000";
-    // uictx.fillRect(...window.cursor.map(c => c * window.zoomLevel), 2, 2);
+    if (window.placingArmy) {
+        const start = window.cursor.map(c => c * window.zoomLevel);
+        const end = window.placingArmy.currentCoordinates.map((c, i) => (c * window.zoomLevel + window.pan[i]) - 5);
+        const dist = distance(start, end);
+        const mid = findD(start, end, dist * 0.1);
+        uictx.strokeStyle = "#000";
+        uictx.lineWidth = 8;
+        uictx.filter = "blur(4px)";
+        uictx.beginPath();
+        uictx.moveTo(...start);
+        uictx.lineTo(...end);
+        uictx.stroke();
+        uictx.lineDashOffset = lineAnim;
+        uictx.setLineDash([30, 40]);
+        uictx.filter = "none";
+        uictx.strokeStyle = moveLineColour;
+        uictx.beginPath();
+        uictx.moveTo(...start);
+        uictx.arcTo(...mid, ...end, dist * 0.1);
+        uictx.lineTo(...end);
+        uictx.stroke();
+        uictx.setLineDash([]);
+        lineAnim++;
+    }
     resourcesBar.draw(uictx);
     uictx.restore();
 };
@@ -364,9 +425,6 @@ const onTick = () => {
     if (window.player) {
         const originalMonth = resourcesBar.currentDate.getMonth();
         resourcesBar.nextDay();
-        if (originalMonth !== resourcesBar.currentDate.getMonth()) {
-            window.players.forEach(p => p.onMonth());
-        }
         window.players.forEach(p => p.onTick());
         window.tooltip.update();
     }
@@ -376,10 +434,13 @@ setupGame();
 
 let last = 0;
 window.main = function (now) {
+    const diff = now - last;
     if (now - last >= 2000) {
         onTick();
         last = now;
     }
+
+    window.players.forEach(p => p.moveUnits(diff));
     updateGame(now);
     updateUi();
     window.requestAnimationFrame(main);

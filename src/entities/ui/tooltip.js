@@ -135,8 +135,11 @@ class Tooltip {
         this.region.defenders.forEach(d => {
             const button = document.createElement("button");
             button.innerHTML = d.number;
-            button.setAttribute("style", `width: 35px; height: 35px; background: ${d.owner.colour}`);
-            button.setAttribute("title", `${d.number} Armies from ${d.owner.country}`);
+            button.setAttribute("style", `width: 35px; height: 35px; background: ${d.owner.colour}; border-color: ${d.owner.strokeColour}`);
+            button.setAttribute("title", `${d.number} Armies from ${d.owner.country}`); 
+            button.addEventListener("click", () => {
+                window.placingArmy = d;
+            });
             ald.appendChild(button);
         });
         this.region.attackers.forEach(a => {
@@ -144,6 +147,9 @@ class Tooltip {
             button.innerHTML = a.number;
             button.setAttribute("style", `width: 35px; height: 35px; background: ${a.owner.colour}`);
             button.setAttribute("title", `${a.number} Armies from ${a.owner.country}`);
+            button.addEventListener("click", () => {
+                window.placingArmy = a;
+            });
             ala.appendChild(button);
         });
     }

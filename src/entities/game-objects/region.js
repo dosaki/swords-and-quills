@@ -203,8 +203,6 @@ class Region extends Interactable {
         }
     }
 
-    onMonth() { }
-
     killEnemyAmbassadors() {
         //This is called -after- the region is conquered!
         const ambassadorsToRemove = this.ambassadors.filter(a => !this.owner.alliedPlayers.keys().includes(a));

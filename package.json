@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Sword and Quill XIII",
   "scripts": {
+    "start": "webpack serve --open --mode development",
     "test": "mocha tests/**/*.js"
   },
   "keywords": [
@@ -11,13 +12,13 @@
   "author": "Tiago Correia",
   "license": "ISC",
   "devDependencies": {
-    "webpack": "^5.46.0",
-    "webpack-cli": "^4.7.2",
-    "roadroller": "^2.1.0",
+    "chai": "^4.3.7",
     "jsdom": "21.1.2",
     "mocha": "^10.2.0",
-    "chai": "^4.3.7"
+    "roadroller": "^2.1.0",
+    "webpack": "^5.46.0",
+    "webpack-cli": "^4.7.2",
+    "webpack-dev-server": "^4.15.1"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }

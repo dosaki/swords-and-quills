@@ -8,6 +8,7 @@ class Player {
 
         this.knownPlayers = {};
         this.alliedPlayers = {};
+        this.atWarWith = {};
 
         this.units = [];
         this._gold = 0;
@@ -15,8 +16,8 @@ class Player {
 
     get resources() {
         return {
-            food: 500, //this.regions.reduce((acc, region) => acc + region.food, 0) - (this.units.reduce((acc, u) => acc + (u.number || 1), 0) + this.ambassadors), // maintenance for units, works as a cap
-            gold: 500, //this._gold // buy units and buildings
+            food: this.regions.reduce((acc, region) => acc + region.food, 0) - (this.units.reduce((acc, u) => acc + (u.number || 1), 0) + this.ambassadors), // maintenance for units, works as a cap
+            gold: this._gold // buy units and buildings
         };
     }
 
@@ -32,7 +33,7 @@ class Player {
     }
 
     get allianceScore() {
-        return this.alliedPlayers.reduce((acc, player) => acc + player.score, this.score);
+        return Object.values(this.alliedPlayers).reduce((acc, player) => acc + player.score, this.score);
     }
 
     get hasLost() {
@@ -43,16 +44,18 @@ class Player {
         return this.capital ? this.capital._colour : "#000";
     }
 
+    get strokeColour() {
+        return this.capital ? this.capital._strokeColour : "#000";
+    }
+
+    moveUnits(diff) {
+        this.units.forEach(unit => unit.moveUnit(diff));
+    }
+
     onTick() {
         this.regions.forEach(region => region.onTick());
         this.units.forEach(unit => unit.onTick());
     }
-
-    onMonth() {
-        this.regions.forEach(region => region.onMonth());
-        this.units.forEach(unit => unit.onMonth());
-    }
-
 
     removeRegion(region) {
         //First remove the region!!!
@@ -87,11 +90,40 @@ class Player {
     }
 
     changeReputationWith(player, reputation) {
-        this.knownPlayers[player.name] = player.knownPlayers[this.name] = Math.min((this.knownPlayers[player.name] || 0) + reputation, 100);
+        this.knownPlayers[player.name] = player.knownPlayers[this.name] = Math.max(-100, Math.min((this.knownPlayers[player.name] || 0) + reputation, 100));
+    }
+
+    setReputationWith(player, reputation) {
+        this.knownPlayers[player.name] = player.knownPlayers[this.name] = reputation;
     }
 
     reputationWith(player) {
         return (this.knownPlayers[player.name] || 0);
+    }
+
+    enterAllianceWith(player) {
+        this.alliedPlayers[player.name] = player.alliedPlayers[this.name] = true;
+    }
+
+    isAlliedWith(player) {
+        return !!this.alliedPlayers[player.name];
+    }
+
+    startWarWith(player) {
+        delete this.alliedPlayers[player.name];
+        delete player.name.alliedPlayers[this.name];
+        this.atWarWith[player.name] = player.atWarWith[this.name] = true;
+        this.reputation(player, -100);
+    }
+
+    endWarWith(player) {
+        delete this.atWarWith[player.name];
+        delete player.name.atWarWith[this.name];
+        this.atWarWith[player.name] = player.atWarWith[this.name] = false;
+    }
+
+    isAtWarWith(player) {
+        return !!this.isAtWarWith[player.name];
     }
 }
 

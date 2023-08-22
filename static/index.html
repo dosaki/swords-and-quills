@@ -159,9 +159,20 @@
             height: 50px;
         }
 
+        #ald,
+        #ala {
+            overflow: auto;
+            height: 75px;
+        }
+
         #ald>button,
         #ala>button {
             color: #000;
+        }
+
+        #ald>button:hover,
+        #ala>button:hover {
+            background: #00000090;
         }
 
         [n] {
@@ -204,12 +215,14 @@
                 <hr />
                 <div fc>
                     <h3>Armies</h3>
-                    <div fr fm>
+                    <div fr>
                         <div id=ald></div>
                         <div id=ala></div>
                     </div>
-                    <button id=bmow>Merge own Armies</button>
-                    <button id=bsow>Split own Armies</button>
+                    <div fr fm>
+                        <button id=bmow>Merge own Armies</button>
+                        <button id=bsow>Split own Armies</button>
+                    </div>
                 </div>
                 <hr />
                 <div fc id=bldsc>
@@ -250,7 +263,7 @@
                     </div>
 
                     <button id=btnpa>Propose Alliance</button>
-                    <button id=btndw>Declare War</button>
+                    <!-- <button id=btndw>Declare War</button> -->
                     <button id=btnpl>Purchase land <div id=btnplc></div></button>
                 </div>
             </div>
@@ -264,9 +277,9 @@
                 <div ib>
                     <div>
                         <input id=tt placeholder=Sir />
-                        <input id=tn placeholder="Teencen Tury I" />
+                        <input id=tn placeholder="Teencen Tury" />
                     </div>
-                    <input id=tc placeholder="Jascriptland" />
+                    <input id=tc placeholder="Javascriptland" />
                     <button id=bp>Pick Nation</button>
                 </div>
             </div>
