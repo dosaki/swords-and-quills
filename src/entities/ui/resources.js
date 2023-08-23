@@ -12,9 +12,15 @@ class ResourcesBar {
     draw(ctx) {
         // Bar
         ctx.save();
+        ctx.lineWidth = 10;
+
+        ctx.strokeStyle = "#0008";
+        ctx.filter = "blur(4px)";
+        ctx.strokeRect(2, -2, cui.width - 4, 40);
+        ctx.filter = "none";
         ctx.lineWidth = 2;
         ctx.fillStyle = "#18243d";
-        ctx.strokeStyle = "#aa4";
+        ctx.strokeStyle = "#ffd700";
         ctx.fillRect(0, 0, cui.width, 40);
         ctx.strokeRect(2, -2, cui.width - 4, 40);
 
@@ -45,7 +51,7 @@ class ResourcesBar {
         // Score
         ctx.lineWidth = 2;
         ctx.fillStyle = "#18243d";
-        ctx.strokeStyle = "#aa4";
+        ctx.strokeStyle = "#ffd700";
         ctx.fillRect(cui.width - 215, -2, 200, 120);
         ctx.strokeRect(cui.width - 215, -2, 200, 120);
 

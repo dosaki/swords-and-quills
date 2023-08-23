@@ -4,26 +4,122 @@ const { Ambassador, Army } = require('../game-objects/units');
 class Tooltip {
     constructor(tooltipElement) {
         this.tooltip = tooltipElement;
-        this.isOpen = false;
+        this.state = 0; // 0 = closed, 1 = opening, 2 = open, 3 = closing
         this.region = null;
+        this.x = 0;
+        this.y = cui.height + 3;
+    }
+
+    get isOpen() {
+        return this.state === 2;
+    }
+
+    get isClosed() {
+        return this.state === 0;
     }
 
     open() {
-        this.isOpen = true;
-        tip.style.marginBottom = "0";
-        tip.style.marginTop = "40px";
+        this.state = 1;
     }
 
     close() {
-        this.isOpen = false;
-        tip.style.marginBottom = `${-cg.height}px`;
-        tip.style.marginTop = `${cg.height}px`;
+        this.state = 3;
     }
 
-    update(force) {
-        if (this.region) {
-            this.set(this.region, force);
+    draw(ctx) {
+        if(!this.region){
+            return;
         }
+        ctx.save();
+        ctx.translate(this.x, this.y);
+
+        // Panel
+        ctx.lineWidth = 10;
+
+        ctx.strokeStyle = "#0008";
+        ctx.filter = "blur(4px)";
+        ctx.beginPath();
+        ctx.moveTo(340, -2);
+        ctx.lineTo(340, cui.height);
+        ctx.stroke();
+        ctx.filter = "none";
+
+        ctx.fillStyle = "#18243d";
+        ctx.fillRect(0, 0, 340, cui.height);
+
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "#ffd700";
+        ctx.beginPath();
+        ctx.moveTo(0, -2);
+        ctx.lineTo(340, -2);
+        ctx.lineTo(340, cui.height);
+        ctx.stroke();
+
+        // Name
+        ctx.translate(10, 75);
+        ctx.fillStyle = "#fff";
+        ctx.font = "32px Arial";
+        ctx.fillText(this.region.owner.name, 0, 32);
+        if (this.region.owner.name !== this.region.owner.country) {
+            ctx.font = "16px Arial";
+            ctx.fillText(`of ${this.region.owner.country}`, 0, 48);
+        }
+
+        // Icon
+        ctx.translate(0, 64);
+        ctx.fillStyle = "#000";
+        ctx.fillRect(0, 0, 150, 150);
+        ctx.fillStyle = this.region._colour;
+        ctx.strokeStyle = this.region._strokeColour;
+        const { x, y, width, height } = this.region.bBox;
+        ctx.save();
+        ctx.translate(-150, -150);
+        ctx.scale(3, 3);
+        ctx.translate(-x + 75 - (width / 2), -y + 75 - (height / 2));
+        ctx.fill(this.region.dPath);
+        ctx.stroke(this.region.dPath);
+        ctx.restore();
+        ctx.strokeStyle = "#ffd700";
+        ctx.strokeRect(0, 0, 150, 150);
+
+        // Building slots
+        ctx.translate(170, 0);
+        for(let i=0; i<this.region.buildingLimit; i++){
+            const [x, y] = i.toString(2).padStart(2, "0").split("").map(Number);
+            const s = 70;
+            const p = 10;
+            ctx.translate(x*(s+p), y*(s+p));
+            ctx.fillStyle = "#000";
+            ctx.fillRect(0, 0, s, s);
+            ctx.strokeStyle = "#ffd700";
+            ctx.strokeRect(0, 0, s, s);
+            ctx.translate(-x*(s+p), -y*(s+p));
+        }
+
+        ctx.restore();
+    }
+
+    update() {
+        if (this.state === 1) {
+            if (this.y <= 40) {
+                this.y = 40;
+                this.state = 2;
+            } else {
+                this.y -= this.y * 0.08;
+            }
+        } else if (this.state === 3) {
+            if (this.y >= cui.height + 3) {
+                this.y = cui.height + 3;
+                this.state = 0;
+            } else {
+                this.y += this.y * 0.08;
+            }
+        }
+
+
+        // if (this.region) {
+        //     this.set(this.region);
+        // }
     }
 
     _populateSellBuildings() {
@@ -136,7 +232,7 @@ class Tooltip {
             const button = document.createElement("button");
             button.innerHTML = d.number;
             button.setAttribute("style", `width: 35px; height: 35px; background: ${d.owner.colour}; border-color: ${d.owner.strokeColour}`);
-            button.setAttribute("title", `${d.number} Armies from ${d.owner.country}`); 
+            button.setAttribute("title", `${d.number} Armies from ${d.owner.country}`);
             button.addEventListener("click", () => {
                 window.placingArmy = d;
             });
@@ -154,18 +250,18 @@ class Tooltip {
         });
     }
 
-    set(region, force) {
+    set(region) {
         const oldRegion = this.region;
         this.region = region;
-        if (this.region !== oldRegion || force) {
+        if (this.region !== oldRegion) {
             tipn.innerHTML = region.owner.name !== region.owner.country ? `${region.owner.name} <br/> <small>of ${region.owner.country}</small>` : region.owner.country;
             tipr.innerHTML = region.name + (region.isCapital ? " 👑" : "");
             tipr.title = region.isCapital ? "Capital" : "";
-            tipi.setAttribute("d", region.d);
-            const { x, y, width, height } = tipi.getBBox();
-            tipi.setAttribute("transform", `translate(-150 -150) scale(3) translate(${(-x + 75 - (width / 2))} ${(-y + 75 - (height / 2))})`);
-            tipi.setAttribute("fill", region._colour);
-            tipi.setAttribute("stroke", region._strokeColour);
+            // tipi.setAttribute("d", region.d);
+            // const { x, y, width, height } = tipi.getBBox();
+            // tipi.setAttribute("transform", `translate(-150 -150) scale(3) translate(${(-x + 75 - (width / 2))} ${(-y + 75 - (height / 2))})`);
+            // tipi.setAttribute("fill", region._colour);
+            // tipi.setAttribute("stroke", region._strokeColour);
             if (region.isCapital) {
                 tiprs2.removeAttribute("n");
             } else {

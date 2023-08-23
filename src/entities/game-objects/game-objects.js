@@ -70,6 +70,8 @@ class Interactable extends Drawable {
         this.uuid = uuidv4();
         this.d = d;
         this.dPath = new Path2D(this.d);
+        measurer.setAttribute("d", this.d);
+        this.bBox = measurer.getBBox();
         this.onHover = () => { };
         this.onMouseOut = () => { };
         this.onClick = () => { };

@@ -124,8 +124,8 @@
         [rc] {
             width: 150px;
             height: 150px;
-            background: #0006;
-            border: 2px solid #ffd700;
+            opacity: 0;
+            pointer-events: none;
         }
 
         [tiprs] {
@@ -184,15 +184,15 @@
 <body>
     <div id=bgw b>
         <div c>
+            <svg rc>
+                <path id=measurer d="" />
+            </svg>
             <canvas id=cg></canvas>
             <canvas id=cui></canvas>
             <div id=tip>
                 <h1 id=tipn></h1>
                 <h2 id=tipr></h2>
                 <div fr fm>
-                    <svg rc>
-                        <path id=tipi d="" />
-                    </svg>
                     <div fc fm>
                         <button id=tiprs1 tiprs title="Building plot"></button>
                         <button id=tiprs2 tiprs title="Building plot" n></button>
@@ -269,7 +269,7 @@
             </div>
             <div id=bnrc>
                 <svg>
-                    <path id=bnr fill=#44a stroke=#aa4 stroke-width=8 d="M 0,0 h 100 v 60 C 75,115 25,115 0,60 z"
+                    <path id=bnr fill=#44a stroke=#ffd700 stroke-width=8 d="M 0,0 h 100 v 60 C 75,115 25,115 0,60 z"
                         transform="translate(15 -4)" />
                 </svg>
             </div>

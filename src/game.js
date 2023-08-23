@@ -100,7 +100,7 @@ let isPanning = false;
 window.players = [];
 window.player = null;
 let regions = [];
-let shapes = [];
+window.shapes = [];
 const resourcesBar = new ResourcesBar();
 
 let playerName = "Sir Teencen Tury I";
@@ -419,6 +419,8 @@ const updateUi = () => {
         lineAnim++;
     }
     resourcesBar.draw(uictx);
+    window.tooltip.update();
+    window.tooltip.draw(uictx);
     uictx.restore();
 };
 const onTick = () => {
@@ -426,7 +428,6 @@ const onTick = () => {
         const originalMonth = resourcesBar.currentDate.getMonth();
         resourcesBar.nextDay();
         window.players.forEach(p => p.onTick());
-        window.tooltip.update();
     }
 };
 

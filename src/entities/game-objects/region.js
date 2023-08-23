@@ -45,7 +45,7 @@ class Region extends Interactable {
     }
 
     get buildingLimit() {
-        return this.isCapital ? 2 : 1;
+        return this.isCapital ? 4 : 2;
     }
 
     get defence() {
