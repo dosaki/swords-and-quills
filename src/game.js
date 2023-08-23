@@ -399,7 +399,7 @@ const updateUi = () => {
         const end = window.placingArmy.currentCoordinates.map((c, i) => (c * window.zoomLevel + window.pan[i]) - 5);
         const dist = distance(start, end);
         const mid = findD(start, end, dist * 0.1);
-        uictx.strokeStyle = "#000";
+        uictx.strokeStyle = "#0008";
         uictx.lineWidth = 8;
         uictx.filter = "blur(4px)";
         uictx.beginPath();

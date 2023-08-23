@@ -165,14 +165,14 @@ class Citizen extends Drawable {
 
 class Army extends Citizen {
     static name = "Army";
-    static description = "+10🗡️, +10🛡️";
+    static description = "+5🗡️, +5🛡️";
     static paths = soldierPaths;
-    static cost = 80;
-    static foodCost = 10;
+    static cost = 40;
+    static foodCost = 5;
 
     constructor(owner) {
         super(owner);
-        this.number = 10;
+        this.number = 5;
     }
 
     get description() {
