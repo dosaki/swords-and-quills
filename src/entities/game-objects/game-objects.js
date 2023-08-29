@@ -1,91 +1,12 @@
-const { adjust } = require("../../utils/colour");
-const { uuidv4 } = require("../../utils/uuid");
+const {Drawable, Interactible} = require("../drawable");
 
-class Drawable {
-    /**
-     * Must implement the methods:
-     *  - draw(ctx)
-     */
-
-    constructor() {
-        this._colour = "#aaaaaa";
-        this._strokecolour = "#aaaaaa";
-
-        //cache
-        this._vertices = null;
-    }
-
-    get vertices() {
-        if (!this._vertices) {
-            this._vertices = this._verticesByShape();
-        }
-        return this._vertices;
-    }
-
-    get colour() {
-        return this._colour;
-    }
-
-    get strokeColour() {
-        return this._strokeColour;
-    }
-
-    _verticesByShape() { }
-
-    changeColour(colour, strokeColour) {
-        const fullColour = colour.length === 4 ? `#${colour[1]}${colour[1]}${colour[2]}${colour[2]}${colour[3]}${colour[3]}` : colour;
-        this._colour = fullColour;
-        this._strokeColour = strokeColour || "#000000";
-    }
-
-    draw(ctx) {
-        ctx.save();
-        ctx.strokeStyle = this._strokeColour;
-        ctx.fillStyle = this.colour;
-        ctx.lineWidth = 0.5;
-        ctx.beginPath();
-        ctx.moveTo(...this.vertices[0][0]);
-        this.vertices[0].slice(1).forEach(([x, y]) => ctx.lineTo(x, y));
-        ctx.fill();
-        ctx.stroke();
-        ctx.restore();
-    }
-}
-
-class Interactable extends Drawable {
-    /**
-     * Must implement the methods:
-     *  - draw(ctx)
-     *  - intersects(cursor)
-     *  - onHover(event, self)
-     *  - onMouseOut(event, self)
-     *  - onClick(event, self)
-     *  - onUnClick(event, self)
-     *  - onRightClick(event, self)
-     *  - onRightUnClick(event, self)
-     */
-
+class GameInteractible extends Interactible {
     constructor(d) {
         super();
-        this.uuid = uuidv4();
         this.d = d;
         this.dPath = new Path2D(this.d);
         measurer.setAttribute("d", this.d);
         this.bBox = measurer.getBBox();
-        this.onHover = () => { };
-        this.onMouseOut = () => { };
-        this.onClick = () => { };
-        this.onUnClick = () => { };
-        this.onRightClick = () => { };
-        this.onRightUnClick = () => { };
-
-        this._hoverColour = "#ffffff";
-        this._clickColour = "#999999";
-        this._strokehoverColour = "#ffffff";
-        this._strokeclickColour = "#999999";
-        this.isHovering = false;
-        this.isClicked = false;
-        this.isRightClicked = false;
     }
 
     get vertices() {
@@ -95,27 +16,9 @@ class Interactable extends Drawable {
         return this._vertices;
     }
 
-    get colour() {
-        return (this.isClicked || this.isRightClicked) ? this._clickColour : (this.isHovering ? this._hoverColour : this._colour);
-    }
-
-    get strokeColour() {
-        return (this.isClicked || this.isRightClicked) ? this._strokeClickColour : (this.isHovering ? this._strokeHoverColour : this._strokeColour);
-    }
-
-    changeColour(colour, strokeColour) {
-        const fullColour = colour.length === 4 ? `#${colour[1]}${colour[1]}${colour[2]}${colour[2]}${colour[3]}${colour[3]}` : colour;
-        this._colour = fullColour;
-        this._hoverColour = adjust(fullColour, 50);
-        this._clickColour = adjust(fullColour, -50);
-        this._strokeColour = strokeColour;
-        this._strokeHoverColour = adjust(this._strokeColour, -50);
-        this._strokeClickColour = adjust(this._strokeColour, 50);
-    }
-
     draw(ctx) {
         ctx.save();
-        ctx.strokeStyle = this._strokeColour;
+        ctx.strokeStyle = this.strokeColour;
         ctx.fillStyle = this.colour;
         ctx.lineWidth = 1;
         ctx.fill(this.dPath);
@@ -125,48 +28,6 @@ class Interactable extends Drawable {
 
     intersectedBy(cursor, ctx) {
         return ctx.isPointInPath(this.dPath, ...cursor);
-    }
-
-    hover(e) {
-        this.onHover(e, this);
-        if ((e || {}).runDefault !== false) {
-            this.isHovering = true;
-        }
-    }
-
-    mouseOut(e) {
-        this.onMouseOut(e, this);
-        if ((e || {}).runDefault !== false) {
-            this.isHovering = false;
-        }
-    }
-
-    click(e) {
-        this.onClick(e, this);
-        if ((e || {}).runDefault !== false) {
-            this.isClicked = true;
-        }
-    }
-
-    unClick(e) {
-        this.onUnClick(e, this);
-        if ((e || {}).runDefault !== false) {
-            this.isClicked = false;
-        }
-    }
-
-    rightClick(e) {
-        this.onRightClick(e, this);
-        if ((e || {}).runDefault !== false) {
-            this.isRightClicked = true;
-        }
-    }
-
-    rightUnClick(e) {
-        this.onRightUnClick(e, this);
-        if ((e || {}).runDefault !== false) {
-            this.isRightClicked = false;
-        }
     }
 
     _verticesByShape() {
@@ -202,7 +63,9 @@ class Interactable extends Drawable {
         });
     }
 }
+
+
 module.exports = {
-    Interactable,
+    GameInteractible,
     Drawable
 };

@@ -1,8 +1,8 @@
-const { Interactable } = require("./game-objects");
+const { GameInteractible } = require("./game-objects");
 const randomUtils = require("../../utils/random");
 const { Castle } = require('./buildings');
 
-class Region extends Interactable {
+class Region extends GameInteractible {
     constructor({ id, name, group, d }) {
         super(d);
         this.id = id;
@@ -126,6 +126,7 @@ class Region extends Interactable {
         this.defenders = this.attackers;
         this.attackers = [];
         oldDefenders.forEach(d => d.onDie()); // in case there's any left
+        this._siegeProgress--;
     }
 
     hasArmiesOfPlayer(player) {
@@ -135,14 +136,14 @@ class Region extends Interactable {
     mergeArmies(player) {
         const defenders = this.defenders.filter(d => d.owner === player);
         const attackers = this.attackers.filter(a => a.owner === player);
-        
-        if(defenders.length > 1){
+
+        if (defenders.length > 1) {
             this.defenders = this.defenders.filter(d => d.owner !== player);
             defenders[0].number = defenders.reduce((acc, d) => acc + d.number, 0);
             this.defenders.push(defenders[0]);
             defenders.slice(1).forEach(d => d.onDie());
         }
-        if(attackers.length > 1){
+        if (attackers.length > 1) {
             this.attackers = this.attackers.filter(a => a.owner !== player);
             attackers[0].number = attackers.reduce((acc, a) => acc + a.number, 0);
             this.attackers.push(attackers[0]);
@@ -153,25 +154,30 @@ class Region extends Interactable {
     splitArmies(player) {
         const defenders = this.defenders.filter(d => d.owner === player);
         const attackers = this.attackers.filter(a => a.owner === player);
-        
-        if(defenders.length > 0){
+
+        if (defenders.length > 0) {
             defenders.forEach(d => {
                 const half = d.number / 2;
                 d.number = Math.ceil(half);
-                const newArmy = d.clone();
-                newArmy.number = Math.floor(half);
-                this.defenders.push(newArmy);
+                if (half >= 1) {
+                    const newArmy = d.clone();
+                    newArmy.number = Math.floor(half);
+                    this.defenders.push(newArmy);
+                }
             });
         }
-        if(attackers.length > 0){
+        if (attackers.length > 0) {
             attackers.forEach(a => {
                 const half = a.number / 2;
                 a.number = Math.ceil(half);
-                const newArmy = a.clone();
-                newArmy.number = Math.floor(half);
-                this.attackers.push(newArmy);
+                if (half >= 1) {
+                    const newArmy = a.clone();
+                    newArmy.number = Math.floor(half);
+                    this.attackers.push(newArmy);
+                }
             });
         }
+        window.tooltip.refreshContent();
     }
 
     onTick() {

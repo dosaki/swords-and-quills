@@ -8,7 +8,6 @@ class Player {
 
         this.knownPlayers = {};
         this.alliedPlayers = {};
-        this.atWarWith = {};
 
         this.units = [];
         this._gold = 0;
@@ -16,8 +15,8 @@ class Player {
 
     get resources() {
         return {
-            food: this.regions.reduce((acc, region) => acc + region.food, 0) - (this.units.reduce((acc, u) => acc + (u.number || 1), 0) + this.ambassadors), // maintenance for units, works as a cap
-            gold: this._gold // buy units and buildings
+            food: 500, //this.regions.reduce((acc, region) => acc + region.food, 0) - (this.units.reduce((acc, u) => acc + (u.number || 1), 0) + this.ambassadors), // maintenance for units, works as a cap
+            gold: 500, //this._gold // buy units and buildings
         };
     }
 
@@ -79,6 +78,7 @@ class Player {
             region.isCapital = false;
         }
         region.killEnemyAmbassadors();
+        region.changeColour(this.colour, this.strokeColour);
     }
 
     addUnit(unit) {
@@ -107,23 +107,6 @@ class Player {
 
     isAlliedWith(player) {
         return !!this.alliedPlayers[player.name];
-    }
-
-    startWarWith(player) {
-        delete this.alliedPlayers[player.name];
-        delete player.name.alliedPlayers[this.name];
-        this.atWarWith[player.name] = player.atWarWith[this.name] = true;
-        this.reputation(player, -100);
-    }
-
-    endWarWith(player) {
-        delete this.atWarWith[player.name];
-        delete player.name.atWarWith[this.name];
-        this.atWarWith[player.name] = player.atWarWith[this.name] = false;
-    }
-
-    isAtWarWith(player) {
-        return !!this.isAtWarWith[player.name];
     }
 }
 

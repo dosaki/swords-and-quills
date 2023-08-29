@@ -1,4 +1,4 @@
-const { Drawable } = require('./game-objects');
+const { Drawable } = require('../drawable');
 
 class Building extends Drawable {
     static name = "";
@@ -89,7 +89,7 @@ class Mine extends Building {
 
 class Castle extends Building {
     static name = "Castle";
-    static description = "+2🪙/day +6🛡️";
+    static description = "+2🪙/day, +6🛡️, +2🪶 slots";
     static cost = 500;
     static icon = "🏰";
     static modifiers = {

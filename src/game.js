@@ -32,13 +32,13 @@ window.addEventListener("resize", () => {
 tiprs1.addEventListener('click', () => {
     if (window.player && tooltip.region && window.player == tooltip.region.owner && tooltip.region.buildings[0]) {
         tooltip.region.sellBuilding(tooltip.region.buildings[0]);
-        tooltip.update(true);
+        tooltip.refreshContent();
     }
 });
 tiprs2.addEventListener('click', () => {
     if (window.player && tooltip.region && window.player == tooltip.region.owner && tooltip.region.buildings[1]) {
         tooltip.region.sellBuilding(tooltip.region.buildings[1]);
-        tooltip.update(true);
+        tooltip.refreshContent();
     }
 });
 
@@ -49,7 +49,7 @@ bldfc.innerHTML = `${Farm.cost}🪙`;
 bldf.addEventListener('click', () => {
     if (window.player && !bldf.hasAttribute('disabled')) {
         tooltip.region.addBuilding(new Farm(window.player));
-        tooltip.update(true);
+        tooltip.refreshContent();
     }
 });
 bldm.innerHTML = Mine.icon;
@@ -58,7 +58,7 @@ bldmc.innerHTML = `${Mine.cost}🪙`;
 bldm.addEventListener('click', () => {
     if (window.player && !bldm.hasAttribute('disabled')) {
         tooltip.region.addBuilding(new Mine(window.player));
-        tooltip.update(true);
+        tooltip.refreshContent();
     }
 });
 bldc.innerHTML = Castle.icon;
@@ -67,7 +67,7 @@ bldcc.innerHTML = `${Castle.cost}🪙`;
 bldc.addEventListener('click', () => {
     if (window.player && !bldc.hasAttribute('disabled')) {
         tooltip.region.addBuilding(new Castle(window.player));
-        tooltip.update(true);
+        tooltip.refreshContent();
     }
 });
 
@@ -75,13 +75,13 @@ bldc.addEventListener('click', () => {
 bmow.addEventListener('click', () => {
     if (window.player && tooltip.region && tooltip.region.hasArmiesOfPlayer(window.player)) {
         tooltip.region.mergeArmies(window.player);
-        tooltip.update(true);
+        tooltip.refreshContent();
     }
 });
 bsow.addEventListener('click', () => {
     if (window.player && tooltip.region && tooltip.region.hasArmiesOfPlayer(window.player)) {
         tooltip.region.splitArmies(window.player);
-        tooltip.update(true);
+        tooltip.refreshContent();
     }
 });
 
@@ -93,6 +93,7 @@ const uictx = cui.getContext('2d');
 window.zoomLevel = 4;
 window.pan = [cg.width / 3, cg.height / 4];
 window.cursor = [0, 0];
+window.uiCursor = [0, 0];
 window.gameCursor = [0, 0];
 window.debugGameCursors = [window.gameCursor];
 let isPanning = false;
@@ -101,6 +102,7 @@ window.players = [];
 window.player = null;
 let regions = [];
 window.shapes = [];
+window.uiShapes = [];
 const resourcesBar = new ResourcesBar();
 
 let playerName = "Sir Teencen Tury I";
@@ -122,6 +124,7 @@ bp.addEventListener('click', () => {
 
 const updateCursor = ([x, y]) => {
     window.cursor = [x, y];
+    window.uiCursor = [x * window.zoomLevel, y * window.zoomLevel];
     window.gameCursor = [x - window.pan[0] / window.zoomLevel, y - window.pan[1] / window.zoomLevel];
 };
 
@@ -142,13 +145,34 @@ const makeRegions = () => {
                 bnr.setAttribute("fill", region._colour);
                 bnr.setAttribute("stroke", region._strokeColour);
                 bnrc.style.top = 0;
+                region.addUnit(new Army(window.player));
+                region.addUnit(new Army(window.player));
+                region.addUnit(new Army(window.player));
+                region.addUnit(new Army(window.player));
+                region.addUnit(new Army(window.player));
+                region.addUnit(new Army(window.player));
+                region.addUnit(new Army(window.player));
+                region.addUnit(new Army(window.player));
+                region.addUnit(new Army(window.player));
+                region.addUnit(new Army(window.player));
+                region.addUnit(new Army(window.player));
+                region.addUnit(new Army(window.player));
+                region.addUnit(new Army(window.player));
+                region.addUnit(new Army(window.player));
+                region.addUnit(new Army(window.player));
+                region.addUnit(new Army(window.player));
+                region.addUnit(new Army(window.player));
+                region.addUnit(new Army(window.player));
+                region.addUnit(new Army(window.player));
+                region.addUnit(new Army(window.player));
+                region.addUnit(new Army(window.player));
 
                 // Tooltip - Unit Buttons - doing it here to use right colours:
                 Army.drawToSvgG(trnss, trnsc, window.player);
                 trns.addEventListener('click', () => {
                     if (!trns.hasAttribute('disabled')) {
                         tooltip.region.addUnit(new Army(window.player));
-                        tooltip.update();
+                        tooltip.refreshContent();
                     }
                 });
 
@@ -156,7 +180,7 @@ const makeRegions = () => {
                 trna.addEventListener('click', () => {
                     if (!trna.hasAttribute('disabled')) {
                         placingAmbassador = new Ambassador(window.player);
-                        tooltip.update();
+                        tooltip.refreshContent();
                         bgw.style.background = "#6a6a6a";
                     }
                 });
@@ -166,7 +190,6 @@ const makeRegions = () => {
                 region.addUnit(placingAmbassador);
                 placingAmbassador = null;
                 bgw.style.background = "#216288";
-                tooltip.update(true);
                 window.tooltip.set(region);
                 window.tooltip.open();
             } else if (window.placingArmy) {
@@ -174,6 +197,7 @@ const makeRegions = () => {
                 window.placingArmy.routeToRegion = window.regionGraph.findShortestPath(window.placingArmy.region.id, region.id);
                 window.placingArmy.routeToRegion.pop();
                 window.placingArmy = null;
+                window.tooltip.refreshContent();
             } else {
                 window.tooltip.set(region);
                 window.tooltip.open();
@@ -285,8 +309,14 @@ const addSharedListeners = () => {
             // console.log(window.cursor);
             // For hovering
             let selectedShape = null;
+            uiShapes.forEach(shape => {
+                if (shape.intersectedBy(window.uiCursor, uictx)) {
+                    selectedShape = shape;
+                }
+                shape.mouseOut(e);
+            });
             shapes.forEach(shape => {
-                if (shape.intersectedBy(window.gameCursor, ctx)) {
+                if (shape.intersectedBy(window.gameCursor, ctx) && !selectedShape) {
                     selectedShape = shape;
                 }
                 shape.mouseOut(e);
@@ -299,10 +329,8 @@ const addSharedListeners = () => {
                         moveLineColour = "#090";
                     } else if (window.player.isAlliedWith(selectedShape.owner)) {
                         moveLineColour = "#009";
-                    } else if (window.player.isAtWarWith(selectedShape.owner)) {
-                        moveLineColour = "#900";
                     } else {
-                        moveLineColour = "#990";
+                        moveLineColour = "#900";
                     }
                 }
             }
@@ -318,8 +346,14 @@ const addGenericShapeListeners = (shape) => {
             e.preventDefault();
         } else {
             let selectedShape = null;
+            uiShapes.forEach(shape => {
+                if (shape.intersectedBy(window.uiCursor, ctx)) {
+                    selectedShape = shape;
+                }
+                shape.unClick(e);
+            });
             shapes.forEach(shape => {
-                if (shape.intersectedBy(window.gameCursor, ctx)) {
+                if (shape.intersectedBy(window.gameCursor, ctx) && !selectedShape) {
                     selectedShape = shape;
                 }
                 shape.unClick(e);
@@ -337,8 +371,14 @@ const addGenericShapeListeners = (shape) => {
         updateCursor([e.offsetX / window.zoomLevel, e.offsetY / window.zoomLevel]);
         // console.log(window.cursor);
         let selectedShape = null;
+        uiShapes.forEach(shape => {
+            if (shape.intersectedBy(window.uiCursor, ctx)) {
+                selectedShape = shape;
+            }
+            shape.rightUnClick(e);
+        });
         shapes.forEach(shape => {
-            if (shape.intersectedBy(window.gameCursor, ctx)) {
+            if (shape.intersectedBy(window.gameCursor, ctx) && !selectedShape) {
                 selectedShape = shape;
             }
             shape.rightUnClick(e);
@@ -365,7 +405,7 @@ const setupGame = () => {
     addGenericShapeListeners();
 };
 
-const updateGame = (now) => {
+const drawGame = (now) => {
     ctx.save();
     ctx.clearRect(0, 0, cg.width, cg.height);
     ctx.translate(window.pan[0], window.pan[1]);
@@ -391,11 +431,11 @@ const distance = (A, B) => {
 };
 
 let lineAnim = 0;
-const updateUi = () => {
+const drawUi = () => {
     uictx.save();
     uictx.clearRect(0, 0, cg.width, cg.height);
     if (window.placingArmy) {
-        const start = window.cursor.map(c => c * window.zoomLevel);
+        const start = uiCursor;
         const end = window.placingArmy.currentCoordinates.map((c, i) => (c * window.zoomLevel + window.pan[i]) - 5);
         const dist = distance(start, end);
         const mid = findD(start, end, dist * 0.1);
@@ -419,13 +459,12 @@ const updateUi = () => {
         lineAnim++;
     }
     resourcesBar.draw(uictx);
-    window.tooltip.update();
     window.tooltip.draw(uictx);
     uictx.restore();
 };
 const onTick = () => {
     if (window.player) {
-        const originalMonth = resourcesBar.currentDate.getMonth();
+        // const originalMonth = resourcesBar.currentDate.getMonth();
         resourcesBar.nextDay();
         window.players.forEach(p => p.onTick());
     }
@@ -433,17 +472,18 @@ const onTick = () => {
 
 setupGame();
 
-let last = 0;
+let lastTick = 0;
 window.main = function (now) {
-    const diff = now - last;
-    if (now - last >= 2000) {
+    const tickDiff = now - lastTick;
+    if (tickDiff >= 2000) {
         onTick();
-        last = now;
+        lastTick = now;
     }
+    players.forEach(p => p.moveUnits(0.1));
+    tooltip.update();
+    drawGame(now);
+    drawUi();
 
-    window.players.forEach(p => p.moveUnits(diff));
-    updateGame(now);
-    updateUi();
     window.requestAnimationFrame(main);
 };
 

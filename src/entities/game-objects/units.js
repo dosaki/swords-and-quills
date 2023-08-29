@@ -1,4 +1,4 @@
-const { Drawable } = require('./game-objects');
+const { Drawable } = require('../drawable');
 const ambassadorPaths = require('../../config/ambassador.json');
 const soldierPaths = require('../../config/knight.json');
 const { pick } = require('../../utils/random');
@@ -19,6 +19,7 @@ class Citizen extends Drawable {
         this.routeToRegion = [];
         this.currentCoordinates = [];
         this._bounceNumber = 0;
+        this.lostCounter = 0;
     }
 
     static canBeAffordedBy(player) {
@@ -85,13 +86,19 @@ class Citizen extends Drawable {
         return this.constructor.cost;
     }
 
+    get isAlive() {
+        return true;
+    }
+
     canBeAfforded() {
         return this.constructor.canBeAffordedBy(this.owner);
     }
 
     drawAt(ctx, x, y) {
-        this._bounceNumber += 0.1;
-        this.constructor.draw(ctx, x, y + (Math.sin(this._bounceNumber)) / 4, this.owner);
+        if (this.isAlive) {
+            this._bounceNumber += 0.1;
+            this.constructor.draw(ctx, x, y + (Math.sin(this._bounceNumber)) / 4, this.owner);
+        }
     }
 
     draw(ctx) {
@@ -106,50 +113,57 @@ class Citizen extends Drawable {
         this.owner._gold -= this.cost;
         this.region = region;
         this.owner.addUnit(this);
+        tooltip.refreshContent();
     }
 
     onArrival(region, stayInOriginalCoords) {
         this.region = region;
-        if(!stayInOriginalCoords){
+        if (!stayInOriginalCoords) {
             this.currentCoordinates = pick(...this.region.largestShape).map((v, i) => (v + this.region.centroid[i]) / 2 + Math.random());
         }
     }
 
     onLeave() {
         this.region = null;
+        tooltip.refreshContent();
     }
 
-    moveUnit() {
-        if (this.routeToRegion.length > 0) {
-            if (this.region) {
-                this.onLeave();
-            }
+    moveUnit(velocity) {
+        if (!this.region) {
+            this.lostCounter++;
+            console.log(this.lostCounter);
+        }
+        if (!this.region && this.lostCounter > 500 && this.routeToRegion.length) {
+            this.lostCounter = 0;
             const targetRegion = window.regionLookup[this.routeToRegion[this.routeToRegion.length - 1]];
-            const [targetX, targetY] = targetRegion.centroid;
+            this.routeToRegion.pop();
+            this.onArrival(targetRegion, this.routeToRegion.length);
+        }
+        if (this.isAlive) {
+            if (this.routeToRegion.length > 0) {
+                if (this.region) {
+                    this.onLeave();
+                }
+                const targetRegion = window.regionLookup[this.routeToRegion[this.routeToRegion.length - 1]];
+                const [targetX, targetY] = targetRegion.centroid;
 
-            // let dx = targetX - this.currentCoordinates[0];
-            // let dy = targetY - this.currentCoordinates[1];
-            // const angle = Math.atan2(dy, dx);
+                var tx = targetX - this.currentCoordinates[0],
+                    ty = targetY - this.currentCoordinates[1],
+                    dist = Math.sqrt(tx * tx + ty * ty);
 
-            // this.currentCoordinates = [Math.sin(angle), Math.cos(angle)].map((v, i) => v + this.currentCoordinates[i]);
-            // console.log(this.currentCoordinates);
+                let velX = (tx / dist) * velocity;
+                let velY = (ty / dist) * velocity;
 
+                this.currentCoordinates[0] += velX;
+                this.currentCoordinates[1] += velY;
 
-            var tx = targetX - this.currentCoordinates[0],
-                ty = targetY - this.currentCoordinates[1],
-                dist = Math.sqrt(tx * tx + ty * ty);
-
-            let velX = (tx / dist) * 0.05;
-            let velY = (ty / dist) * 0.05;
-
-            this.currentCoordinates[0] += velX;
-            this.currentCoordinates[1] += velY;
-
-            const [x0, y0] = this.currentCoordinates.map(c => Math.floor(c * 10));
-            const [x1, y1] = targetRegion.centroid.map(c => Math.floor(c * 10));
-            if (x0 === x1 && y0 === y1) {
-                this.routeToRegion.pop();
-                this.onArrival(targetRegion, !this.routeToRegion.length);
+                const [x0, y0] = this.currentCoordinates.map(c => Math.floor(c * 10));
+                const [x1, y1] = targetRegion.centroid.map(c => Math.floor(c * 10));
+                if (x0 === x1 && y0 === y1) {
+                    this.lostCounter = 0;
+                    this.routeToRegion.pop();
+                    this.onArrival(targetRegion, this.routeToRegion.length);
+                }
             }
         }
     }
@@ -160,6 +174,7 @@ class Citizen extends Drawable {
         this.owner.removeUnit(this);
         this.owner = null;
         this.region = null;
+        tooltip.refreshContent();
     }
 }
 
@@ -179,36 +194,40 @@ class Army extends Citizen {
         return `${this.number}🗡️, ${this.number}🛡️`;
     }
 
+    get isAlive() {
+        return this.number > 0;
+    }
+
     draw(ctx) {
         super.draw(ctx);
-        ctx.save();
-        ctx.translate(...this.currentCoordinates);
-        // show number of soldiers
-        ctx.fillStyle = "#fff";
-        ctx.strokeStyle = "#000";
-        ctx.lineWidth = 0.1;
-        ctx.font = "2px sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillText(this.number, -1.5, 2);
-        ctx.strokeText(this.number, -1.5, 2);
-        ctx.restore();
+        if (this.isAlive) {
+            ctx.save();
+            ctx.translate(...this.currentCoordinates);
+            // show number of soldiers
+            ctx.fillStyle = "#fff";
+            ctx.strokeStyle = "#000";
+            ctx.lineWidth = 1;
+            ctx.font = "2px Arial";
+            ctx.textAlign = "center";
+            ctx.strokeText(this.number, -1.5, 2);
+            ctx.fillText(this.number, -1.5, 2);
+            ctx.restore();
+        }
     }
 
     onPlacement(region) {
-        if (this.region) {
-            this.onLeave();
-        }
         super.onPlacement(region);
         this.onArrival(region);
     }
 
-    onArrival(region) {
-        super.onArrival(region);
+    onArrival(region, stayInOriginalCoords) {
+        super.onArrival(region, stayInOriginalCoords);
         if (region.owner === this.owner || region.owner.isAlliedWith(this.owner)) {
             region.defenders.push(this);
         } else {
             region.attackers.push(this);
         }
+        tooltip.refreshContent();
     }
 
     clone() {
@@ -237,6 +256,10 @@ class Army extends Citizen {
             if (this.region.defenders.length === 0) {
                 this.region._siegeProgress++;
             }
+        } else if (this.region && this.region.owner === this.owner && this.region._siegeProgress) {
+            if (this.region.attackers.length === 0) {
+                this.region._siegeProgress = Math.max(this.region._siegeProgress-1, 0);
+            }
         }
     }
 }
@@ -248,18 +271,16 @@ class Ambassador extends Citizen {
     static cost = 10;
 
     onPlacement(region) {
-        if (this.region) {
-            this.onLeave();
-        }
         super.onPlacement(region);
         this.onArrival(region);
     }
 
-    onArrival(region) {
-        super.onArrival(region);
+    onArrival(region, stayInOriginalCoords) {
+        super.onArrival(region, stayInOriginalCoords);
         if (region.freeAmbassadorSlots != 0 && region.owner != this.owner) {
             region.ambassadors.push(this);
         }
+        tooltip.refreshContent();
     }
 
     onLeave() {
@@ -275,6 +296,11 @@ class Ambassador extends Citizen {
             this.region.owner._gold++;
             this.owner.changeReputationWith(this.region.owner, 1);
         }
+    }
+
+    onDie() {
+        this.onLeave();
+        super.onDie();
     }
 }
 
