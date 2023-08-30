@@ -128,7 +128,7 @@ const updateCursor = ([x, y]) => {
     window.gameCursor = [x - window.pan[0] / window.zoomLevel, y - window.pan[1] / window.zoomLevel];
 };
 
-let placingAmbassador = null;
+window.placingAmbassador = null;
 window.placingArmy = null;
 
 const makeRegions = () => {

@@ -53,6 +53,10 @@ class Region extends GameInteractible {
             + this.buildings.reduce((acc, b) => acc + (b.modifiers.defence || 0), 0);
     }
 
+    get isUnderSiege() {
+        return this._siegeProgress > 0;
+    }
+
     get siegeProgress() {
         return this.defence - this._siegeProgress;
     }
@@ -114,19 +118,41 @@ class Region extends GameInteractible {
         }
     }
 
+    _reCalculateUnitSides() {
+        const allUnits = [...this.defenders, ...this.attackers];
+        this.defenders = [];
+        this.attackers = [];
+        allUnits.forEach(unit => {
+            if (unit.owner.isAlliedWith(this.owner)) {
+                this.defenders.push(unit);
+            } else {
+                this.attackers.push(unit);
+            }
+        });
+    }
+
     transferOwnership(player) {
         if (this.owner.resources.gold < 0) {
             const goldToGive = Math.min(this.owner.resources.gold, randomUtils.int(1, 2 * this.neighbours.length));
             this.owner._gold -= goldToGive;
             player._gold += goldToGive;
         }
+        this.defenders.forEach(d => d.onDie()); // in case there's any left
         this.owner.removeRegion(this);
         player.addRegion(this);
-        const oldDefenders = this.defenders;
-        this.defenders = this.attackers;
-        this.attackers = [];
-        oldDefenders.forEach(d => d.onDie()); // in case there's any left
+        this._reCalculateUnitSides();
         this._siegeProgress--;
+    }
+
+    getPriceFor(player) {
+        return this.owner.getSellMoodWith(player) * (this.scoreValue + this.food + this.gold + this.isCapital ? 10 : 0);
+    }
+
+    sellTo(player) {
+        this.owner.removeRegion(this);
+        player.addRegion(this);
+        this._reCalculateUnitSides();
+        this._siegeProgress = 0;
     }
 
     hasArmiesOfPlayer(player) {

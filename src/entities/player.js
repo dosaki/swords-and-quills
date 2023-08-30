@@ -1,3 +1,5 @@
+const { pick, int } = require("../utils/random");
+
 class Player {
     constructor(country) {
         this.name = country;
@@ -11,6 +13,7 @@ class Player {
 
         this.units = [];
         this._gold = 0;
+        this._sellMood = 0;
     }
 
     get resources() {
@@ -45,6 +48,14 @@ class Player {
 
     get strokeColour() {
         return this.capital ? this.capital._strokeColour : "#000";
+    }
+
+    getSellMoodWith(player) {
+        if(!this._sellMood){
+            const min = 200 - this.reputationWith(player)
+            this._sellMood = int(min, min*2);
+        }
+        return this._sellMood;
     }
 
     moveUnits(diff) {
@@ -99,6 +110,28 @@ class Player {
 
     reputationWith(player) {
         return (this.knownPlayers[player.name] || 0);
+    }
+
+    attitudeWith(player) {
+        const reputation = this.reputationWith(player);
+        if(reputation < -50){
+            return "Hostile"
+        }
+        if(reputation < 0){
+            return "Unfriendly"
+        }
+        if(reputation < 50){
+            return "Neutral"
+        }
+        return this.isAlliedWith(player) ? "Ally" : "Friendly";
+    }
+
+    wouldSellTo(player) {
+        return this.reputationWith(player) >= 35;
+    }
+
+    wouldAllyWith(player) {
+        return this.reputationWith(player) >= 80;
     }
 
     enterAllianceWith(player) {

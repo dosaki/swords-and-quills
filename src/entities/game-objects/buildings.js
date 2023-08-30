@@ -19,7 +19,7 @@ class Building extends Drawable {
     }
 
     static canBeAffordedBy(player) {
-        return player._gold >= this.cost;
+        return player.resources.gold >= this.cost;
     }
 
     get name() {

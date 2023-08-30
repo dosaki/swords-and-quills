@@ -107,7 +107,16 @@ class Tooltip {
 
         ctx.fillStyle = "#ffd700";
         this._drawSectionTitle("Armies", 220, ctx);
-        this._drawSectionTitle("Build", 360, ctx);
+        if (this.region.owner === window.player) {
+            this._drawSectionTitle("Build", 370, ctx);
+            this._drawSectionTitle("Train", 480, ctx);
+        } else {
+            this._drawSectionTitle("Diplomacy", 370, ctx);
+            ctx.fillStyle = "#fff";
+            ctx.fillText(this.region.owner.attitudeWith(window.player), 200, 400);
+            ctx.font = "32px Arial";
+            ctx.fillText(`${this.region.owner.reputationWith(window.player)}🪶`, 200, 440);
+        }
 
         // Building slots
         const transform = ctx.getTransform();
@@ -116,7 +125,7 @@ class Tooltip {
             interactible.draw(ctx);
         });
 
-        if (this.hoveredInteractible && this.hoveredInteractible.help) {
+        if (this.hoveredInteractible && this.hoveredInteractible.help.length) {
             this.hoveredInteractible.drawTooltip(ctx);
         }
 
@@ -190,37 +199,34 @@ class Tooltip {
         }
     }
 
-    _setMakeBuildingsAndUnits() {
+    _makeBuildBuildings() {
         if (this.region.owner === window.player) {
-            bldsc.removeAttribute("n");
-            trnc.removeAttribute("n");
-            const canAffordFarm = Farm.canBeAffordedBy(window.player) && this.region.hasBuildingSpace;
-            if (canAffordFarm) {
-                bldf.removeAttribute("disabled");
-                bldf.parentElement.removeAttribute("st");
-            } else {
-                bldf.setAttribute("disabled", "");
-                bldf.parentElement.setAttribute("st", "");
-            }
-            const canAffordMine = Mine.canBeAffordedBy(window.player) && this.region.hasBuildingSpace;
-            if (canAffordMine) {
-                bldm.removeAttribute("disabled");
-                bldm.parentElement.removeAttribute("st");
-            } else {
-                bldm.setAttribute("disabled", "");
-                bldm.parentElement.setAttribute("st", "");
-            }
-            const canAffordCastle = Castle.canBeAffordedBy(window.player) && this.region.hasBuildingSpace;
-            if (canAffordCastle) {
-                bldc.removeAttribute("disabled");
-                bldc.parentElement.removeAttribute("st");
-            } else {
-                bldc.setAttribute("disabled", "");
-                bldc.parentElement.setAttribute("st", "");
-            }
-        } else {
-            bldsc.setAttribute("n", "");
-            trnc.setAttribute("n", "");
+            [Farm, Mine, Castle].forEach((B, i) => {
+                const button = this._addInteractible(new UiInteractible([[0, 0], [70, 0], [70, 70], [0, 70]], i * 124, 380, 2));
+                button.disabled = !(B.canBeAffordedBy(window.player) && this.region.hasBuildingSpace);
+                button.text = B.icon;
+                button.textSize = 50;
+                if (button.disabled) {
+                    button.help = [
+                        !this.region.hasBuildingSpace ? "Not enough plots" : "Not enough 🪙",
+                        B.description
+                    ];
+                    button.compoundText.push(["/", 0, 0]);
+                    button.textColour = "#0006";
+                    button.textOutline = "transparent";
+                    button.changeColour("#2c2c40", "#ffd700");
+                    button.forceShowHelp = true;
+                } else {
+                    button.help = [`${B.name}: ${B.cost}🪙`, B.description];
+                    button.changeColour("#1d1d4d", "#ffd700");
+                    button.onClick = () => {
+                        this.region.addBuilding(new B(window.player));
+                        this._makeBuildBuildings();
+                        this._populateSellBuildings();
+                        this._populateAmbassadors();
+                    };
+                }
+            });
         }
     }
 
@@ -248,31 +254,63 @@ class Tooltip {
         return;
     }
 
-    _setTrainUnits() {
-        const canAffordArmy = Army.canBeAffordedBy(window.player);
-        if (canAffordArmy) {
-            trns.removeAttribute("disabled");
-            trns.parentElement.removeAttribute("st");
-        } else {
-            trns.setAttribute("disabled", "");
-            trns.parentElement.setAttribute("st", "");
-        }
-        const canAffordAmbassador = Ambassador.canBeAffordedBy(window.player);
-        if (canAffordAmbassador) {
-            trna.removeAttribute("disabled");
-            trna.parentElement.removeAttribute("st");
-        } else {
-            trna.setAttribute("disabled", "");
-            trna.parentElement.setAttribute("st", "");
+    _makeTrainUnits() {
+        if (this.region.owner == window.player) {
+            [Army, Ambassador].forEach((U, i) => {
+                const button = this._addInteractible(new UiInteractible([[62, 0], [132, 0], [132, 70], [62, 70]], i * 124, 490, 2));
+                button.disabled = !U.canBeAffordedBy(window.player);
+                button.classWithIcon = U;
+                button.textSize = 50;
+                if (button.disabled) {
+                    button.help = [
+                        "Not enough 🪙 or 🍖",
+                        U.description
+                    ];
+                    button.compoundText.push(["/", 0, 0]);
+                    button.textColour = "#0006";
+                    button.textOutline = "transparent";
+                    button.changeColour("#2c2c40", "#ffd700");
+                    button.forceShowHelp = true;
+                } else {
+                    button.help = [`${U.name}: ${U.cost}🪙 ${U.foodCost}🍖`, U.description];
+                    button.changeColour("#1d1d4d", "#ffd700");
+                    button.onClick = () => {
+                        if (U === Army) {
+                            this.region.addUnit(new U(window.player));
+                        } else {
+                            window.placingAmbassador = new U(window.player);
+                        }
+                        this._makeTrainUnits();
+                        this._populateAmbassadors();
+                        this._populateArmies();
+                    };
+                }
+            });
         }
     }
 
-    _setOtherPlayerView() {
+    _setDiplomacyView() {
         if (this.region.owner !== window.player) {
-            dvc.removeAttribute("n");
-            dvv.innerHTML = this.region.owner.reputationWith(window.player);
-        } else {
-            dvc.setAttribute("n", "");
+            const noBuyReason = !this.region.owner.wouldSellTo(window.player) ? [`${this.region.owner.name} does not want to sell to you`, "Increase your reputation with them via Ambassadors"] : this.region.isUnderSiege ? `${this.region.owner.name} is under siege` : `Buy ${this.region.name} for ${this.region.getPriceFor(window.player)}🪙`;
+            const noAllyReason = this.region.owner.wouldAllyWith(window.player) ? `Ally with ${this.region.owner.name}` : [`${this.region.owner.name} does not want to ally with you`, "Increase your reputation with them via Ambassadors"];
+            const buttons = {
+                "Buy land": [() => {
+                    if (this.region.owner !== window.player && this.region.owner.wouldSellTo(window.player) && !this.region.isUnderSiege) {
+                        this.region.sellTo(window.player);
+                    }
+                }, noBuyReason],
+                "Make Alliance": [() => {
+
+                }, noAllyReason],
+            };
+            Object.keys(buttons).forEach((text, i) => {
+                const button = this._addInteractible(new UiInteractible([[0, 0], [130, 0], [130, 40], [0, 40]], 0, i * 50 + 385, 2));
+                button.text = text;
+                button.textSize = 18;
+                button.help = buttons[text][1];
+                button.changeColour("#1d1d4d", "#ffd700");
+                button.onClick = buttons[text][0];
+            });
         }
     }
 
@@ -287,14 +325,14 @@ class Tooltip {
                 if (Math.floor(i / 7) >= 3) {
                     return;
                 }
-                if(Math.floor(i%7) === 6 && Math.floor(i / 7) === 2 && i < allArmies.length - 2) {
+                if (Math.floor(i % 7) === 6 && Math.floor(i / 7) === 2 && i < allArmies.length - 2) {
                     const button = this._addInteractible(new UiInteractible([[0, 0], [33, 0], [33, 33], [0, 33]], x + 52, y + 230, 2));
                     button.changeColour("#1d1d4d", "#ffd700");
                     button.text = "...";
                     button.help = `Too many armies. Merge yours.`;
                     button.onClick = () => {
                         this.region.mergeArmies(window.player);
-                    }
+                    };
                     return;
                 }
                 const button = this._addInteractible(new UiInteractible([[0, 0], [33, 0], [33, 33], [0, 33]], x + 52, y + 230, 2));
@@ -343,10 +381,9 @@ class Tooltip {
         this._populateAmbassadors();
         this._populateArmies();
         this._armyButtons();
-
-        this._setMakeBuildingsAndUnits();
-        this._setTrainUnits();
-        this._setOtherPlayerView();
+        this._makeBuildBuildings();
+        this._makeTrainUnits();
+        this._setDiplomacyView();
     }
 }
 

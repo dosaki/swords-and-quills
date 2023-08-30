@@ -26,10 +26,11 @@ class Citizen extends Drawable {
         return player.resources.gold >= this.cost && player.resources.food - this.foodCost >= 0;
     }
 
-    static draw(ctx, x, y, owner) {
+    static draw(ctx, x, y, owner, scale) {
+        const _scale = scale || 0.3;
         ctx.save();
         ctx.translate((x || 0) - 3, ((y || 0) - 3));
-        ctx.scale(0.3, 0.3);
+        ctx.scale(_scale, _scale);
         Object.keys(this.paths).forEach(p => {
             const path = new Path2D(p);
             const [fill, stroke] = this.paths[p];

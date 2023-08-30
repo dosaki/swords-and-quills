@@ -22,16 +22,31 @@ class UiInteractible extends Interactible {
         this.compoundText = [];
         this.textSize = 20;
         this.transformationOnDraw = null;
-        this.help = "";
+        this._help = [];
         this.disabled = false;
+        this.textColour = "#fff";
+        this.textOutline = "#000";
+        this.forceShowHelp = false;
+        this.classWithIcon = null;
     }
 
     set text(text) {
         this.compoundText = [[text, 0, 0], ...this.compoundText];
     }
 
+    get help() {
+        return this._help;
+    }
+    set help(text) {
+        this._help = Array.isArray(text) ? text : [text];
+    }
+
+
     hover(e) {
-        if(this.disabled){
+        if (this.disabled) {
+            if (this.forceShowHelp) {
+                window.tooltip.hoveredInteractible = this;
+            }
             return;
         }
         super.hover(e);
@@ -39,7 +54,10 @@ class UiInteractible extends Interactible {
     }
 
     mouseOut(e) {
-        if(this.disabled){
+        if (this.disabled) {
+            if (this.forceShowHelp) {
+                window.tooltip.hoveredInteractible = null;
+            }
             return;
         }
         super.mouseOut(e);
@@ -88,17 +106,22 @@ class UiInteractible extends Interactible {
         ctx.stroke();
 
         const { width, height } = this._calculateBBox();
-        ctx.font = `${this.textSize}px Arial`;
-        ctx.fillStyle = "#fff";
-        ctx.strokeStyle = "#000";
-        ctx.lineWidth = 3;
-        this.compoundText.forEach(compoundTextProperties => {
-            const [text, normalOffset, hoverOffset] = compoundTextProperties;
-            const offset = this.isHovering ? hoverOffset : normalOffset;
-            const textMetrics = ctx.measureText(text);
-            ctx.strokeText(text, (offset + this.x + width * 0.5) - textMetrics.width * 0.5, (this.y + height * 0.5) + this.textSize * 0.4);
-            ctx.fillText(text, (offset + this.x + width * 0.5) - textMetrics.width * 0.5, (this.y + height * 0.5) + this.textSize * 0.4);
-        });
+        if (this.classWithIcon) {
+            ctx.lineWidth = 1;
+            this.classWithIcon.draw(ctx, this.x + 14, this.y + 7, tooltip.region.owner, 5);
+        } else {
+            ctx.font = `${this.textSize}px Arial`;
+            ctx.lineWidth = 3;
+            ctx.fillStyle = this.textColour;
+            ctx.strokeStyle = this.textOutline;
+            this.compoundText.forEach(compoundTextProperties => {
+                const [text, normalOffset, hoverOffset] = compoundTextProperties;
+                const offset = this.isHovering ? hoverOffset : normalOffset;
+                const textMetrics = ctx.measureText(text);
+                ctx.strokeText(text, (offset + this.x + width * 0.5) - textMetrics.width * 0.5, (this.y + height * 0.5) + this.textSize * 0.4);
+                ctx.fillText(text, (offset + this.x + width * 0.5) - textMetrics.width * 0.5, (this.y + height * 0.5) + this.textSize * 0.4);
+            });
+        }
         ctx.restore();
     }
 
@@ -108,11 +131,14 @@ class UiInteractible extends Interactible {
         ctx.strokeStyle = "#ffd700";
         ctx.font = `16px Arial`;
         ctx.lineWidth = 2;
-        const textMetrics = ctx.measureText(this.help);
-        ctx.fillRect(this.x + width, this.y - height/2, textMetrics.width + 20, 36);
-        ctx.strokeRect(this.x + width, this.y - height/2, textMetrics.width + 20, 36);
+        const textMetrics = this.help.map(helpText => ctx.measureText(helpText));
+        const maxWidth = Math.max(...textMetrics.map(tm => tm.width));
+        ctx.fillRect(this.x + width, this.y - height / 2, maxWidth + 20, 36 * textMetrics.length);
+        ctx.strokeRect(this.x + width, this.y - height / 2, maxWidth + 20, 36 * textMetrics.length);
         ctx.fillStyle = "#fff";
-        ctx.fillText(this.help, this.x + 10 + width, this.y + 24 - height/2);
+        this.help.forEach((helpText, i) => {
+            ctx.fillText(helpText, this.x + 10 + width, this.y + 24 - height / 2 + 36 * i);
+        });
     }
 
     intersectedBy(cursor) {
