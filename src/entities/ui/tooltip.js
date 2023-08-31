@@ -190,7 +190,7 @@ class Tooltip {
         if (this.region.owner === window.player) {
             [Farm, Mine, Castle].forEach((B, i) => {
                 const button = this._addInteractible(new UiInteractible([[0, 0], [70, 0], [70, 70], [0, 70]], i * 124, 380, 2));
-                button.disabled = !(B.canBeAffordedBy(window.player) && this.buildings.length < this.buildingLimit);
+                button.disabled = !(B.canBeAffordedBy(window.player) && this.region.buildings.length < this.region.buildingLimit);
                 button.text = B.icon;
                 button.textSize = 50;
                 if (button.disabled) {
@@ -198,7 +198,7 @@ class Tooltip {
                         `${B.name}: ${B.cost}🟡`,
                         B.description,
                         "",
-                        [this.buildings.length >= this.buildingLimit ? "Not enough plots" : "Not enough 🟡", "#f88"]
+                        [this.region.buildings.length >= this.region.buildingLimit ? "Not enough plots" : "Not enough 🟡", "#f88"]
                     ];
                     button.textColour = "#0006";
                     button.textOutline = "transparent";
