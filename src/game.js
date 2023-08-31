@@ -2,9 +2,7 @@ const { loadRegions, loadJoinedRegionPaths } = require("./loader/region-loader")
 const Player = require("./entities/player");
 const ResourcesBar = require("./entities/ui/resources");
 const Tooltip = require("./entities/ui/tooltip");
-//
-const { Farm, Mine, Castle } = require("./entities/game-objects/buildings");
-const { Army, Ambassador } = require("./entities/game-objects/units");
+const { Castle } = require("./entities/game-objects/buildings");
 const Region = require('./entities/game-objects/region');
 
 
@@ -12,80 +10,12 @@ const mapShadow = loadJoinedRegionPaths();
 
 cui.width = cg.width = window.innerWidth;
 cui.height = cg.height = window.innerHeight;
-tip.style.width = `${cg.width / 3 > 344 ? 344 : cg.width * 0.2}px`;
-tip.style.height = `${cg.height - 40}px`;
-tip.style.marginBottom = `${-cg.height}px`;
-tip.style.marginTop = `${cg.height}px`;
-window.tooltip = new Tooltip(tip);
+window.tooltip = new Tooltip();
 
 window.addEventListener("resize", () => {
     cui.width = cg.width = window.innerWidth;
     cui.height = cg.height = window.innerHeight;
-    tip.style.width = `${cg.width / 3 > 344 ? 344 : cg.width * 0.2}px`;
-    tip.style.height = `${cg.height - 40}px`;
-    tip.style.marginBottom = window.tooltip.isOpen ? "0" : `${-cg.height}px`;
-    tip.style.marginTop = window.tooltip.isOpen ? "40px" : `${cg.height}px`;
 });
-
-
-// Tooltip - Building Slots
-tiprs1.addEventListener('click', () => {
-    if (window.player && tooltip.region && window.player == tooltip.region.owner && tooltip.region.buildings[0]) {
-        tooltip.region.sellBuilding(tooltip.region.buildings[0]);
-        tooltip.refreshContent();
-    }
-});
-tiprs2.addEventListener('click', () => {
-    if (window.player && tooltip.region && window.player == tooltip.region.owner && tooltip.region.buildings[1]) {
-        tooltip.region.sellBuilding(tooltip.region.buildings[1]);
-        tooltip.refreshContent();
-    }
-});
-
-// Tooltip - Building Buttons
-bldf.innerHTML = Farm.icon;
-bldf.setAttribute("title", `${Farm.name}: ${Farm.description}`);
-bldfc.innerHTML = `${Farm.cost}🪙`;
-bldf.addEventListener('click', () => {
-    if (window.player && !bldf.hasAttribute('disabled')) {
-        tooltip.region.addBuilding(new Farm(window.player));
-        tooltip.refreshContent();
-    }
-});
-bldm.innerHTML = Mine.icon;
-bldm.setAttribute("title", `${Mine.name}: ${Mine.description}`);
-bldmc.innerHTML = `${Mine.cost}🪙`;
-bldm.addEventListener('click', () => {
-    if (window.player && !bldm.hasAttribute('disabled')) {
-        tooltip.region.addBuilding(new Mine(window.player));
-        tooltip.refreshContent();
-    }
-});
-bldc.innerHTML = Castle.icon;
-bldc.setAttribute("title", `${Castle.name}: ${Castle.description}`);
-bldcc.innerHTML = `${Castle.cost}🪙`;
-bldc.addEventListener('click', () => {
-    if (window.player && !bldc.hasAttribute('disabled')) {
-        tooltip.region.addBuilding(new Castle(window.player));
-        tooltip.refreshContent();
-    }
-});
-
-// Tooltip - Army merge/split
-bmow.addEventListener('click', () => {
-    if (window.player && tooltip.region && tooltip.region.hasArmiesOfPlayer(window.player)) {
-        tooltip.region.mergeArmies(window.player);
-        tooltip.refreshContent();
-    }
-});
-bsow.addEventListener('click', () => {
-    if (window.player && tooltip.region && tooltip.region.hasArmiesOfPlayer(window.player)) {
-        tooltip.region.splitArmies(window.player);
-        tooltip.refreshContent();
-    }
-});
-
-
 
 const ctx = cg.getContext('2d');
 const uictx = cui.getContext('2d');
@@ -119,7 +49,6 @@ bp.addEventListener('click', () => {
     }
     m.setAttribute("n", "");
 });
-
 // ------------------------------
 
 const updateCursor = ([x, y]) => {
@@ -135,55 +64,18 @@ const makeRegions = () => {
     regions = loadRegions();
     shapes = [...shapes, ...regions];
     regions.forEach(region => {
-        region.onClick = (e, self) => {
+        region.onClick = () => {
             if (isPickingNation) {
                 region.owner.name = playerName;
                 window.player = region.owner;
+                window.player.isHuman = true;
+                window.player.style = "neutral";
                 window.player.country = playerNationName;
                 window.player.conquestPoints = -window.player.score; // To adjust starting with a big nation
                 isPickingNation = false;
                 bnr.setAttribute("fill", region._colour);
                 bnr.setAttribute("stroke", region._strokeColour);
                 bnrc.style.top = 0;
-                region.addUnit(new Army(window.player));
-                region.addUnit(new Army(window.player));
-                region.addUnit(new Army(window.player));
-                region.addUnit(new Army(window.player));
-                region.addUnit(new Army(window.player));
-                region.addUnit(new Army(window.player));
-                region.addUnit(new Army(window.player));
-                region.addUnit(new Army(window.player));
-                region.addUnit(new Army(window.player));
-                region.addUnit(new Army(window.player));
-                region.addUnit(new Army(window.player));
-                region.addUnit(new Army(window.player));
-                region.addUnit(new Army(window.player));
-                region.addUnit(new Army(window.player));
-                region.addUnit(new Army(window.player));
-                region.addUnit(new Army(window.player));
-                region.addUnit(new Army(window.player));
-                region.addUnit(new Army(window.player));
-                region.addUnit(new Army(window.player));
-                region.addUnit(new Army(window.player));
-                region.addUnit(new Army(window.player));
-
-                // Tooltip - Unit Buttons - doing it here to use right colours:
-                Army.drawToSvgG(trnss, trnsc, window.player);
-                trns.addEventListener('click', () => {
-                    if (!trns.hasAttribute('disabled')) {
-                        tooltip.region.addUnit(new Army(window.player));
-                        tooltip.refreshContent();
-                    }
-                });
-
-                Ambassador.drawToSvgG(trnas, trnac, window.player);
-                trna.addEventListener('click', () => {
-                    if (!trna.hasAttribute('disabled')) {
-                        placingAmbassador = new Ambassador(window.player);
-                        tooltip.refreshContent();
-                        bgw.style.background = "#6a6a6a";
-                    }
-                });
             }
 
             if (placingAmbassador && region.owner !== placingAmbassador.owner && region.freeAmbassadorSlots > 0) {
@@ -338,7 +230,7 @@ const addSharedListeners = () => {
     });
 };
 
-const addGenericShapeListeners = (shape) => {
+const addGenericShapeListeners = () => {
     cui.addEventListener('click', (e) => {
         updateCursor([e.offsetX / window.zoomLevel, e.offsetY / window.zoomLevel]);
         // console.log(window.cursor);
@@ -360,7 +252,7 @@ const addGenericShapeListeners = (shape) => {
             });
             if (selectedShape) {
                 selectedShape.click(e);
-            } else {
+            } else if (window.tooltip.isOpen && window.uiCursor[0] > 340) {
                 window.tooltip.close();
             }
         }
@@ -474,12 +366,15 @@ setupGame();
 
 let lastTick = 0;
 window.main = function (now) {
-    const tickDiff = now - lastTick;
-    if (tickDiff >= 2000) {
-        onTick();
-        lastTick = now;
+    if (!isPickingNation) {
+        const tickDiff = now - lastTick;
+        if (tickDiff >= 2000) {
+            onTick();
+            players.forEach(p => p.doAi());
+            lastTick = now;
+        }
+        players.forEach(p => p.moveUnits(0.1));
     }
-    players.forEach(p => p.moveUnits(0.1));
     tooltip.update();
     drawGame(now);
     drawUi();

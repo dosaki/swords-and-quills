@@ -3,8 +3,7 @@ const { Ambassador, Army } = require('../game-objects/units');
 const UiInteractible = require('./ui-interactible');
 
 class Tooltip {
-    constructor(tooltipElement) {
-        this.tooltip = tooltipElement;
+    constructor() {
         this.state = 0; // 0 = closed, 1 = opening, 2 = open, 3 = closing
         this.region = null;
         this.x = 0;
@@ -129,18 +128,6 @@ class Tooltip {
             this.hoveredInteractible.drawTooltip(ctx);
         }
 
-        // for (let i = 0; i < this.region.buildingLimit; i++) {
-        //     const [x, y] = i.toString(2).padStart(2, "0").split("").map(Number);
-        //     const s = 70;
-        //     const p = 10;
-        //     ctx.translate(x * (s + p), y * (s + p));
-        //     ctx.fillStyle = "#000";
-        //     ctx.fillRect(0, 0, s, s);
-        //     ctx.strokeStyle = "#ffd700";
-        //     ctx.strokeRect(0, 0, s, s);
-        //     ctx.translate(-x * (s + p), -y * (s + p));
-        // }
-
         ctx.restore();
     }
 
@@ -184,7 +171,7 @@ class Tooltip {
             button.textSize = 50;
             button.help = `${b.name}`;
             if (this.region.owner === window.player) {
-                button.help = `Sell ${b.name} for ${b.sellPrice}🪙`;
+                button.help = `Sell ${b.name} for ${b.sellPrice}🟡`;
                 button.onClick = () => {
                     this.region.sellBuilding(b);
                     this._populateSellBuildings();
@@ -203,21 +190,22 @@ class Tooltip {
         if (this.region.owner === window.player) {
             [Farm, Mine, Castle].forEach((B, i) => {
                 const button = this._addInteractible(new UiInteractible([[0, 0], [70, 0], [70, 70], [0, 70]], i * 124, 380, 2));
-                button.disabled = !(B.canBeAffordedBy(window.player) && this.region.hasBuildingSpace);
+                button.disabled = !(B.canBeAffordedBy(window.player) && this.buildings.length < this.buildingLimit);
                 button.text = B.icon;
                 button.textSize = 50;
                 if (button.disabled) {
                     button.help = [
-                        !this.region.hasBuildingSpace ? "Not enough plots" : "Not enough 🪙",
-                        B.description
+                        `${B.name}: ${B.cost}🟡`,
+                        B.description,
+                        "",
+                        [this.buildings.length >= this.buildingLimit ? "Not enough plots" : "Not enough 🟡", "#f88"]
                     ];
-                    button.compoundText.push(["/", 0, 0]);
                     button.textColour = "#0006";
                     button.textOutline = "transparent";
                     button.changeColour("#2c2c40", "#ffd700");
                     button.forceShowHelp = true;
                 } else {
-                    button.help = [`${B.name}: ${B.cost}🪙`, B.description];
+                    button.help = [`${B.name}: ${B.cost}🟡`, B.description];
                     button.changeColour("#1d1d4d", "#ffd700");
                     button.onClick = () => {
                         this.region.addBuilding(new B(window.player));
@@ -263,16 +251,17 @@ class Tooltip {
                 button.textSize = 50;
                 if (button.disabled) {
                     button.help = [
-                        "Not enough 🪙 or 🍖",
-                        U.description
+                        `${U.name}: ${U.cost}🟡 ${U.foodCost}🍖`,
+                        U.description,
+                        "",
+                        ["Not enough 🟡 or 🍖", "#f88"]
                     ];
-                    button.compoundText.push(["/", 0, 0]);
                     button.textColour = "#0006";
                     button.textOutline = "transparent";
                     button.changeColour("#2c2c40", "#ffd700");
                     button.forceShowHelp = true;
                 } else {
-                    button.help = [`${U.name}: ${U.cost}🪙 ${U.foodCost}🍖`, U.description];
+                    button.help = [`${U.name}: ${U.cost}🟡 ${U.foodCost}🍖`, U.description];
                     button.changeColour("#1d1d4d", "#ffd700");
                     button.onClick = () => {
                         if (U === Army) {
@@ -291,11 +280,11 @@ class Tooltip {
 
     _setDiplomacyView() {
         if (this.region.owner !== window.player) {
-            const noBuyReason = !this.region.owner.wouldSellTo(window.player) ? [`${this.region.owner.name} does not want to sell to you`, "Increase your reputation with them via Ambassadors"] : this.region.isUnderSiege ? `${this.region.owner.name} is under siege` : `Buy ${this.region.name} for ${this.region.getPriceFor(window.player)}🪙`;
+            const noBuyReason = !this.region.owner.wouldSellTo(window.player) ? [`${this.region.owner.name} does not want to sell to you`, "Increase your reputation with them via Ambassadors"] : this.region._siegeProgress > 0 ? `${this.region.owner.name} is under siege` : `Buy ${this.region.name} for ${this.region.getPriceFor(window.player)}🟡`;
             const noAllyReason = this.region.owner.wouldAllyWith(window.player) ? `Ally with ${this.region.owner.name}` : [`${this.region.owner.name} does not want to ally with you`, "Increase your reputation with them via Ambassadors"];
             const buttons = {
                 "Buy land": [() => {
-                    if (this.region.owner !== window.player && this.region.owner.wouldSellTo(window.player) && !this.region.isUnderSiege) {
+                    if (this.region.owner !== window.player && this.region.owner.wouldSellTo(window.player) && this.region._siegeProgress <= 0) {
                         this.region.sellTo(window.player);
                     }
                 }, noBuyReason],

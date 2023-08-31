@@ -78,9 +78,9 @@ class Farm extends Building {
 
 class Mine extends Building {
     static name = "Mine";
-    static description = "+1🪙/day";
+    static description = "+1🟡/day";
     static cost = 70;
-    static icon = "🪨";
+    static icon = "🗻";
 
     onTick() {
         this.owner._gold++;
@@ -89,7 +89,7 @@ class Mine extends Building {
 
 class Castle extends Building {
     static name = "Castle";
-    static description = "+2🪙/day, +6🛡️, +2🪶 slots";
+    static description = "+2🟡/day, +6🛡️, +2🪶 slots";
     static cost = 500;
     static icon = "🏰";
     static modifiers = {

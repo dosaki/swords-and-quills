@@ -37,7 +37,7 @@ class ResourcesBar {
         if (window.player) {
             ctx.fillStyle = "#fff";
             ctx.font = "16px Arial";
-            ctx.fillText(`${window.player.resources.gold}🪙  ${window.player.resources.food}🍖`, window.innerWidth / 2, 20);
+            ctx.fillText(`${window.player.resources.gold}🟡  ${window.player.resources.food}🍖`, window.innerWidth / 2, 20);
             ctx.strokeStyle = "#fff";
         }
 

@@ -18,21 +18,6 @@
             overflow: hidden;
         }
 
-        [fc] {
-            display: flex;
-            flex-direction: column;
-        }
-
-        [fm] {
-            align-items: center;
-            justify-content: space-evenly;
-        }
-
-        [fr] {
-            display: flex;
-            flex-direction: row;
-        }
-
         [b],
         [i] {
             height: 100%;
@@ -83,28 +68,6 @@
             color: #fff;
         }
 
-        #tip {
-            background: #18243d;
-            color: #fff;
-            font-size: 12px;
-            font-family: Arial, sans-serif;
-            border-right: 2px solid #ffd700;
-            margin-bottom: -10000px;
-            margin-top: 10000px;
-            padding: 0 20px;
-            filter: drop-shadow(0px 4px 8px #0006);
-            transition: margin 700ms;
-        }
-
-        #tipn {
-            margin-top: 70px;
-        }
-
-        #tipr {
-            margin-top: 10px;
-            height: 25px;
-        }
-
         #bnrc {
             position: absolute;
             top: -105px;
@@ -115,64 +78,11 @@
             transition: top 700ms;
         }
 
-        [bldb] {
-            font-size: 30px;
-            width: 55px;
-            height: 55px;
-        }
-
         [rc] {
             width: 150px;
             height: 150px;
             opacity: 0;
             pointer-events: none;
-        }
-
-        [tiprs] {
-            width: 50px;
-            height: 50px;
-            background: #0006;
-            border: 2px solid #ffd700;
-            margin: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-        }
-
-        [disabled] {
-            filter: grayscale(1);
-            opacity: 0.8;
-        }
-
-        [disabled]:hover {
-            background: #1d1d4d;
-            color: #ffd700;
-        }
-
-        [st] {
-            text-decoration: line-through 2px;
-        }
-
-        [u] {
-            width: 50px;
-            height: 50px;
-        }
-
-        #ald,
-        #ala {
-            overflow: auto;
-            height: 75px;
-        }
-
-        #ald>button,
-        #ala>button {
-            color: #000;
-        }
-
-        #ald>button:hover,
-        #ala>button:hover {
-            background: #00000090;
         }
 
         [n] {
@@ -189,84 +99,6 @@
             </svg>
             <canvas id=cg></canvas>
             <canvas id=cui></canvas>
-            <div id=tip>
-                <h1 id=tipn></h1>
-                <h2 id=tipr></h2>
-                <div fr fm>
-                    <div fc fm>
-                        <button id=tiprs1 tiprs title="Building plot"></button>
-                        <button id=tiprs2 tiprs title="Building plot" n></button>
-                    </div>
-                </div>
-                <div fr fm>
-                    <button id=tipras0 title="Ambassador seat" tiprs n><svg u>
-                            <g id=tipras0s transform="scale(4.5)"></g>
-                        </svg></button>
-                    <button id=tipras1 title="Ambassador seat" tiprs n><svg u>
-                            <g id=tipras1s transform="scale(4.5)"></g>
-                        </svg></button>
-                    <button id=tipras2 title="Ambassador seat" tiprs n><svg u>
-                            <g id=tipras2s transform="scale(4.5)"></g>
-                        </svg></button>
-                    <button id=tipras3 title="Ambassador seat" tiprs n><svg u>
-                            <g id=tipras3s transform="scale(4.5)"></g>
-                        </svg></button>
-                </div>
-                <hr />
-                <div fc>
-                    <h3>Armies</h3>
-                    <div fr>
-                        <div id=ald></div>
-                        <div id=ala></div>
-                    </div>
-                    <div fr fm>
-                        <button id=bmow>Merge own Armies</button>
-                        <button id=bsow>Split own Armies</button>
-                    </div>
-                </div>
-                <hr />
-                <div fc id=bldsc>
-                    <h3>Build</h3>
-                    <div fr fm>
-                        <div fc fm><button id=bldf bldb fc fm></button>
-                            <div id=bldfc></div>
-                        </div>
-                        <div fc fm><button id=bldm bldb fc fm></button>
-                            <div id=bldmc></div>
-                        </div>
-                        <div fc fm><button id=bldc bldb fc fm></button>
-                            <div id=bldcc></div>
-                        </div>
-                    </div>
-                </div>
-                <div fc id=trnc>
-                    <h3>Train</h3>
-                    <div fr fm>
-                        <div fc fm>
-                            <button id=trns bldb fc fm><svg u>
-                                    <g id=trnss transform="scale(5)"></g>
-                                </svg></button>
-                            <div id=trnsc></div>
-                        </div>
-                        <div fc fm>
-                            <button id=trna bldb fc fm><svg u>
-                                    <g id=trnas transform="scale(5)"></g>
-                                </svg></button>
-                            <div id=trnac></div>
-                        </div>
-                    </div>
-                </div>
-                <div fc id=dvc n>
-                    <h3>Diplomacy</h3>
-                    <div fr>
-                        🪶 <div id=dvv></div>
-                    </div>
-
-                    <button id=btnpa>Propose Alliance</button>
-                    <!-- <button id=btndw>Declare War</button> -->
-                    <button id=btnpl>Purchase land <div id=btnplc></div></button>
-                </div>
-            </div>
             <div id=bnrc>
                 <svg>
                     <path id=bnr fill=#44a stroke=#ffd700 stroke-width=8 d="M 0,0 h 100 v 60 C 75,115 25,115 0,60 z"

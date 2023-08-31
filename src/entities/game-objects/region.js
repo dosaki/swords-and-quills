@@ -18,6 +18,8 @@ class Region extends GameInteractible {
         this.defenders = [];
         this.attackers = [];
         this.centroid = [0, 0];
+        this._defenderPower = null;
+        this._attackerPower = null;
     }
 
     get scoreValue() {
@@ -36,10 +38,6 @@ class Region extends GameInteractible {
         return this.maxAmbassadors - this.ambassadors.length;
     }
 
-    get hasAmbassadors() {
-        return this.ambassadors.length > 0;
-    }
-
     get maxAmbassadors() {
         return this.buildings.reduce((acc, b) => acc + (b.modifiers.foreignAmbassadors || 0), 0);
     }
@@ -53,24 +51,22 @@ class Region extends GameInteractible {
             + this.buildings.reduce((acc, b) => acc + (b.modifiers.defence || 0), 0);
     }
 
-    get isUnderSiege() {
-        return this._siegeProgress > 0;
-    }
-
     get siegeProgress() {
         return this.defence - this._siegeProgress;
     }
 
-    get hasBuildingSpace() {
-        return this.buildings.length < this.buildingLimit;
+    get defenderPower() {
+        if (this._defenderPower === null) {
+            this._defenderPower = this.defenders.reduce((acc, da) => acc + da.number, 0);
+        }
+        return this._defenderPower;
     }
 
-    get canTrainAmbassador() {
-        return this.buildings.some(b => b.constructor === Castle);
-    }
-
-    get canTrainArmy() {
-        return this.buildings.some(b => b.constructor === Castle);
+    get attackerPower() {
+        if (this._attackerPower === null) {
+            this._attackerPower = this.attackers.reduce((acc, aa) => acc + aa.number, 0);
+        }
+        return this._attackerPower;
     }
 
     draw(ctx, isPlacingAmbassador) {
@@ -102,7 +98,7 @@ class Region extends GameInteractible {
     removeBuilding(building) {
         building.onRemoval();
         this.buildings = this.buildings.filter(b => b !== building);
-        if (this.hasAmbassadors < 0) {
+        if (this.ambassadors.length > 0) {
             this.ambassadors.slice(this.ambassadorSlots).forEach(a => a.die());
         }
     }
@@ -142,6 +138,7 @@ class Region extends GameInteractible {
         player.addRegion(this);
         this._reCalculateUnitSides();
         this._siegeProgress--;
+        player.changeReputationWith(this.owner, -15);
     }
 
     getPriceFor(player) {
@@ -207,15 +204,20 @@ class Region extends GameInteractible {
     }
 
     onTick() {
+        this._defenderPower = null;
+        this._attackerPower = null;
         this.buildings.forEach(b => b.onTick());
-        const defenderPower = this.defenders.reduce((acc, da) => acc + da.number, 0);
-        const attackerPower = this.attackers.reduce((acc, aa) => acc + aa.number, 0);
+        const defenderPower = this.defenderPower;
+        const attackerPower = this.attackerPower;
         let defendersLeftToKill = randomUtils.int(0, attackerPower);
         let attackersLeftToKill = randomUtils.int(0, defenderPower);
+        const defenderOwners = [...new Set(this.defenders.map(d => d.owner))];
+        const attackerOwners = [...new Set(this.attackers.map(a => a.owner))];
         this.defenders.forEach(d => {
             const actualKilled = Math.min(defendersLeftToKill, d.number);
             d.number = d.number - actualKilled;
             defendersLeftToKill = defendersLeftToKill - actualKilled;
+            attackerOwners.forEach(p => p.changeReputationWith(d.owner, -1*actualKilled));
             if (d.number <= 0) {
                 d.onDie();
             }
@@ -224,6 +226,7 @@ class Region extends GameInteractible {
             const actualKilled = Math.min(attackersLeftToKill, a.number);
             a.number = a.number - actualKilled;
             attackersLeftToKill = attackersLeftToKill - actualKilled;
+            defenderOwners.forEach(p => p.changeReputationWith(d.owner, -1*actualKilled));
             if (a.number <= 0) {
                 a.onDie();
             }

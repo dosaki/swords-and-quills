@@ -108,7 +108,9 @@ class UiInteractible extends Interactible {
         const { width, height } = this._calculateBBox();
         if (this.classWithIcon) {
             ctx.lineWidth = 1;
+            ctx.globalAlpha = this.disabled ? 0.5 : 1;
             this.classWithIcon.draw(ctx, this.x + 14, this.y + 7, tooltip.region.owner, 5);
+            ctx.globalAlpha = 1;
         } else {
             ctx.font = `${this.textSize}px Arial`;
             ctx.lineWidth = 3;
@@ -127,17 +129,26 @@ class UiInteractible extends Interactible {
 
     drawTooltip(ctx) {
         const { width, height } = this._calculateBBox();
-        ctx.fillStyle = "#1d1d4d";
+        ctx.fillStyle = "#1d1d4ddd";
         ctx.strokeStyle = "#ffd700";
-        ctx.font = `16px Arial`;
         ctx.lineWidth = 2;
-        const textMetrics = this.help.map(helpText => ctx.measureText(helpText));
+        const textMetrics = this.help.map((helpText, i) => {
+            ctx.font = !i ? `16px Arial` : `14px Arial`;
+            return ctx.measureText(Array.isArray(helpText) ? helpText[0] : helpText);
+        });
         const maxWidth = Math.max(...textMetrics.map(tm => tm.width));
-        ctx.fillRect(this.x + width, this.y - height / 2, maxWidth + 20, 36 * textMetrics.length);
-        ctx.strokeRect(this.x + width, this.y - height / 2, maxWidth + 20, 36 * textMetrics.length);
+        ctx.fillRect(this.x + width, this.y - height / 2, maxWidth + 20, 36 + (20 * (textMetrics.length - 1)));
+        ctx.strokeRect(this.x + width, this.y - height / 2, maxWidth + 20, 36 + (20 * (textMetrics.length - 1)));
         ctx.fillStyle = "#fff";
         this.help.forEach((helpText, i) => {
-            ctx.fillText(helpText, this.x + 10 + width, this.y + 24 - height / 2 + 36 * i);
+            ctx.font = !i ? `16px Arial` : `14px Arial`;
+            if (Array.isArray(helpText)) {
+                ctx.fillStyle = helpText[1];
+                ctx.fillText(helpText[0], this.x + 10 + width, this.y + 24 - height / 2 + 20 * i);
+                ctx.fillStyle = "#fff";
+            } else {
+                ctx.fillText(helpText, this.x + 10 + width, this.y + 24 - height / 2 + 20 * i);
+            }
         });
     }
 

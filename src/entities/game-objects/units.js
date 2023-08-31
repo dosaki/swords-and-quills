@@ -1,7 +1,26 @@
 const { Drawable } = require('../drawable');
-const ambassadorPaths = require('../../config/ambassador.json');
-const soldierPaths = require('../../config/knight.json');
 const { pick } = require('../../utils/random');
+const ambassadorPaths = {
+    "m 8,6 h 1 v 1 H 8 Z": ["#e9c9a5", null],
+    "M 3,6 H 2 v 1 h 1 v 3 H 4 V 9 h 2 v 1 H 7 V 7 H 8 V 6 H 7 Z": ["#694726", null],
+    "m 3,2 4,0 V 6 H 3 Z": ["#e9c9a5", null],
+    "M 4,4 V 3": [null, "#000000"],
+    "M 3,9 C 5,9 7,8 7,6": [null, "-"],
+    "M 6,4 V 3": [null, "#000000"],
+    "M 1,6 H 2 V 7 H 1 Z": ["#e9c9a5", null],
+    "M 3,1 H 7 V 2 H 3 Z": ["-", "-"]
+};
+
+const soldierPaths = {
+    "m 8,6 h 1 v 1 H 8 Z": ["#000000", null],
+    "m 3,6 v 4 H 4 V 9 h 2 v 1 H 7 V 7 H 8 V 6 H 7 Z": ["#808080", null],
+    "M 9,1 V 6": [null, "#9b9b9b"],
+    "M 9,7 V 6": [null, "#85633f"],
+    "M 5,2 V 5": [null, "#808080"],
+    "M 7,6 V 2 H 3 v 4": [null, "#808080"],
+    "M 3,8 H 7": [null, "-"],
+    "M 0,6 2,4 4,6 2,10 Z": ["-", "#9b9b9b"]
+};
 
 class Citizen extends Drawable {
     static name = "Citizen";
@@ -67,7 +86,7 @@ class Citizen extends Drawable {
             gElement.parentElement.parentElement.setAttribute("title", `${this.name}: ${this.description}`);
         }
         if (costElement) {
-            costElement.innerHTML = `${this.cost}🪙 ${this.foodCost}🍖`;
+            costElement.innerHTML = `${this.cost}🟡 ${this.foodCost}🍖`;
         }
     }
 
@@ -259,7 +278,7 @@ class Army extends Citizen {
             }
         } else if (this.region && this.region.owner === this.owner && this.region._siegeProgress) {
             if (this.region.attackers.length === 0) {
-                this.region._siegeProgress = Math.max(this.region._siegeProgress-1, 0);
+                this.region._siegeProgress = Math.max(this.region._siegeProgress - 1, 0);
             }
         }
     }
@@ -267,7 +286,7 @@ class Army extends Citizen {
 
 class Ambassador extends Citizen {
     static name = "Ambassador";
-    static description = "+1🪶/day, -1🪙/day";
+    static description = "+1🪶/day, -1🟡/day";
     static paths = ambassadorPaths;
     static cost = 10;
 
