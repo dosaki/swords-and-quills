@@ -222,7 +222,7 @@ class Tooltip {
         this.region.ambassadors.forEach((a, i) => {
             const button = this._addInteractible(new UiInteractible([[0, 0], [33, 0], [33, 33], [0, 33]], i * 41, 160, 2));
             button.changeColour("#1d1d4d", "#ffd700");
-            button.text = "?";
+            button.text = "🪶";
             button.textSize = 20;
             button.help = `Ambassador from ${a.owner.country}`;
             if (a.owner === window.player) {
