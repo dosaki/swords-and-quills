@@ -3,3 +3,4 @@ dist
 gifs
 node_modules
 publish.sh
+.DS_Store

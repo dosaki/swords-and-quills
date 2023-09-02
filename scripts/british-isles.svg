@@ -2,20 +2,20 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   inkscape:version="1.2.2 (b0a84865, 2022-12-01)"
    sodipodi:docname="british-isles.svg"
    id="svg1755"
    version="1.1"
    viewBox="0 0 140 138"
    height="138"
-   width="140">
+   width="140"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs1749" />
   <sodipodi:namedview
@@ -25,18 +25,21 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.1200001"
-     inkscape:cx="37.075617"
-     inkscape:cy="56.572413"
+     inkscape:zoom="5.9291008"
+     inkscape:cx="60.211491"
+     inkscape:cy="74.378901"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
      units="px"
-     inkscape:window-width="1920"
-     inkscape:window-height="1009"
-     inkscape:window-x="3432"
-     inkscape:window-y="-8"
-     inkscape:window-maximized="1">
+     inkscape:window-width="1512"
+     inkscape:window-height="916"
+     inkscape:window-x="0"
+     inkscape:window-y="38"
+     inkscape:window-maximized="1"
+     inkscape:showpageshadow="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1">
     <inkscape:grid
        type="xygrid"
        id="grid948" />
@@ -58,38 +61,38 @@
      inkscape:groupmode="layer"
      id="layer1">
     <path
-       style="opacity:1;fill:#c11a0e;stroke:#000000;stroke-width:0.30000001;stroke-miterlimit:4;stroke-dasharray:none"
-       d="m 69,85 h -2 l 1,4 3,-3 z m 14,2 -12,1 -5,5 5,-1 -1,2 2,3 5,-3 1,-2 4,1 3,-3 z"
+       style="opacity:1;fill:#610ec1;fill-opacity:1;stroke:#000000;stroke-width:0.3;stroke-miterlimit:4;stroke-dasharray:none"
+       d="m 83,87 -12,1 -5,5 4,1 2,3 5,-3 1,-2 4,1 3,-3 z"
        id="242"
        inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cccccccccccccccc">
+       sodipodi:nodetypes="cccccccccc">
       <title
-         id="title30344">Gwynedd (#242), England (ENG)</title>
+         id="title30344">Gwynedd (#242), Wales (ENG)</title>
     </path>
     <path
-       style="opacity:1;fill:#6882ac;stroke:#000000;stroke-width:0.30000001;stroke-miterlimit:4;stroke-dasharray:none"
-       d="m 47,73 -5,2 v 4 l -5,-2 -3,2 -1,-1 -2,8 v 4 h 6 l 5,3 -3,7 1,2 1,1 1,-2 1,1 5,-1 -1,-1 2,-2 3,-7 v -2 l -3,-3 2,-4 -3,-6 2,1 v -2 l 3,-1 z"
+       style="opacity:1;fill:#6882ac;stroke:#000000;stroke-width:0.3;stroke-miterlimit:4;stroke-dasharray:none"
+       d="m 47,73 -5,2 v 4 l -5,-2 -3,2 -3,7 v 4 h 6 l 5,3 -3,7 1,2 2,-1 1,1 5,-1 -1,-1 5,-9 -3,-5 2,-4 -3,-6 2,1 3,-3 z"
        id="4120"
        inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccccccccccccccccccccccccc">
+       sodipodi:nodetypes="cccccccccccccccccccccc">
       <title
-         id="title30404">Kildare (#4120), Kildare (KID)</title>
+         id="title30404">Leinster (#4120), Leinster (LEI)</title>
     </path>
     <path
-       style="opacity:1;fill:#ead6a5;stroke:#000000;stroke-width:0.30000001;stroke-miterlimit:4;stroke-dasharray:none"
-       d="m 39,56 -3,6 -2,-4 -5,2 -3,3 2,1 -5,2 6,2 -1,1 h 3 l 5,2 1,6 5,2 v -4 l 5,-2 6,1 3,-2 -1,-4 3,3 -2,-5 -3,1 2,-2 -2,-2 -3,-4 h -6 l -5,2 2,-3 z"
+       style="opacity:1;fill:#ead6a5;stroke:#000000;stroke-width:0.3;stroke-miterlimit:4;stroke-dasharray:none"
+       d="m 39,56 -3,6 -2,-4 -8,5 2,1 -5,2 5,3 h 3 l 5,2 1,6 5,2 v -4 l 5,-2 6,1 3,-2 -1,-4 3,3 -2,-5 -3,1 2,-2 -5,-6 -11,2 z"
        id="4121"
        inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cccccccccccccccccccccccccccc">
+       sodipodi:nodetypes="ccccccccccccccccccccccc">
       <title
          id="title30389">Ulster (#4121), Ulster (ULS)</title>
     </path>
     <path
-       style="opacity:1;fill:#c7af0c;stroke:#000000;stroke-width:0.30000001;stroke-miterlimit:4;stroke-dasharray:none"
-       d="m 76,34 -10,4 -5,1 -3,-2 v 3 l 2,1 h -3 l -1,3 -1,9 -1,5 3,-4 3,-9 1,1 -1,3 2,2 2,-3 h 10 l 5,5 h 6 l 1,-3 4,-2 -5,-1 -1,1 -7,-1 6,-3 3,1 1,-2 -4,-2 -3,1 2,-2 z"
+       style="opacity:1;fill:#c7af0c;stroke:#000000;stroke-width:0.3;stroke-miterlimit:4;stroke-dasharray:none"
+       d="m 76,34 -10,4 -8,-1 v 3 l 2,1 h -3 l -3,17 3,-4 3,-9 v 4 l 2,2 24,-1 4,-2 h -6 l -7,-1 6,-3 3,1 1,-2 -4,-2 -3,1 2,-2 z"
        id="248"
        inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccccccccccccccccccccccccccccc">
+       sodipodi:nodetypes="cccccccccccccccccccccc">
       <title
          id="title30383">Lothian (#248), Scotland (SCO)</title>
     </path>
@@ -112,87 +115,87 @@
          id="title30338">Cornwall (#4373), England (ENG)</title>
     </path>
     <path
-       sodipodi:nodetypes="ccccccccccccccccccccccccc"
-       style="opacity:1;fill:#c7af0c;stroke:#000000;stroke-width:0.30000001;stroke-miterlimit:4;stroke-dasharray:none"
+       sodipodi:nodetypes="cccccccccccccccccccc"
+       style="opacity:1;fill:#006968;stroke:#000000;stroke-width:0.3;stroke-miterlimit:4;stroke-dasharray:none;fill-opacity:1"
        inkscape:connector-curvature="0"
-       d="m 60,13 2,-5 4,2 1,-2 5,1 7,-1 1,-1 2,4 -11,9 3,1 -4,1 2,1 -2,3 -13,3 v -3 h -4 l 2,-2 -1,-4 2,1 v -2 l 4,-1 -2,-1 1,-1 -1,-3 z"
+       d="m 60,13 2,-5 4,2 1,-2 5,1 8,-2 2,4 -11,9 3,1 -4,5 -13,3 v -3 h -4 l 2,-2 -1,-4 2,1 v -2 l 4,-1 -2,-5 z"
        class="SCO city highlands"
        id="4110">
       <title
-         id="title1861">Sutherland (#4110), Scotland (SCO)</title>
+         id="title1861">Sutherland (#4110), Isles (SCO)</title>
     </path>
     <path
-       style="opacity:1;fill:#006968;stroke:#000000;stroke-width:0.30000001;stroke-miterlimit:4;stroke-dasharray:none"
-       d="m 49,8 -5,4 v 1 l -2,1 v -1 l -2,2 v 3 l 1,1 -1,1 5,-1 v -1 l 2,1 1,-2 -1,-2 3,-4 z m 0,13 -2,3 -3,1 8,5 v 2 l 3,-3 -5,-2 z m -10,0 -3,2 4,1 z m -2,4 -1,3 3,2 1,-4 z m 10,10 -2,1 v 1 h 3 z m -4,3 h -1 l -2,2 h 4 z m 6,0 1,3 1,1 4,-1 z m -2,13 h 2 v 2 l 5,-8 z"
+       style="opacity:1;fill:#006968;stroke:#000000;stroke-width:0.3;stroke-miterlimit:4;stroke-dasharray:none"
+       d="m 48,9 -6,4 -2,2 v 3 l 1,1 h 4 2 l 1,-2 -1,-2 2,-3 z m 1,12 -5,4 8,5 v 2 l 3,-3 -5,-2 z m -10,0 -3,2 4,1 z m -2,4 -1,3 3,2 1,-4 z m 10,10 -2,1 v 1 h 3 z m -4,3 h -1 l -2,2 h 4 z m 6,0 1,3 1,1 4,-1 z m -2,13 h 2 v 2 l 5,-8 z"
        id="253"
        inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccccccccccccccccccccccccccccccccccccccccccccccccccc">
+       sodipodi:nodetypes="ccccccccccccccccccccccccccccccccccccccccccccccc">
       <title
-         id="title30407">Outer Hebrides (#253), The Isles (LOI)</title>
+         id="title30407">Hebrides (#253), Isles (LOI)</title>
     </path>
     <path
        id="251"
        class="SCO city hills"
-       d="m 78,22 h 5 9 l 2,-1 2,2 v 2 l -3,4 -1,5 -10,6 -6,-6 5,-3 -8,-7 z"
+       d="m 78,22 16,-1 2,2 -4,11 -10,6 -6,-6 5,-3 -8,-7 z"
        inkscape:connector-curvature="0"
-       style="opacity:1;fill:#c7af0c;stroke:#000000;stroke-width:0.3;stroke-miterlimit:4;stroke-dasharray:none"
-       sodipodi:nodetypes="ccccccccccccc">
+       style="opacity:1;fill:#f1870f;stroke:#000000;stroke-width:0.3;stroke-miterlimit:4;stroke-dasharray:none;fill-opacity:1"
+       sodipodi:nodetypes="ccccccccc">
       <title
-         id="title2051">Aberdeen (#251), Scotland (SCO)</title>
+         id="title2051">Aberdeen (#251), Aberdeen (ABE)</title>
     </path>
     <path
-       sodipodi:nodetypes="cccccccccccccccc"
+       sodipodi:nodetypes="ccccccccccccc"
        style="opacity:1;fill:#c7af0c;stroke:#000000;stroke-width:0.3;stroke-miterlimit:4;stroke-dasharray:none"
        inkscape:connector-curvature="0"
-       d="m 73,24 8,7 -5,3 -10,4 -5,1 -3,-2 -2,3 -4,-3 h -3 l 4,-1 v -1 l 2,-1 h -3 l 5,-5 13,-3 z"
+       d="m 73,24 8,7 -5,3 -10,4 -8,-1 -2,3 -4,-3 1,-2 2,-1 h -3 l 5,-5 13,-3 z"
        class="SCO city highlands"
        id="252">
       <title
          id="title2066">Inverness (#252), Scotland (SCO)</title>
     </path>
     <path
-       style="opacity:1;fill:#c7af0c;stroke:#000000;stroke-width:0.30000001;stroke-miterlimit:4;stroke-dasharray:none"
-       d="m 64,48 -2,3 3,2 1,2 -2,2 -4,7 2,1 2,-1 4,3 v -4 l 2,2 6,-1 1,-2 3,1 11,-8 v -2 l 2,-3 -3,-2 -4,2 -1,3 h -6 l -5,-5 z"
+       style="opacity:1;fill:#c7af0c;stroke:#000000;stroke-width:0.3;stroke-miterlimit:4;stroke-dasharray:none"
+       d="m 62,51 4,4 -6,9 2,1 2,-1 4,3 v -4 l 2,2 6,-1 1,-2 3,1 13,-13 -3,-2 -4,2 z"
        id="249"
        inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccccccccccccccccccccc">
+       sodipodi:nodetypes="ccccccccccccccc">
       <title
          id="title30377">Ayrshire (#249), Scotland (SCO)</title>
     </path>
     <path
-       style="opacity:1;fill:#c11a0e;stroke:#000000;stroke-width:0.3;stroke-miterlimit:4;stroke-dasharray:none"
-       d="m 93,50 -2,3 v 2 l -11,8 -4,6 3,2 1,4 10,-2 2,-4 h 2 l 4,-1 h 6 L 98,54 95,53 Z"
+       style="opacity:1;fill:#0ec190;stroke:#000000;stroke-width:0.3;stroke-miterlimit:4;stroke-dasharray:none;fill-opacity:1"
+       d="m 93,50 -13,13 -4,6 3,2 -1,4 12,-2 2,-4 h 2 l 4,-1 h 6 L 98,54 95,53 Z"
        id="246"
        inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccccccccccccc">
+       sodipodi:nodetypes="ccccccccccccc">
       <title
-         id="title30371">Northumberland (#246), England (ENG)</title>
+         id="title30371">Northumberland (#246), Northumberland (NOR)</title>
     </path>
     <path
-       style="opacity:1;fill:#bf9bcb;stroke:#000000;stroke-width:0.30000001;stroke-miterlimit:4;stroke-dasharray:none"
-       d="m 31,69 h -3 l -4,2 1,2 -5,-1 -1,2 -7,-3 -2,3 1,4 h 3 l -2,1 -1,3 -3,2 4,1 v 2 l 3,-1 -1,2 7,-1 7,-3 3,2 2,-8 1,1 3,-2 -1,-6 z"
+       style="opacity:1;fill:#bf9bcb;stroke:#000000;stroke-width:0.3;stroke-miterlimit:4;stroke-dasharray:none"
+       d="m 31,69 h -3 l -4,2 1,2 -5,-1 -1,2 -7,-3 -1,7 h 3 l -6,6 4,1 v 2 l 3,-1 -1,2 7,-1 7,-3 3,2 3,-7 3,-2 -1,-6 z"
        id="4119"
        inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccccccccccccccccccccccc">
+       sodipodi:nodetypes="ccccccccccccccccccccc">
       <title
-         id="title30401">Sligo (#4119), Sligo (SLN)</title>
+         id="title30401">Connaught (#4119), Connaught (CON)</title>
     </path>
     <path
        id="4365"
        class="ENG city coastline"
        d="m 72,73 -5,5 -4,-3 4,-6 z"
        inkscape:connector-curvature="0"
-       style="opacity:1;fill:#c11a0e;stroke:#000000;stroke-width:0.30000001;stroke-miterlimit:4;stroke-dasharray:none"
+       style="opacity:1;fill:#006968;stroke:#000000;stroke-width:0.30000001;stroke-miterlimit:4;stroke-dasharray:none;fill-opacity:1"
        sodipodi:nodetypes="ccccc">
       <title
-         id="title2749">Mann (#4365), England (ENG)</title>
+         id="title2749">Mann (#4365), Isles (ENG)</title>
     </path>
     <path
        style="opacity:1;fill:#c11a0e;stroke:#000000;stroke-width:0.3;stroke-miterlimit:4;stroke-dasharray:none"
-       d="m 80,75 h 4 l -2,4 1,3 v 2 l -1,2 1,1 2,3 h 3 l 2,1 3,-3 h 2 l -2,-2 2,-3 -5,-10 z"
+       d="m 84,74 -2,5 1,3 v 2 l -1,2 1,1 2,3 h 3 l 2,1 3,-3 h 2 l -2,-2 2,-3 -5,-10 z"
        id="244"
        inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cccccccccccccccc">
+       sodipodi:nodetypes="ccccccccccccccc">
       <title
          id="title30365">Lancashire (#244), England (ENG)</title>
     </path>
@@ -206,20 +209,20 @@
          id="title30362">Lincolnshire (#243), England (ENG)</title>
     </path>
     <path
-       style="opacity:1;fill:#68898c;stroke:#000000;stroke-width:0.30000001;stroke-miterlimit:4;stroke-dasharray:none"
-       d="m 21,87 -5,3 1,2 -3,3 -3,1 h 11 l -5,1 -5,4 -5,1 5,1 -2,1 -4,4 h 4 l 5,-2 -6,4 5,-1 -2,2 h 4 l 11,-3 1,-2 1,1 v 1 l 3,-2 h 3 l 1,-3 4,-1 -1,-2 3,-7 -5,-3 h -6 v -4 l -3,-2 z"
+       style="opacity:1;fill:#68898c;stroke:#000000;stroke-width:0.3;stroke-miterlimit:4;stroke-dasharray:none"
+       d="m 21,87 -5,3 1,2 -6,4 h 11 l -15,6 5,1 -6,5 h 4 l 5,-2 -6,4 5,-1 -2,2 h 4 l 11,-3 1,-2 1,2 3,-2 h 3 l 1,-3 4,-1 -1,-2 3,-7 -5,-3 h -6 v -4 l -3,-2 z"
        id="375"
        inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccccccccccccccccccccccccccccccc">
+       sodipodi:nodetypes="cccccccccccccccccccccccccccc">
       <title
-         id="title30395">Limerick (#375), Thomond (MNS)</title>
+         id="title30395">Munster (#375), Munster (MNS)</title>
     </path>
     <path
-       style="opacity:1;fill:#c11a0e;stroke:#000000;stroke-width:0.30000001;stroke-miterlimit:4;stroke-dasharray:none"
-       d="m 90,91 -2,-1 h -3 l -3,3 1,3 -2,1 1,8 3,1 1,4 h 2 l -2,2 5,1 5,-3 2,-6 4,-2 v -5 l -7,-9 h -2 z"
+       style="opacity:1;fill:#c11a0e;stroke:#000000;stroke-width:0.3;stroke-miterlimit:4;stroke-dasharray:none"
+       d="m 90,91 -2,-1 h -3 l -3,3 1,3 -2,1 5,13 h 2 l -2,2 5,1 5,-3 2,-6 4,-2 v -5 l -7,-9 h -2 z"
        id="4372"
        inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccccccccccccccccc">
+       sodipodi:nodetypes="ccccccccccccccccc">
       <title
          id="title30350">Coventry (#4372), England (ENG)</title>
     </path>
@@ -233,13 +236,13 @@
          id="title30359">Norfolk (#1860), England (ENG)</title>
     </path>
     <path
-       style="opacity:1;fill:#c11a0e;stroke:#000000;stroke-width:0.3;stroke-miterlimit:4;stroke-dasharray:none"
-       d="m 77,94 -5,3 -6,6 -7,2 2,2 -1,2 h 2 v 2 l 3,-2 h 5 l -1,2 5,-1 2,3 5,1 1,-2 4,-2 -1,-4 -3,-1 -1,-8 2,-1 -1,-3 -4,-1 z"
+       style="opacity:1;fill:#0ec143;fill-opacity:1;stroke:#000000;stroke-width:0.3;stroke-miterlimit:4;stroke-dasharray:none"
+       d="m 77,94 -5,3 -6,6 -7,2 2,2 1,4 3,-2 h 5 l -1,2 5,-1 2,3 5,1 1,-2 4,-2 -5,-13 2,-1 -1,-3 -4,-1 z"
        id="4366"
        inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccccccccccccccccccccc">
+       sodipodi:nodetypes="ccccccccccccccccccc">
       <title
-         id="title30347">Montgomery (#4366), England (ENG)</title>
+         id="title30347">Montgomery (#4366), Marcher (ENG)</title>
     </path>
     <path
        style="opacity:1;fill:#c11a0e;stroke:#000000;stroke-width:0.30000001;stroke-miterlimit:4;stroke-dasharray:none"

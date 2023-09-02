@@ -17,9 +17,11 @@ class Player {
         this._gold = 0;
         this._sellMood = 0;
         this.isHuman = false;
-        this.style = pick("aggressive", "friendly", "neutral");
+        this.style = pick("aggressive", "friendly", "neutral", "aggressive");
         this.firstTimeSetUp = false;
         this.attackTargets = [];
+        this.colour = "#000";
+        this.strokeColour = "#000";
     }
 
     get resources() {
@@ -46,14 +48,6 @@ class Player {
 
     get hasLost() {
         return this.regions.length === 0;
-    }
-
-    get colour() {
-        return this.capital ? this.capital._colour : "#000";
-    }
-
-    get strokeColour() {
-        return this.capital ? this.capital._strokeColour : "#000";
     }
 
     get hasLost() {
@@ -175,7 +169,6 @@ class Player {
             const neighboringPlayers = this.findNeighboringPlayers(foreignRegions);
             const alliedPlayerRegions = this.type === "neutral" ? [] : neighboringPlayers.filter(p => this.isAlliedWith(p)).map(p => p.regions).flat();
             const unprotectedAreas = [...this.regions.filter(r => r.attackerPower > r.defenderPower), ...alliedPlayerRegions];
-            const armies = this.units.filter(u => u instanceof Army);
             if (!this.firstTimeSetUp) {
                 this.firstTimeSetUp = true;
                 neighboringPlayers.forEach(player => {
@@ -198,7 +191,7 @@ class Player {
             }
             this.tryBuilding(neighboringPlayers, foreignRegions, unprotectedAreas);
             this.tryTraining(neighboringPlayers, unprotectedAreas);
-            this.tryMoving(neighboringPlayers, foreignRegions, unprotectedAreas, armies);
+            this.tryMoving(neighboringPlayers, foreignRegions, unprotectedAreas);
         }
     }
 
@@ -216,7 +209,7 @@ class Player {
         });
 
         if (pick(0, 1) && this.type === "friendly" && Ambassador.canBeAffordedBy(this)) {
-            const potentialAmbassadorTargets = neighbours.filter(n => !n.isAlliedWith(this) && n.reputationWith(this) > -50);
+            const potentialAmbassadorTargets = neighbours.filter(n => !n.isAlliedWith(this) && n.reputationWith(this) > -25);
             if (potentialAmbassadorTargets.length) {
                 const foreignRegion = pick(...potentialAmbassadorTargets).capital;
                 if (foreignRegion.freeAmbassadorSlots > 0) {
@@ -226,7 +219,8 @@ class Player {
         }
     };
 
-    tryMoving(neighbours, neighbouringForeignRegions, unprotectedAreas, armies) {
+    tryMoving(neighbours, neighbouringForeignRegions, unprotectedAreas) {
+        let armies = this.units.filter(u => u instanceof Army && u.region);
         if (!armies.length) {
             return;
         }
@@ -260,8 +254,9 @@ class Player {
             if (fringeRegions) {
                 currentArea = 0;
                 movedTo = {};
+                armies = this.units.filter(u => u instanceof Army && u.region);
                 armies.forEach(unit => {
-                    if (unit.region._siegeProgress <= 0) {
+                    if (unit.region?._siegeProgress <= 0) {
                         const target = fringeRegions[currentArea];
                         if (!target) {
                             return;

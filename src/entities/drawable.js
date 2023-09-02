@@ -62,8 +62,6 @@ class Interactible extends Drawable {
      *  - onMouseOut(event, self)
      *  - onClick(event, self)
      *  - onUnClick(event, self)
-     *  - onRightClick(event, self)
-     *  - onRightUnClick(event, self)
      */
 
     constructor() {
@@ -74,26 +72,23 @@ class Interactible extends Drawable {
         this.onMouseOut = () => { };
         this.onClick = () => { };
         this.onUnClick = () => { };
-        this.onRightClick = () => { };
-        this.onRightUnClick = () => { };
 
-        this._hoverColour = "#ffffff";
-        this._clickColour = "#999999";
-        this._strokehoverColour = "#ffffff";
-        this._strokeclickColour = "#999999";
+        this._hoverColour = "#fff";
+        this._clickColour = "#000";
+        this._strokehoverColour = "#fff";
+        this._strokeclickColour = "#000";
         this.isHovering = false;
         this.isClicked = false;
-        this.isRightClicked = false;
 
         this.disabled = false;
     }
 
     get colour() {
-        return (this.isClicked || this.isRightClicked) ? this._clickColour : (this.isHovering ? this._hoverColour : this._colour);
+        return this.isClicked ? this._clickColour : (this.isHovering ? this._hoverColour : this._colour);
     }
 
     get strokeColour() {
-        return (this.isClicked || this.isRightClicked) ? this._strokeClickColour : (this.isHovering ? this._strokeHoverColour : this._strokeColour);
+        return this.isClicked ? this._strokeClickColour : (this.isHovering ? this._strokeHoverColour : this._strokeColour);
     }
 
     changeColour(colour, strokeColour) {
@@ -143,26 +138,6 @@ class Interactible extends Drawable {
         this.onUnClick(e, this);
         if ((e || {}).runDefault !== false) {
             this.isClicked = false;
-        }
-    }
-
-    rightClick(e) {
-        if (this.disabled) {
-            return;
-        }
-        this.onRightClick(e, this);
-        if ((e || {}).runDefault !== false) {
-            this.isRightClicked = true;
-        }
-    }
-
-    rightUnClick(e) {
-        if (this.disabled) {
-            return;
-        }
-        this.onRightUnClick(e, this);
-        if ((e || {}).runDefault !== false) {
-            this.isRightClicked = false;
         }
     }
 }

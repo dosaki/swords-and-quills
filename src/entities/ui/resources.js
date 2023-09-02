@@ -71,8 +71,8 @@ class ResourcesBar {
         const surrounding = sortedPlayers?.slice(start, !start ? 4 : start + 3);
         surrounding.forEach((p, i) => {
             const paddedPlace = `${start + 1 + i}`.padStart(`${window.players.length}`.length, " ");
-            ctx.fillStyle = p.capital._colour;
-            ctx.strokeStyle = p.capital._strokeColour;
+            ctx.fillStyle = p.colour;
+            ctx.strokeStyle = p.strokeColour;
             ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.arc(cui.width - 200, 18 + 20 * (i + 1), 8, 0, 2 * Math.PI);

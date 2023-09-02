@@ -12,9 +12,9 @@ const ambassadorPaths = {
 };
 
 const soldierPaths = {
-    "m 8,6 h 1 v 1 H 8 Z": ["#000000", null],
-    "m 3,6 v 4 H 4 V 9 h 2 v 1 H 7 V 7 H 8 V 6 H 7 Z": ["#808080", null],
-    "M 9,1 V 6": [null, "#9b9b9b"],
+    "m 3,6 v 4 H 4 V 9 h 2 v 1 H 7 V 7 H 9 V 6 H 7 Z": ["#808080", null],
+    "M 3,2 H 7 V 6 H 3 Z": ["#000000", null],
+    "M 9,1 V 6": [null, "#808080"],
     "M 9,7 V 6": [null, "#85633f"],
     "M 5,2 V 5": [null, "#808080"],
     "M 7,6 V 2 H 3 v 4": [null, "#808080"],

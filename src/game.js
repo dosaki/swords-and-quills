@@ -69,7 +69,6 @@ const makeRegions = () => {
                 region.owner.name = playerName;
                 window.player = region.owner;
                 window.player.isHuman = true;
-                window.player.style = "neutral";
                 window.player.country = playerNationName;
                 window.player.conquestPoints = -window.player.score; // To adjust starting with a big nation
                 isPickingNation = false;
@@ -106,14 +105,6 @@ const makeRegions = () => {
                 e.runDefault = false;
                 regions.filter(r => r.group === self.group).forEach(r => r.isHovering = false);
             }
-        };
-        region.onRightClick = (e, self) => {
-            e.runDefault = false;
-            self.unClick();
-        };
-        region.onRightUnClick = (e, self) => {
-            e.runDefault = false;
-            self.unClick();
         };
     });
 };
@@ -158,6 +149,8 @@ const makePlayers = () => {
             _players[region.group] = new Player(region.group);
             _players[region.group]._gold = 600;
             _players[region.group].capital = region;
+            _players[region.group].colour = region._colour;
+            _players[region.group].strokeColour = region._strokeColour;
             region.owner = _players[region.group];
             region.addBuilding(new Castle(_players[region.group]));
         } else {
@@ -231,24 +224,6 @@ const addGenericShapeListeners = () => {
     cui.addEventListener('contextmenu', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        updateCursor([e.offsetX / window.zoomLevel, e.offsetY / window.zoomLevel]);
-        // console.log(window.cursor);
-        let selectedShape = null;
-        uiShapes.forEach(shape => {
-            if (shape.intersectedBy(window.uiCursor, ctx)) {
-                selectedShape = shape;
-            }
-            shape.rightUnClick(e);
-        });
-        shapes.forEach(shape => {
-            if (shape.intersectedBy(window.gameCursor, ctx) && !selectedShape) {
-                selectedShape = shape;
-            }
-            shape.rightUnClick(e);
-        });
-        if (selectedShape) {
-            selectedShape.rightClick(e);
-        }
         if (placingAmbassador) {
             placingAmbassador = null;
             bgw.style.background = "#216288";

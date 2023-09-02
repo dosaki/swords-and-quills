@@ -4,9 +4,7 @@ const sorter = (a, b) => {
 
 
 class Graph {
-    findPaths(map, start, end, infinity) {
-        infinity = infinity || Infinity;
-
+    findPaths(map, start, end) {
         let costs = {},
             open = { '0': [start] },
             predecessors = {},
