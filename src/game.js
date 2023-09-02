@@ -41,12 +41,8 @@ let isPickingNation = true;
 
 // Get player name and stuff
 bp.addEventListener('click', () => {
-    if (tt.value && tn.value) {
-        playerName = `${tt.value} ${tn.value}`;
-    }
-    if (tc.value) {
-        playerNationName = tc.value;
-    }
+    tt.value && tn.value && (playerName = `${tt.value} ${tn.value}`);
+    tc.value && (playerNationName = tc.value);
     m.setAttribute("n", "");
 });
 // ------------------------------
@@ -81,18 +77,15 @@ const makeRegions = () => {
                 region.addUnit(placingAmbassador);
                 placingAmbassador = null;
                 bgw.style.background = "#216288";
-                window.tooltip.set(region);
-                window.tooltip.open();
             } else if (window.placingArmy) {
                 window.placingArmy.targetRegion = region;
                 window.placingArmy.routeToRegion = window.regionGraph.findShortestPath(window.placingArmy.region.id, region.id);
                 window.placingArmy.routeToRegion.pop();
                 window.placingArmy = null;
                 window.tooltip.refreshContent();
-            } else {
-                window.tooltip.set(region);
-                window.tooltip.open();
             }
+            window.tooltip.set(region);
+            window.tooltip.open();
         };
         region.onHover = (e, self) => {
             if (isPickingNation) {
@@ -135,11 +128,7 @@ const drawMap = () => {
 
     regions.forEach(region => region.draw(ctx, placingAmbassador));
     currentWaveValue += 0.001 * currentWaveDirection;
-    if (currentWaveValue >= 1) {
-        currentWaveDirection = -1;
-    } else if (currentWaveValue <= 0.8) {
-        currentWaveDirection = 1;
-    }
+    currentWaveDirection = currentWaveValue >= 1 ? -1 : currentWaveValue <= 0.8 ? 1 : currentWaveDirection;
 };
 
 const makePlayers = () => {
@@ -190,6 +179,7 @@ const addSharedListeners = () => {
         if (isPanning) {
             //For panning
             window.pan = [e.offsetX - panStart[0], e.offsetY - panStart[1]];
+            // see game loop for logic that used to be here - this was to solve a bug with objects being recreated and their events not firing
         }
     });
 };

@@ -8,7 +8,6 @@ class Tooltip {
         this.region = null;
         this.x = 0;
         this.y = cui.height + 3;
-        this.interactibles = [];
     }
 
     get isOpen() {
@@ -119,7 +118,7 @@ class Tooltip {
 
         // Building slots
         const transform = ctx.getTransform();
-        this.interactibles.forEach(interactible => {
+        window.uiShapes.forEach(interactible => {
             interactible.transformationOnDraw = transform;
             interactible.draw(ctx);
         });
@@ -150,15 +149,12 @@ class Tooltip {
     }
 
     _addInteractible(interactible) {
-        this.interactibles.push(interactible);
         window.uiShapes.push(interactible);
         return interactible;
     }
 
     _removeAllInteractibles() {
-        const uuids = this.interactibles.map(i => i.uuid);
-        window.uiShapes = window.uiShapes.filter(s => !uuids.includes(s.uuid));
-        this.interactibles = [];
+        window.uiShapes = [];
         this.hoveredInteractible = null;
     }
 
@@ -282,7 +278,7 @@ class Tooltip {
         if (this.region.owner !== window.player) {
             const regionPrice = this.region.getPriceFor(window.player);
             const noBuyReason = !this.region.owner.wouldSellTo(window.player) ? [`${this.region.owner.name} does not want to sell to you`, "Increase your reputation with them via Ambassadors"] : this.region._siegeProgress > 0 ? `${this.region.owner.name} is under siege` : `Buy ${this.region.name} for ${regionPrice}🟡`;
-            const noAllyReason = this.region.owner.wouldAllyWith(window.player) ? `Ally with ${this.region.owner.name}` : [`${this.region.owner.name} does not want to ally with you`, "Increase your reputation with them via Ambassadors"];
+            const noAllyReason = this.region.owner.isAlliedWith(window.player) ? "Already an ally" : this.region.owner.wouldAllyWith(window.player) ? `Ally with ${this.region.owner.name}` : [`${this.region.owner.name} does not want to ally with you`, "Increase your reputation with them via Ambassadors"];
             const buttons = {
                 "Buy land": [() => {
                     if (this.region.owner !== window.player && this.region.owner.wouldSellTo(window.player) && this.region._siegeProgress <= 0) {
@@ -290,7 +286,7 @@ class Tooltip {
                     }
                 }, noBuyReason],
                 "Make Alliance": [() => {
-
+                    this.region.owner.enterAllianceWith(window.player);
                 }, noAllyReason],
             };
             Object.keys(buttons).forEach((text, i) => {
@@ -359,9 +355,7 @@ class Tooltip {
     }
 
     refreshContent() {
-        if (this.region) {
-            this.set(this.region);
-        }
+        this.region && this.set(this.region);
     }
 
     set(region) {

@@ -1,5 +1,4 @@
 const { adjust } = require("../utils/colour");
-const { uuidv4 } = require("../utils/uuid");
 
 class Drawable {
     /**
@@ -66,8 +65,6 @@ class Interactible extends Drawable {
 
     constructor() {
         super();
-        this.uuid = uuidv4();
-
         this.onHover = () => { };
         this.onMouseOut = () => { };
         this.onClick = () => { };

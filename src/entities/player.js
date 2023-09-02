@@ -198,7 +198,7 @@ class Player {
 
 
     tryTraining(neighbours, unprotectedAreas) {
-        if (pick(0, 1, this.type === "aggressive" ? 1 : 0) && Army.canBeAffordedBy(this)) {
+        if (pick(0, 1, this.type === "aggressive") && Army.canBeAffordedBy(this)) {
             this.capital.addUnit(new Army(this));
         }
 
@@ -232,19 +232,18 @@ class Player {
                 if (!target) {
                     return;
                 }
-                if (target.defenderPower + movedTo[target.uuid] > target.attackerPower) {
+                if (target.defenderPower + movedTo[target.id] > target.attackerPower) {
                     currentArea++;
                 } else {
                     unit.moveTo(target);
-                    movedTo[target.uuid] = (movedTo[target.uuid] || 0) + unit.number;
+                    movedTo[target.id] = (movedTo[target.id] || 0) + unit.number;
                 }
             });
         }
         if (pick(0, 1)) {
-            if (!this.attackTargets.length || pick(0, 0, 0, 0, 1)) {
+            if (!this.attackTargets.length || pick(0, 0, 0, 1)) {
                 const potentialTarget = pick(...neighbours.filter(n => {
-                    return (this.type === "aggressive" && !n.isAlliedWith(this))
-                        || (this.type !== "aggressive" && n.reputationWith(this) < -20 && !n.isAlliedWith(this));
+                    return !n.isAlliedWith(this) && (this.type === "aggressive" || n.reputationWith(this) < -20);
                 }));
                 if (potentialTarget) {
                     this.attackTargets.push(potentialTarget);
@@ -261,11 +260,11 @@ class Player {
                         if (!target) {
                             return;
                         }
-                        if (target.attackerPower + movedTo[target.uuid] > target.defenderPower) {
+                        if (target.attackerPower + movedTo[target.id] > target.defenderPower) {
                             currentArea++;
                         } else {
                             unit.moveTo(target);
-                            movedTo[target.uuid] = (movedTo[target.uuid] || 0) + unit.number;
+                            movedTo[target.id] = (movedTo[target.id] || 0) + unit.number;
                         }
                     }
                 });
@@ -277,7 +276,7 @@ class Player {
         if (this.resources.food < Army.cost && Farm.canBeAffordedBy(this)) {
             pick(...this.regions.filter(r => r.buildings.length < r.buildingLimit))?.addBuilding(new Farm(this));
         }
-        if (this.resources.food >= Army.cost && (this.resources.gold < Army.cost || !Farm.canBeAffordedBy(this)) && Mine.canBeAffordedBy(this)) {
+        if (this.resources.food >= Army.cost && pick(0,1) && Mine.canBeAffordedBy(this)) {
             pick(...this.regions.filter(r => r.buildings.length < r.buildingLimit))?.addBuilding(new Mine(this));
         }
     }

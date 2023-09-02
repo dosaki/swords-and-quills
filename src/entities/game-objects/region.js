@@ -235,7 +235,7 @@ class Region extends GameInteractible {
         });
         this.defenders = this.defenders.filter(d => d.number > 0);
         this.attackers = this.attackers.filter(a => a.number > 0);
-        if (!defenderPower && this.siegeProgress <= 0) {
+        if (!defenderPower && this.siegeProgress <= 0 && this.attackers[0]) {
             this.transferOwnership(this.attackers[0].owner);
         }
         if (!this.attackerPower && this._siegeProgress) {
