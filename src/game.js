@@ -339,10 +339,10 @@ let lastTick = 0;
 window.main = function (now) {
     if (!isPickingNation) {
         const tickDiff = now - lastTick;
-        if (tickDiff >= 2000) {
+        if (tickDiff >= 1500) {
             onTick();
-            tooltip.refreshContent();
             players.forEach(p => p.doAi());
+            tooltip.refreshContent();
             lastTick = now;
         }
         players.forEach(p => p.moveUnits(0.1));

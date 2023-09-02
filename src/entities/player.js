@@ -17,7 +17,7 @@ class Player {
         this._gold = 0;
         this._sellMood = 0;
         this.isHuman = false;
-        this.style = pick("aggressive", "friendly", "defensive", "neutral");
+        this.style = pick("aggressive", "friendly", "neutral");
         this.firstTimeSetUp = false;
         this.attackTargets = [];
     }
@@ -173,37 +173,25 @@ class Player {
             this._sellMood = 0;
             const foreignRegions = this.findNeighbouringForeignRegions();
             const neighboringPlayers = this.findNeighboringPlayers(foreignRegions);
-            const alliedPlayerRegions = ["neutral"].includes[this.type] ? [] : neighboringPlayers.filter(p => this.isAlliedWith(p)).map(p => p.regions).flat();
+            const alliedPlayerRegions = this.type === "neutral" ? [] : neighboringPlayers.filter(p => this.isAlliedWith(p)).map(p => p.regions).flat();
             const unprotectedAreas = [...this.regions.filter(r => r.attackerPower > r.defenderPower), ...alliedPlayerRegions];
             const armies = this.units.filter(u => u instanceof Army);
             if (!this.firstTimeSetUp) {
                 this.firstTimeSetUp = true;
                 neighboringPlayers.forEach(player => {
                     if (this.style === "aggressive") {
-                        this.changeReputationWith(player, -20);
+                        this.changeReputationWith(player, -25);
                     } else if (this.style === "friendly") {
                         if (player.style === "aggressive") {
                             this.changeReputationWith(player, -5);
                         } else if (player.style === "friendly") {
                             this.changeReputationWith(player, 20);
-                        } else if (player.style === "defensive") {
-                            this.changeReputationWith(player, 5);
-                        }
-                    } else if (this.style === "defensive") {
-                        if (player.style === "aggressive") {
-                            this.changeReputationWith(player, -30);
-                        } else if (player.style === "friendly") {
-                            this.changeReputationWith(player, 5);
-                        } else if (player.style === "defensive") {
-                            this.changeReputationWith(player, 0);
                         }
                     } else if (this.style === "neutral") {
                         if (player.style === "aggressive") {
                             this.changeReputationWith(player, -1);
                         } else if (player.style === "friendly") {
                             this.changeReputationWith(player, 1);
-                        } else if (player.style === "defensive") {
-                            this.changeReputationWith(player, 0);
                         }
                     }
                 });
@@ -217,7 +205,7 @@ class Player {
 
 
     tryTraining(neighbours, unprotectedAreas) {
-        if (pick(0, 1) && ["aggressive", "defensive"].includes(this.type) && Army.canBeAffordedBy(this)) {
+        if (pick(0, 1, this.type === "aggressive" ? 1 : 0) && Army.canBeAffordedBy(this)) {
             this.capital.addUnit(new Army(this));
         }
 
@@ -227,7 +215,7 @@ class Player {
             }
         });
 
-        if (pick(0, 1) && !["aggressive", "neutral"].includes(this.type) && Ambassador.canBeAffordedBy(this)) {
+        if (pick(0, 1) && this.type === "friendly" && Ambassador.canBeAffordedBy(this)) {
             const potentialAmbassadorTargets = neighbours.filter(n => !n.isAlliedWith(this) && n.reputationWith(this) > -50);
             if (potentialAmbassadorTargets.length) {
                 const foreignRegion = pick(...potentialAmbassadorTargets).capital;
@@ -262,7 +250,7 @@ class Player {
             if (!this.attackTargets.length || pick(0, 0, 0, 0, 1)) {
                 const potentialTarget = pick(...neighbours.filter(n => {
                     return (this.type === "aggressive" && !n.isAlliedWith(this))
-                        || (this.type !== "aggressive" && n.reputationWith(this) < -50 && !n.isAlliedWith(this));
+                        || (this.type !== "aggressive" && n.reputationWith(this) < -20 && !n.isAlliedWith(this));
                 }));
                 if (potentialTarget) {
                     this.attackTargets.push(potentialTarget);

@@ -65,7 +65,7 @@ class ResourcesBar {
         ctx.lineTo(cui.width - 20, 22);
         ctx.stroke();
         ctx.font = "15px Arial";
-        const sortedPlayers = window.players?.sort((a, b) => b.score - a.score);
+        const sortedPlayers = window.players?.sort((a, b) => b.allianceScore - a.allianceScore);
         const place = sortedPlayers?.indexOf(window.player);
         const start = Math.max(0, place - 1);
         const surrounding = sortedPlayers?.slice(start, !start ? 4 : start + 3);
@@ -80,7 +80,7 @@ class ResourcesBar {
             ctx.stroke();
             ctx.fillStyle = "#fff";
             ctx.lineWidth = 1;
-            ctx.fillText(`${paddedPlace}. ${p.name} (${p.score})`, cui.width - 190, 23 + 20 * (i + 1));
+            ctx.fillText(`${paddedPlace}. ${p.name} (${p.allianceScore})`, cui.width - 190, 23 + 20 * (i + 1));
         });
 
         ctx.restore();
