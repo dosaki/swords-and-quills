@@ -280,12 +280,13 @@ class Tooltip {
 
     _setDiplomacyView() {
         if (this.region.owner !== window.player) {
-            const noBuyReason = !this.region.owner.wouldSellTo(window.player) ? [`${this.region.owner.name} does not want to sell to you`, "Increase your reputation with them via Ambassadors"] : this.region._siegeProgress > 0 ? `${this.region.owner.name} is under siege` : `Buy ${this.region.name} for ${this.region.getPriceFor(window.player)}🟡`;
+            const regionPrice = this.region.getPriceFor(window.player);
+            const noBuyReason = !this.region.owner.wouldSellTo(window.player) ? [`${this.region.owner.name} does not want to sell to you`, "Increase your reputation with them via Ambassadors"] : this.region._siegeProgress > 0 ? `${this.region.owner.name} is under siege` : `Buy ${this.region.name} for ${regionPrice}🟡`;
             const noAllyReason = this.region.owner.wouldAllyWith(window.player) ? `Ally with ${this.region.owner.name}` : [`${this.region.owner.name} does not want to ally with you`, "Increase your reputation with them via Ambassadors"];
             const buttons = {
                 "Buy land": [() => {
                     if (this.region.owner !== window.player && this.region.owner.wouldSellTo(window.player) && this.region._siegeProgress <= 0) {
-                        this.region.sellTo(window.player);
+                        this.region.sellTo(window.player, regionPrice);
                     }
                 }, noBuyReason],
                 "Make Alliance": [() => {

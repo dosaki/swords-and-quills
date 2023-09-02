@@ -197,35 +197,6 @@ const addSharedListeners = () => {
         if (isPanning) {
             //For panning
             window.pan = [e.offsetX - panStart[0], e.offsetY - panStart[1]];
-        } else {
-            // console.log(window.cursor);
-            // For hovering
-            let selectedShape = null;
-            uiShapes.forEach(shape => {
-                if (shape.intersectedBy(window.uiCursor, uictx)) {
-                    selectedShape = shape;
-                }
-                shape.mouseOut(e);
-            });
-            shapes.forEach(shape => {
-                if (shape.intersectedBy(window.gameCursor, ctx) && !selectedShape) {
-                    selectedShape = shape;
-                }
-                shape.mouseOut(e);
-            });
-            moveLineColour = "#333";
-            if (selectedShape) {
-                selectedShape.hover(e);
-                if (window.player && selectedShape instanceof Region) {
-                    if (selectedShape.owner === window.player) {
-                        moveLineColour = "#090";
-                    } else if (window.player.isAlliedWith(selectedShape.owner)) {
-                        moveLineColour = "#009";
-                    } else {
-                        moveLineColour = "#900";
-                    }
-                }
-            }
         }
     });
 };
@@ -370,10 +341,39 @@ window.main = function (now) {
         const tickDiff = now - lastTick;
         if (tickDiff >= 2000) {
             onTick();
+            tooltip.refreshContent();
             players.forEach(p => p.doAi());
             lastTick = now;
         }
         players.forEach(p => p.moveUnits(0.1));
+    }
+    if (!isPanning) {
+        let selectedShape = null;
+        uiShapes.forEach(shape => {
+            if (shape.intersectedBy(window.uiCursor, uictx)) {
+                selectedShape = shape;
+            }
+            shape.mouseOut({});
+        });
+        shapes.forEach(shape => {
+            if (shape.intersectedBy(window.gameCursor, ctx) && !selectedShape) {
+                selectedShape = shape;
+            }
+            shape.mouseOut({});
+        });
+        moveLineColour = "#333";
+        if (selectedShape) {
+            selectedShape.hover({});
+            if (window.player && selectedShape instanceof Region) {
+                if (selectedShape.owner === window.player) {
+                    moveLineColour = "#090";
+                } else if (window.player.isAlliedWith(selectedShape.owner)) {
+                    moveLineColour = "#009";
+                } else {
+                    moveLineColour = "#900";
+                }
+            }
+        }
     }
     tooltip.update();
     drawGame(now);

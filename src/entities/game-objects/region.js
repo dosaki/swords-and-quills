@@ -1,6 +1,5 @@
 const { GameInteractible } = require("./game-objects");
 const randomUtils = require("../../utils/random");
-const { Castle } = require('./buildings');
 
 class Region extends GameInteractible {
     constructor({ id, name, group, d }) {
@@ -119,7 +118,7 @@ class Region extends GameInteractible {
         this.defenders = [];
         this.attackers = [];
         allUnits.forEach(unit => {
-            if (unit.owner.isAlliedWith(this.owner)) {
+            if (unit.owner === this.owner || unit.owner.isAlliedWith(this.owner)) {
                 this.defenders.push(unit);
             } else {
                 this.attackers.push(unit);
@@ -145,15 +144,16 @@ class Region extends GameInteractible {
         return this.owner.getSellMoodWith(player) * (this.scoreValue + this.food + this.gold + this.isCapital ? 10 : 0);
     }
 
-    sellTo(player) {
-        this.owner.removeRegion(this);
-        player.addRegion(this);
-        this._reCalculateUnitSides();
-        this._siegeProgress = 0;
-    }
+    sellTo(player, price) {
+        if (player.resources.gold >= price) {
+            player._gold -= price;
+            this.owner._gold += price;
 
-    hasArmiesOfPlayer(player) {
-        return this.defenders.some(d => d.owner === player) || this.attackers.some(a => a.owner === player);
+            this.owner.removeRegion(this);
+            player.addRegion(this);
+            this._reCalculateUnitSides();
+            this._siegeProgress = 0;
+        }
     }
 
     mergeArmies(player) {
@@ -217,7 +217,7 @@ class Region extends GameInteractible {
             const actualKilled = Math.min(defendersLeftToKill, d.number);
             d.number = d.number - actualKilled;
             defendersLeftToKill = defendersLeftToKill - actualKilled;
-            attackerOwners.forEach(p => p.changeReputationWith(d.owner, -1*actualKilled));
+            attackerOwners.forEach(p => p.changeReputationWith(d.owner, -1 * actualKilled));
             if (d.number <= 0) {
                 d.onDie();
             }
@@ -226,7 +226,7 @@ class Region extends GameInteractible {
             const actualKilled = Math.min(attackersLeftToKill, a.number);
             a.number = a.number - actualKilled;
             attackersLeftToKill = attackersLeftToKill - actualKilled;
-            defenderOwners.forEach(p => p.changeReputationWith(d.owner, -1*actualKilled));
+            defenderOwners.forEach(p => p.changeReputationWith(d.owner, -1 * actualKilled));
             if (a.number <= 0) {
                 a.onDie();
             }
@@ -236,11 +236,14 @@ class Region extends GameInteractible {
         if (!defenderPower && this.siegeProgress <= 0) {
             this.transferOwnership(this.attackers[0].owner);
         }
+        if (!this.attackerPower && this._siegeProgress) {
+            this._siegeProgress--;
+        }
     }
 
     killEnemyAmbassadors() {
         //This is called -after- the region is conquered!
-        const ambassadorsToRemove = this.ambassadors.filter(a => !this.owner.alliedPlayers.keys().includes(a));
+        const ambassadorsToRemove = this.ambassadors.filter(a => !Object.keys(this.owner.alliedPlayers).includes(a));
         ambassadorsToRemove.forEach(a => {
             a.owner.changeReputationWith(this.owner, -1);
             a.die();

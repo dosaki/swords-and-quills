@@ -71,7 +71,7 @@ class Farm extends Building {
     static modifiers = {
         foreignAmbassadors: 0,
         gold: 0,
-        food: 2,
+        food: 3,
         defence: 0
     };
 }
@@ -105,7 +105,6 @@ class Castle extends Building {
 }
 
 module.exports = {
-    Building,
     Mine,
     Farm,
     Castle

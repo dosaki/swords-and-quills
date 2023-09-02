@@ -4,14 +4,6 @@ const sorter = (a, b) => {
 
 
 class Graph {
-    extractKeys(obj) {
-        let keys = [], key;
-        for (key in obj) {
-            Object.prototype.hasOwnProperty.call(obj, key) && keys.push(key);
-        }
-        return keys;
-    }
-
     findPaths(map, start, end, infinity) {
         infinity = infinity || Infinity;
 
@@ -29,7 +21,7 @@ class Graph {
         costs[start] = 0;
 
         while (open) {
-            if (!(keys = this.extractKeys(open)).length) break;
+            if (!(keys = Object.keys(open)).length) break;
 
             keys.sort(sorter);
 

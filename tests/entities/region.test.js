@@ -1,5 +1,5 @@
 const { expect } = require("chai");
-const Region = require("../../src/entities/region");
+const Region = require("../../src/entities/game-objects/region");
 
 const regionData = {
     id: "1",

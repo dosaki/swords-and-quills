@@ -148,10 +148,15 @@ class Citizen extends Drawable {
         tooltip.refreshContent();
     }
 
+    moveTo(target) {
+        this.targetRegion = target;
+        this.routeToRegion = window.regionGraph.findShortestPath(this.region.id, target.id);
+        this.routeToRegion.pop();
+    }
+
     moveUnit(velocity) {
         if (!this.region) {
             this.lostCounter++;
-            console.log(this.lostCounter);
         }
         if (!this.region && this.lostCounter > 500 && this.routeToRegion.length) {
             this.lostCounter = 0;
@@ -325,7 +330,6 @@ class Ambassador extends Citizen {
 }
 
 module.exports = {
-    Citizen,
     Army,
     Ambassador
 };

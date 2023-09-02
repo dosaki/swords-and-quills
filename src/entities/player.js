@@ -175,8 +175,8 @@ class Player {
             const neighboringPlayers = this.findNeighboringPlayers(foreignRegions);
             const alliedPlayerRegions = ["neutral"].includes[this.type] ? [] : neighboringPlayers.filter(p => this.isAlliedWith(p)).map(p => p.regions).flat();
             const unprotectedAreas = [...this.regions.filter(r => r.attackerPower > r.defenderPower), ...alliedPlayerRegions];
+            const armies = this.units.filter(u => u instanceof Army);
             if (!this.firstTimeSetUp) {
-                // console.log("setting up", this.name);
                 this.firstTimeSetUp = true;
                 neighboringPlayers.forEach(player => {
                     if (this.style === "aggressive") {
@@ -208,9 +208,9 @@ class Player {
                     }
                 });
             }
-            this.tryBuilding(this, neighboringPlayers, foreignRegions, unprotectedAreas);
-            this.tryTraining(this, neighboringPlayers, unprotectedAreas);
-            this.tryMoving(this, neighboringPlayers, foreignRegions, unprotectedAreas);
+            this.tryBuilding(neighboringPlayers, foreignRegions, unprotectedAreas);
+            this.tryTraining(neighboringPlayers, unprotectedAreas);
+            this.tryMoving(neighboringPlayers, foreignRegions, unprotectedAreas, armies);
         }
     }
 
@@ -227,9 +227,9 @@ class Player {
             }
         });
 
-        if (pick(0, 1) && this.type !== "aggressive" && Ambassador.canBeAffordedBy(this)) {
+        if (pick(0, 1) && !["aggressive", "neutral"].includes(this.type) && Ambassador.canBeAffordedBy(this)) {
             const potentialAmbassadorTargets = neighbours.filter(n => !n.isAlliedWith(this) && n.reputationWith(this) > -50);
-            if (potentialAmbassadorTargets) {
+            if (potentialAmbassadorTargets.length) {
                 const foreignRegion = pick(...potentialAmbassadorTargets).capital;
                 if (foreignRegion.freeAmbassadorSlots > 0) {
                     foreignRegion.addUnit(new Ambassador(this));
@@ -238,14 +238,14 @@ class Player {
         }
     };
 
-    tryMoving(neighbours, neighbouringForeignRegions, unprotectedAreas) {
-        if (!this.units.length) {
+    tryMoving(neighbours, neighbouringForeignRegions, unprotectedAreas, armies) {
+        if (!armies.length) {
             return;
         }
         let currentArea = 0;
         let movedTo = {};
         if (unprotectedAreas.length) {
-            this.units.forEach(unit => {
+            armies.forEach(unit => {
                 const target = unprotectedAreas[currentArea];
                 if (!target) {
                     return;
@@ -268,35 +268,34 @@ class Player {
                     this.attackTargets.push(potentialTarget);
                 }
             }
-            const attackTarget = pick(...this.attackTargets);
-            const fringeRegions = attackTarget.regions.filter(r => neighbouringForeignRegions.includes(r));
-            currentArea = 0;
-            movedTo = {};
-            this.units.forEach(unit => {
-                if (unit.region._siegeProgress <= 0) {
-                    const target = fringeRegions[currentArea];
-                    if (!target) {
-                        return;
+            const fringeRegions = pick(...this.attackTargets)?.regions.filter(r => neighbouringForeignRegions.includes(r));
+            if (fringeRegions) {
+                currentArea = 0;
+                movedTo = {};
+                armies.forEach(unit => {
+                    if (unit.region._siegeProgress <= 0) {
+                        const target = fringeRegions[currentArea];
+                        if (!target) {
+                            return;
+                        }
+                        if (target.attackerPower + movedTo[target.uuid] > target.defenderPower) {
+                            currentArea++;
+                        } else {
+                            unit.moveTo(target);
+                            movedTo[target.uuid] = (movedTo[target.uuid] || 0) + unit.number;
+                        }
                     }
-                    if (target.attackerPower + movedTo[target.uuid] > target.defenderPower) {
-                        currentArea++;
-                    } else {
-                        unit.moveTo(target);
-                        movedTo[target.uuid] = (movedTo[target.uuid] || 0) + unit.number;
-                    }
-                }
-            });
+                });
+            }
         }
     };
 
-    tryBuilding(){
-        if(this.food < Army.cost && Farm.canBeAffordedBy(this)){
-            // console.log("Building farm");
-            pick(...this.regions.filter(r => r.buildings.length < r.buildingLimit)).addBuilding(new Farm(this));
+    tryBuilding() {
+        if (this.resources.food < Army.cost && Farm.canBeAffordedBy(this)) {
+            pick(...this.regions.filter(r => r.buildings.length < r.buildingLimit))?.addBuilding(new Farm(this));
         }
-        if((this.gold < Army.cost || !Farm.canBeAffordedBy(this)) && Mine.canBeAffordedBy(this)){
-            // console.log("Building mine");
-            pick(...this.regions.filter(r => r.buildings.length < r.buildingLimit)).addBuilding(new Mine(this));
+        if (this.resources.food >= Army.cost && (this.resources.gold < Army.cost || !Farm.canBeAffordedBy(this)) && Mine.canBeAffordedBy(this)) {
+            pick(...this.regions.filter(r => r.buildings.length < r.buildingLimit))?.addBuilding(new Mine(this));
         }
     }
 }
