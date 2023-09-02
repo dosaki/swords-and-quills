@@ -26,13 +26,13 @@ if [[ "${IS_DEV_MODE}" == "TRUE" ]]; then
     ./node_modules/webpack/bin/webpack.js --mode development
 else
     ./node_modules/webpack/bin/webpack.js
-    npx roadroller ./app/js/game.js -o ./app/js/game.tmp.js
-    mv ./app/js/game.tmp.js ./app/js/game.js
+    # npx roadroller ./app/js/game.js -o ./app/js/game.tmp.js
+    # mv ./app/js/game.tmp.js ./app/js/game.js
 fi
 
 cp -r ./static/* ./app/
-cat ./static/index.html | sed -e :a -re 's/<!--.*?-->//g;/<!--/N;//ba' > ./app/index.tmp1.html
-cat ./app/index.tmp1.html | tr '\n' ' ' | sed 's/  //g' > ./app/index.tmp2.html
+# cat ./static/index.html | sed -e :a -re 's/<!--.*?-->//g;/<!--/N;//ba' > ./app/index.tmp1.html
+cat ./static/index.html | tr '\n' ' ' | sed 's/  //g' > ./app/index.tmp2.html
 cat ./app/index.tmp2.html | sed 's/> </></g' > ./app/index.html
 rm ./app/index.tmp*.html
 

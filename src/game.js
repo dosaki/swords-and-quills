@@ -36,7 +36,7 @@ window.uiShapes = [];
 const resourcesBar = new ResourcesBar();
 
 let playerName = "Sir Teencen Tury I";
-let playerNationName = "Jascriptland";
+let playerNationName = "Javascriptland";
 let isPickingNation = true;
 
 // Get player name and stuff
