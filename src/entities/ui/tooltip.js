@@ -8,6 +8,7 @@ class Tooltip {
         this.region = null;
         this.x = 0;
         this.y = cui.height + 3;
+        this.interactibles = [];
     }
 
     get isOpen() {
@@ -59,7 +60,7 @@ class Tooltip {
         ctx.fillRect(0, 0, 340, cui.height);
 
         ctx.lineWidth = 2;
-        ctx.strokeStyle = "#ffd700";
+        ctx.strokeStyle = window.resourcesBar.currentSpeed ? "#ffd700" : "#ff0000";
         ctx.beginPath();
         ctx.moveTo(0, -2);
         ctx.lineTo(340, -2);
@@ -118,7 +119,7 @@ class Tooltip {
 
         // Building slots
         const transform = ctx.getTransform();
-        window.uiShapes.forEach(interactible => {
+        this.interactibles.forEach(interactible => {
             interactible.transformationOnDraw = transform;
             interactible.draw(ctx);
         });
@@ -150,20 +151,20 @@ class Tooltip {
 
     _addInteractible(interactible) {
         window.uiShapes.push(interactible);
+        this.interactibles.push(interactible);
         return interactible;
     }
 
     _removeAllInteractibles() {
-        window.uiShapes = [];
+        window.uiShapes = window.uiShapes.filter(s => !this.interactibles.includes(s));
+        this.interactibles = [];
         this.hoveredInteractible = null;
     }
 
     _populateSellBuildings() {
         this.region.buildings.forEach((b, i) => {
             const [x, y] = i.toString(2).padStart(2, "0").split("").map(n => Number(n) * 80);
-            const button = this._addInteractible(new UiInteractible([[170, 0], [240, 0], [240, 70], [170, 70]], x, y, 2));
-            button.changeColour("#1d1d4d", "#ffd700");
-            button.text = b.icon;
+            const button = this._addInteractible(new UiInteractible([[170, 0], [240, 0], [240, 70], [170, 70]], x, y, 2, b.icon, ["#000030", "#ffd700"]));
             button.textSize = 50;
             button.help = `${b.name}`;
             if (this.region.owner === window.player) {
@@ -172,12 +173,13 @@ class Tooltip {
                     this.region.sellBuilding(b);
                     this._populateSellBuildings();
                 };
+            } else {
+                button.forceShowHelp = button.disabled = true;
             }
         });
         for (let i = this.region.buildings.length; i < this.region.buildingLimit; i++) {
             const [x, y] = i.toString(2).padStart(2, "0").split("").map(n => Number(n) * 80);
-            const button = this._addInteractible(new UiInteractible([[170, 0], [240, 0], [240, 70], [170, 70]], x, y, 2));
-            button.changeColour("#1d1d4d", "#ffd700");
+            const button = this._addInteractible(new UiInteractible([[170, 0], [240, 0], [240, 70], [170, 70]], x, y, 2, null, ["#000030", "#ffd700"]));
             button.help = `Empty plot`;
         }
     }
@@ -185,9 +187,8 @@ class Tooltip {
     _makeBuildBuildings() {
         if (this.region.owner === window.player) {
             [Farm, Mine, Castle].forEach((B, i) => {
-                const button = this._addInteractible(new UiInteractible([[0, 0], [70, 0], [70, 70], [0, 70]], i * 124, 380, 2));
+                const button = this._addInteractible(new UiInteractible([[0, 0], [70, 0], [70, 70], [0, 70]], i * 124, 380, 2, B.icon, ["#000030", "#ffd700"]));
                 button.disabled = !(B.canBeAffordedBy(window.player) && this.region.buildings.length < this.region.buildingLimit);
-                button.text = B.icon;
                 button.textSize = 50;
                 if (button.disabled) {
                     button.help = [
@@ -202,7 +203,6 @@ class Tooltip {
                     button.forceShowHelp = true;
                 } else {
                     button.help = [`${B.name}: ${B.cost}🟡`, B.description];
-                    button.changeColour("#1d1d4d", "#ffd700");
                     button.onClick = () => {
                         this.region.addBuilding(new B(window.player));
                         this._makeBuildBuildings();
@@ -216,13 +216,11 @@ class Tooltip {
 
     _populateAmbassadors() {
         this.region.ambassadors.forEach((a, i) => {
-            const button = this._addInteractible(new UiInteractible([[0, 0], [33, 0], [33, 33], [0, 33]], i * 41, 160, 2));
-            button.changeColour("#1d1d4d", "#ffd700");
-            button.text = "🪶";
+            const button = this._addInteractible(new UiInteractible([[0, 0], [33, 0], [33, 33], [0, 33]], i * 41, 160, 2, "🪶", ["#000030", "#ffd700"]));
             button.textSize = 20;
             button.help = `Ambassador from ${a.owner.country}`;
-            if (a.owner === window.player) {
-                button.help = `Fire ambassador`;
+            if (a.owner === window.player || this.region.owner === window.player) {
+                button.help = a.owner === window.player ? `Fire ambassador` : `Fire ambassador from ${a.owner.country}`;
                 button.onClick = () => {
                     a.onDie();
                 };
@@ -230,8 +228,7 @@ class Tooltip {
         });
         if (this.region.maxAmbassadors) {
             for (let i = this.region.ambassadors.length; i < this.region.maxAmbassadors; i++) {
-                const button = this._addInteractible(new UiInteractible([[0, 0], [33, 0], [33, 33], [0, 33]], i * 41, 160, 2));
-                button.changeColour("#1d1d4d", "#ffd700");
+                const button = this._addInteractible(new UiInteractible([[0, 0], [33, 0], [33, 33], [0, 33]], i * 41, 160, 2, null, ["#000030", "#ffd700"]));
                 button.help = `Empty ambassador seat`;
             }
         }
@@ -241,7 +238,7 @@ class Tooltip {
     _makeTrainUnits() {
         if (this.region.owner == window.player) {
             [Army, Ambassador].forEach((U, i) => {
-                const button = this._addInteractible(new UiInteractible([[62, 0], [132, 0], [132, 70], [62, 70]], i * 124, 490, 2));
+                const button = this._addInteractible(new UiInteractible([[62, 0], [132, 0], [132, 70], [62, 70]], i * 124, 490, 2, null, ["#000030", "#ffd700"]));
                 button.disabled = !U.canBeAffordedBy(window.player);
                 button.classWithIcon = U;
                 button.textSize = 50;
@@ -258,7 +255,6 @@ class Tooltip {
                     button.forceShowHelp = true;
                 } else {
                     button.help = [`${U.name}: ${U.cost}🟡 ${U.foodCost}🍖`, U.description];
-                    button.changeColour("#1d1d4d", "#ffd700");
                     button.onClick = () => {
                         if (U === Army) {
                             this.region.addUnit(new U(window.player));
@@ -277,25 +273,37 @@ class Tooltip {
     _setDiplomacyView() {
         if (this.region.owner !== window.player) {
             const regionPrice = this.region.getPriceFor(window.player);
-            const noBuyReason = !this.region.owner.wouldSellTo(window.player) ? [`${this.region.owner.name} does not want to sell to you`, "Increase your reputation with them via Ambassadors"] : this.region._siegeProgress > 0 ? `${this.region.owner.name} is under siege` : `Buy ${this.region.name} for ${regionPrice}🟡`;
-            const noAllyReason = this.region.owner.isAlliedWith(window.player) ? "Already an ally" : this.region.owner.wouldAllyWith(window.player) ? `Ally with ${this.region.owner.name}` : [`${this.region.owner.name} does not want to ally with you`, "Increase your reputation with them via Ambassadors"];
+            const buyIsDisabled = !this.region.owner.wouldSellTo(window.player) || this.region._siegeProgress > 0;
+            const buyButtonHelp = !this.region.owner.wouldSellTo(window.player) ? [`${this.region.owner.name} does not want to sell to you`, "Increase your reputation with them via Ambassadors"] : this.region._siegeProgress > 0 ? `${this.region.owner.name} is under siege` : `Buy ${this.region.name} for ${regionPrice}🟡`;
+            const allyIsDisabled = !this.region.owner.wouldAllyWith(window.player);
+            const allyButtonHelp = this.region.owner.wouldAllyWith(window.player) ? `Ally with ${this.region.owner.name}` : [`${this.region.owner.name} does not want to ally with you`, "Increase your reputation with them via Ambassadors"];
+            const allyButtonText = (this.region.owner.isAlliedWith(window.player) ? "Break Alliance" : "Make Alliance");
             const buttons = {
                 "Buy land": [() => {
                     if (this.region.owner !== window.player && this.region.owner.wouldSellTo(window.player) && this.region._siegeProgress <= 0) {
                         this.region.sellTo(window.player, regionPrice);
                     }
-                }, noBuyReason],
-                "Make Alliance": [() => {
-                    this.region.owner.enterAllianceWith(window.player);
-                }, noAllyReason],
+                }, buyButtonHelp, buyIsDisabled],
+                [allyButtonText]: [() => {
+                    if (this.region.owner.isAlliedWith(window.player)) {
+                        this.region.owner.dissolveAllianceWith(window.player);
+                    } else {
+                        this.region.owner.enterAllianceWith(window.player);
+                    }
+                    this._setDiplomacyView();
+                }, allyButtonHelp, allyIsDisabled],
             };
             Object.keys(buttons).forEach((text, i) => {
-                const button = this._addInteractible(new UiInteractible([[0, 0], [130, 0], [130, 40], [0, 40]], 0, i * 50 + 385, 2));
-                button.text = text;
+                const button = this._addInteractible(new UiInteractible([[0, 0], [130, 0], [130, 40], [0, 40]], 0, i * 50 + 385, 2, text, ["#000030", "#ffd700"], buttons[text][0]));
                 button.textSize = 18;
                 button.help = buttons[text][1];
-                button.changeColour("#1d1d4d", "#ffd700");
-                button.onClick = buttons[text][0];
+                button.disabled = buttons[text][2];
+                button.forceShowHelp = true;
+                if (button.disabled) {
+                    button.textColour = "#fff6";
+                    button.textOutline = "transparent";
+                    button.changeColour("#2c2c40", "#ffd700");
+                }
             });
         }
     }
@@ -304,7 +312,7 @@ class Tooltip {
         const allArmies = [...this.region.defenders, ...this.region.attackers];
         const playerArmies = allArmies.filter(a => a.owner === window.player);
         const restOfArmies = allArmies.filter(a => a.owner !== window.player);
-        [...playerArmies, restOfArmies].forEach((d, i) => {
+        [...playerArmies, ...restOfArmies].forEach((d, i) => {
             if (d.isAlive) {
                 const x = (i % 7) * 39;
                 const y = (Math.floor(i / 7)) * 39;
@@ -313,7 +321,7 @@ class Tooltip {
                 }
                 if (Math.floor(i % 7) === 6 && Math.floor(i / 7) === 2 && i < allArmies.length - 2) {
                     const button = this._addInteractible(new UiInteractible([[0, 0], [33, 0], [33, 33], [0, 33]], x + 52, y + 230, 2));
-                    button.changeColour("#1d1d4d", "#ffd700");
+                    button.changeColour("#000030", "#ffd700");
                     button.text = "...";
                     button.help = `Too many armies. Merge yours.`;
                     button.onClick = () => {
@@ -336,19 +344,32 @@ class Tooltip {
     }
 
     _armyButtons() {
+        const playerArmies = [...this.region.defenders, ...this.region.attackers].filter(u => u.owner === window.player);
         const mergeButton = this._addInteractible(new UiInteractible([[0, 0], [40, 0], [40, 40], [0, 40]], 0, 230, 2));
         mergeButton.compoundText = [["⇒", -9, -8], ["⇐", 9, 8]];
         mergeButton.textSize = 18;
-        mergeButton.changeColour("#1d1d4d", "#ffd700");
+        mergeButton.changeColour("#000030", "#ffd700");
         mergeButton.help = "Merge Armies";
+        mergeButton.disabled = playerArmies.length <= 1;
+        if (mergeButton.disabled) {
+            mergeButton.textColour = "#fff6";
+            mergeButton.textOutline = "transparent";
+            mergeButton.changeColour("#2c2c40", "#ffd700");
+        }
         mergeButton.onClick = () => {
             this.region.mergeArmies(window.player);
         };
         const splitButton = this._addInteractible(new UiInteractible([[0, 0], [40, 0], [40, 40], [0, 40]], 0, 280, 2));
         splitButton.compoundText = [["⇒", 8, 9], ["⇐", -8, -9]];
         splitButton.textSize = 18;
-        splitButton.changeColour("#1d1d4d", "#ffd700");
+        splitButton.changeColour("#000030", "#ffd700");
         splitButton.help = "Split Armies";
+        splitButton.disabled = !playerArmies.length;
+        if (splitButton.disabled) {
+            splitButton.textColour = "#fff6";
+            splitButton.textOutline = "transparent";
+            splitButton.changeColour("#2c2c40", "#ffd700");
+        }
         splitButton.onClick = () => {
             this.region.splitArmies(window.player);
         };

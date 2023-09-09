@@ -41,7 +41,7 @@ rm ./app/index.tmp*.html
 if [[ "${IS_DIST}" == "TRUE" ]]; then
   rm -r ./dist
   mkdir ./dist
-  7z a -mpass=15 -r ./dist/${NAME}.zip ./app/* -xr!*.map
+  7z a -mpass=15 -mm=Deflate -mfb=258 -r ./dist/${NAME}.zip ./app/* -xr!*.map
   unix_type=$(uname -a | awk '{ print $1 }')
   if [[ "${unix_type}" == "Darwin" ]]; then
     size=`stat -f%z ./dist/${NAME}.zip`

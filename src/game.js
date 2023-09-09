@@ -4,7 +4,7 @@ const ResourcesBar = require("./entities/ui/resources");
 const Tooltip = require("./entities/ui/tooltip");
 const { Castle } = require("./entities/game-objects/buildings");
 const Region = require('./entities/game-objects/region');
-
+import { Music, Note, Track } from './utils/audio-utils';
 
 const mapShadow = loadJoinedRegionPaths();
 
@@ -27,15 +27,17 @@ window.uiCursor = [0, 0];
 window.gameCursor = [0, 0];
 window.debugGameCursors = [window.gameCursor];
 let isPanning = false;
+let panStart = [0, 0];
 
 window.players = [];
 window.player = null;
 let regions = [];
 window.shapes = [];
 window.uiShapes = [];
-const resourcesBar = new ResourcesBar();
+window.resourcesBar = new ResourcesBar();
+window.resourcesBar.currentSpeed = 0;
 
-let playerName = "Sir Teencen Tury I";
+let playerName = "Sir Teencen Tury";
 let playerNationName = "Javascriptland";
 let isPickingNation = true;
 
@@ -71,6 +73,9 @@ const makeRegions = () => {
                 bnr.setAttribute("fill", region._colour);
                 bnr.setAttribute("stroke", region._strokeColour);
                 bnrc.style.top = 0;
+                window.resourcesBar.currentSpeed = 1;
+                window.resourcesBar.timeButtons[0].isSelected = false;
+                window.resourcesBar.timeButtons[1].isSelected = true;
             }
 
             if (placingAmbassador && region.owner !== placingAmbassador.owner && region.freeAmbassadorSlots > 0) {
@@ -214,12 +219,10 @@ const addGenericShapeListeners = () => {
     cui.addEventListener('contextmenu', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        if (placingAmbassador) {
-            placingAmbassador = null;
+        if (placingAmbassador || window.placingArmy) {
+            placingAmbassador = window.placingArmy = null;
             bgw.style.background = "#216288";
-        }
-        if (window.placingArmy) {
-            window.placingArmy = null;
+            Note.new("b", 0.01, 1).play(0.5);
         }
     });
 };
@@ -293,38 +296,67 @@ const drawUi = () => {
 const onTick = () => {
     if (window.player) {
         // const originalMonth = resourcesBar.currentDate.getMonth();
-        resourcesBar.nextDay();
+        resourcesBar.nextWeek();
         window.players.forEach(p => p.onTick());
     }
+};
+
+const drawLostScreen = () => {
+    uictx.clearRect(0, 0, cg.width, cg.height);
+    uictx.fillStyle = "#1d1d4d";
+    uictx.fillRect(0, 0, cg.width, cg.height);
+    uictx.fillStyle = "#fff";
+
+    uictx.font = "30px Arial";
+    const { width } = uictx.measureText("You were defeated!");
+    uictx.fillText("You were defeated!", (cg.width / 2) - (width / 2), (cg.height / 2) - 30);
+
+    uictx.font = "20px Arial";
+    const { width: width2 } = uictx.measureText("At the height of your power you had:");
+    uictx.fillText("At the height of your power you had:", (cg.width / 2) - (width2 / 2), cg.height / 2);
+    Object.keys(window.player.maxStats).forEach((stat, i) => {
+        const text = `${stat}: ${window.player.maxStats[stat]}`;
+        const { width } = uictx.measureText(text);
+        uictx.fillText(text, (cg.width / 2) - (width / 2), cg.height / 2 + 30 + (i * 20));
+    });
+    uictx.font = "16px Arial";
+    const { width: width3 } = uictx.measureText("Press F5 to restart");
+    uictx.fillText("Press F5 to restart", (cg.width / 2) - (width3 / 2), cg.height / 2 + 30 + (Object.keys(window.player.maxStats).length * 20) + 30);
 };
 
 setupGame();
 
 let lastTick = 0;
 window.main = function (now) {
-    if (!isPickingNation) {
-        const tickDiff = now - lastTick;
-        if (tickDiff >= 1500) {
-            onTick();
-            players.forEach(p => p.doAi());
-            tooltip.refreshContent();
-            lastTick = now;
-        }
-        players.forEach(p => p.moveUnits(0.1));
+    if (player?.hasLost) {
+        drawLostScreen();
+        return;
+    }
+    const tickDiff = now - lastTick;
+    if (resourcesBar.currentSpeed && tickDiff >= (1500 * resourcesBar.currentSpeed)) {
+        onTick();
+        players.forEach(p => p.doAi());
+        tooltip.refreshContent();
+        lastTick = now;
+    }
+    if (resourcesBar.currentSpeed) {
+        players.forEach(p => p.moveUnits(0.1 / resourcesBar.currentSpeed));
     }
     if (!isPanning) {
         let selectedShape = null;
         uiShapes.forEach(shape => {
             if (shape.intersectedBy(window.uiCursor, uictx)) {
                 selectedShape = shape;
+            } else {
+                shape.mouseOut({});
             }
-            shape.mouseOut({});
         });
         shapes.forEach(shape => {
             if (shape.intersectedBy(window.gameCursor, ctx) && !selectedShape) {
                 selectedShape = shape;
+            } else {
+                shape.mouseOut({});
             }
-            shape.mouseOut({});
         });
         moveLineColour = "#333";
         if (selectedShape) {

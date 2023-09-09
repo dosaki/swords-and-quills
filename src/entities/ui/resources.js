@@ -1,11 +1,36 @@
+const UiInteractible = require("./ui-interactible");
+
 class ResourcesBar {
     constructor() {
         this.currentDate = new Date("1200-01-01 00:00");
         this.dateString = this.currentDate.toISOString().split('T')[0];
+        this.currentSpeed = 1;
+        this.timeButtons = [
+            new UiInteractible([[0, 0], [25, 0], [25, 25], [0, 25]], 0, 0, 2, "⏸", ["#1d1d4d", "#ffd700"]),
+            new UiInteractible([[0, 0], [25, 0], [25, 25], [0, 25]], 30, 0, 2, "⏵", ["#1d1d4d", "#ffd700"]),
+            new UiInteractible([[0, 0], [25, 0], [25, 25], [0, 25]], 60, 0, 2, "⏵⏵", ["#1d1d4d", "#ffd700"])
+        ];
+        this.timeButtons[0].isSelected = true;
+        this.timeButtons[0].onClick = () => {
+            this.timeButtons.forEach(b => b.isSelected = false);
+            this.timeButtons[0].isSelected = true;
+            this.currentSpeed = 0;
+        };
+        this.timeButtons[1].onClick = () => {
+            this.timeButtons.forEach(b => b.isSelected = false);
+            this.timeButtons[1].isSelected = true;
+            this.currentSpeed = 1;
+        };
+        this.timeButtons[2].onClick = () => {
+            this.timeButtons.forEach(b => b.isSelected = false);
+            this.timeButtons[2].isSelected = true;
+            this.currentSpeed = 0.2;
+        };
+        window.uiShapes = [...this.timeButtons, ...window.uiShapes];
     }
 
-    nextDay() {
-        this.currentDate = new Date((24 * 60 * 60 * 1000) + this.currentDate.getTime());
+    nextWeek() {
+        this.currentDate = new Date((7 * 24 * 60 * 60 * 1000) + this.currentDate.getTime());
         this.dateString = this.currentDate.toISOString().split('T')[0];
     }
 
@@ -20,7 +45,7 @@ class ResourcesBar {
         ctx.filter = "none";
         ctx.lineWidth = 2;
         ctx.fillStyle = "#18243d";
-        ctx.strokeStyle = "#ffd700";
+        ctx.strokeStyle = this.currentSpeed ? "#ffd700" : "#ff0000";
         ctx.fillRect(0, 0, cui.width, 40);
         ctx.strokeRect(2, -2, cui.width - 4, 40);
 
@@ -46,18 +71,26 @@ class ResourcesBar {
         ctx.fillStyle = "#fff";
         ctx.font = "16px Arial";
         ctx.fillText(this.dateString, cui.width - 310, 20);
+        ctx.translate(cui.width - 310, 25);
+        const transform = ctx.getTransform();
+        this.timeButtons.forEach(b => {
+            b.transformationOnDraw = transform;
+            b.changeColour(b.isSelected ? "#2d2dfd" : "#1d1d4d", "#ffd700");
+            b.draw(ctx);
+        });
+        ctx.translate(-1 * (cui.width - 310), -25);
 
 
         // Score
         ctx.lineWidth = 2;
         ctx.fillStyle = "#18243d";
-        ctx.strokeStyle = "#ffd700";
+        ctx.strokeStyle = this.currentSpeed ? "#ffd700" : "#ff0000";
         ctx.fillRect(cui.width - 215, -2, 200, 120);
         ctx.strokeRect(cui.width - 215, -2, 200, 120);
 
         ctx.fillStyle = "#fff";
         ctx.font = "16px Arial";
-        ctx.fillText(`Scores:`, cui.width - 210, 20);
+        ctx.fillText(`Nation Power:`, cui.width - 210, 20);
         ctx.strokeStyle = "#fff";
         ctx.lineWidth = 1;
         ctx.beginPath();

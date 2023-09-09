@@ -29,7 +29,7 @@ const hsvToRgb = (h, s, v) => {
 };
 
 const newColour = (h, s, v) => {
-    return "#" + hsvToRgb(h !== null ? h : int(0, 360) / 360, s || 0.5, v || 1).map(c => Math.floor(c).toString(16).padStart(2, "0")).join("");
+    return "#" + hsvToRgb(h !== null ? h : int(0, 360) / 360, s || 0.7, v || 1).map(c => Math.floor(c).toString(16).padStart(2, "0")).join("");
 };
 
 module.exports = {

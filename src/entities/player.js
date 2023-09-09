@@ -22,6 +22,12 @@ class Player {
         this.attackTargets = [];
         this.colour = "#000";
         this.strokeColour = "#000";
+        this.maxStats = {
+            Score: 0,
+            Regions: 0,
+            Armies: 0,
+            Ambassadors: 0
+        };
     }
 
     get resources() {
@@ -43,7 +49,7 @@ class Player {
     }
 
     get allianceScore() {
-        return Object.values(this.alliedPlayers).reduce((acc, player) => acc + player.score, this.score);
+        return Object.keys(this.alliedPlayers).reduce((acc, player) => acc + window.players.find(p => p.name === player).score, this.score);
     }
 
     get hasLost() {
@@ -67,6 +73,14 @@ class Player {
     }
 
     onTick() {
+        if (this.maxStats.Score < this.score) {
+            this.maxStats = {
+                Score: this.score,
+                Regions: this.regions.length,
+                Armies: this.units.filter(u => u instanceof Army).length,
+                Ambassadors: this.units.filter(u => u instanceof Ambassador).length
+            };
+        }
         if (this.hasLost) {
             this.units.forEach(unit => unit.onDie());
         }
@@ -145,6 +159,11 @@ class Player {
         this.alliedPlayers[player.name] = player.alliedPlayers[this.name] = true;
     }
 
+    dissolveAllianceWith(player) {
+        delete this.alliedPlayers[player.name];
+        delete player.alliedPlayers[this.name];
+    }
+
     isAlliedWith(player) {
         return !!this.alliedPlayers[player.name];
     }
@@ -198,17 +217,15 @@ class Player {
 
 
     tryTraining(neighbours, unprotectedAreas) {
-        if (pick(0, 1, this.type === "aggressive") && Army.canBeAffordedBy(this)) {
-            this.capital.addUnit(new Army(this));
-        }
-
         unprotectedAreas.forEach(region => {
             while (Army.canBeAffordedBy(this) && region.owner === this && region.attackers.length > region.defenders.length) {
                 region.addUnit(new Army(this));
             }
         });
 
-        if (pick(0, 1) && this.type === "friendly" && Ambassador.canBeAffordedBy(this)) {
+        if (pick(0, 1, this.type === "aggressive") && Army.canBeAffordedBy(this)) {
+            this.capital.addUnit(new Army(this));
+        } else if (pick(0, 1) && this.type === "friendly" && Ambassador.canBeAffordedBy(this)) {
             const potentialAmbassadorTargets = neighbours.filter(n => !n.isAlliedWith(this) && n.reputationWith(this) > -25);
             if (potentialAmbassadorTargets.length) {
                 const foreignRegion = pick(...potentialAmbassadorTargets).capital;
@@ -273,10 +290,10 @@ class Player {
     };
 
     tryBuilding() {
-        if (this.resources.food < Army.cost && Farm.canBeAffordedBy(this)) {
+        if (this.resources.food < Army.cost && pick(0, 1) && Farm.canBeAffordedBy(this)) {
             pick(...this.regions.filter(r => r.buildings.length < r.buildingLimit))?.addBuilding(new Farm(this));
         }
-        if (this.resources.food >= Army.cost && pick(0,1) && Mine.canBeAffordedBy(this)) {
+        if ((this.resources.food >= Army.cost || this.units.filter(u => u instanceof Army).length > 0) && pick(0, 1) && Mine.canBeAffordedBy(this)) {
             pick(...this.regions.filter(r => r.buildings.length < r.buildingLimit))?.addBuilding(new Mine(this));
         }
     }

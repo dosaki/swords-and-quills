@@ -22,6 +22,19 @@ const soldierPaths = {
     "M 0,6 2,4 4,6 2,10 Z": ["-", "#9b9b9b"]
 };
 
+
+const isNearPoint = ([x, y], [cx, cy], radius) => {
+    const dx = Math.abs(x - cx);
+    const dy = Math.abs(y - cy);
+    if (dx > radius)
+        return false;
+    if (dy > radius)
+        return false;
+    if (dx + dy <= radius)
+        return true;
+    return dx ^ 2 + dy ^ 2 <= radius ^ 2;
+};
+
 class Citizen extends Drawable {
     static name = "Citizen";
     static description = "";
@@ -38,7 +51,6 @@ class Citizen extends Drawable {
         this.routeToRegion = [];
         this.currentCoordinates = [];
         this._bounceNumber = 0;
-        this.lostCounter = 0;
     }
 
     static canBeAffordedBy(player) {
@@ -155,15 +167,6 @@ class Citizen extends Drawable {
     }
 
     moveUnit(velocity) {
-        if (!this.region) {
-            this.lostCounter++;
-        }
-        if (!this.region && this.lostCounter > 500 && this.routeToRegion.length) {
-            this.lostCounter = 0;
-            const targetRegion = window.regionLookup[this.routeToRegion[this.routeToRegion.length - 1]];
-            this.routeToRegion.pop();
-            this.onArrival(targetRegion, this.routeToRegion.length);
-        }
         if (this.isAlive) {
             if (this.routeToRegion.length > 0) {
                 if (this.region) {
@@ -182,10 +185,7 @@ class Citizen extends Drawable {
                 this.currentCoordinates[0] += velX;
                 this.currentCoordinates[1] += velY;
 
-                const [x0, y0] = this.currentCoordinates.map(c => Math.floor(c * 10));
-                const [x1, y1] = targetRegion.centroid.map(c => Math.floor(c * 10));
-                if (x0 === x1 && y0 === y1) {
-                    this.lostCounter = 0;
+                if (isNearPoint(this.currentCoordinates, targetRegion.centroid, 2)) {
                     this.routeToRegion.pop();
                     this.onArrival(targetRegion, this.routeToRegion.length);
                 }
@@ -193,10 +193,8 @@ class Citizen extends Drawable {
         }
     }
 
-    onTick() { }
-
     onDie() {
-        this.owner.removeUnit(this);
+        this.owner?.removeUnit(this);
         this.owner = null;
         this.region = null;
         tooltip.refreshContent();
@@ -291,7 +289,7 @@ class Army extends Citizen {
 
 class Ambassador extends Citizen {
     static name = "Ambassador";
-    static description = "+1🪶/day, -1🟡/day";
+    static description = "+1🪶/week, -1🟡/week";
     static paths = ambassadorPaths;
     static cost = 10;
 

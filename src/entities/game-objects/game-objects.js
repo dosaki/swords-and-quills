@@ -1,4 +1,5 @@
-const {Drawable, Interactible} = require("../drawable");
+const { Note } = require("../../utils/audio-utils");
+const { Interactible } = require("../drawable");
 
 class GameInteractible extends Interactible {
     constructor(d) {
@@ -14,6 +15,11 @@ class GameInteractible extends Interactible {
             this._vertices = this._verticesByShape();
         }
         return this._vertices;
+    }
+
+    click(e) {
+        Note.new("f#", 3, 0.2).play(0.4);
+        super.click(e);
     }
 
     draw(ctx) {
@@ -66,6 +72,5 @@ class GameInteractible extends Interactible {
 
 
 module.exports = {
-    GameInteractible,
-    Drawable
+    GameInteractible
 };

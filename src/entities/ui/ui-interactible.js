@@ -1,4 +1,5 @@
 const { Interactible } = require("../drawable");
+const { Note } = require("../../utils/audio-utils");
 
 const transformPoint = (x, y, transform) => {
     if (!transform || transform.isIdentity) {
@@ -13,13 +14,13 @@ const transformPoint = (x, y, transform) => {
 };
 
 class UiInteractible extends Interactible {
-    constructor(vertices, x, y, lineWidth) {
+    constructor(vertices, x, y, lineWidth, text, colour, onClick) {
         super();
         this._vertices = vertices.map(v => [v[0] + x, v[1] + y]);
         this.lineWidth = lineWidth || 1;
         this.x = this._vertices[0][0];
         this.y = this._vertices[0][1];
-        this.compoundText = [];
+        this.compoundText = text ? [[text, 0, 0]] : [];
         this.textSize = 20;
         this.transformationOnDraw = null;
         this._help = [];
@@ -28,6 +29,8 @@ class UiInteractible extends Interactible {
         this.textOutline = "#000";
         this.forceShowHelp = false;
         this.classWithIcon = null;
+        colour && this.changeColour(...colour);
+        this.onClick = onClick ? onClick : () => { };
     }
 
     set text(text) {
@@ -41,6 +44,16 @@ class UiInteractible extends Interactible {
         this._help = Array.isArray(text) ? text : [text];
     }
 
+    click(e) {
+        if (this.disabled) {
+            return;
+        }
+        Note.new("c", 2, 0.1).play(1);
+        setTimeout(() => {
+            Note.new("f#", 3, 0.1).play(0.9);
+        }, 100);
+        super.click(e);
+    }
 
     hover(e) {
         if (this.disabled) {

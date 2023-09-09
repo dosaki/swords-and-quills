@@ -127,18 +127,18 @@ class Region extends GameInteractible {
     }
 
     transferOwnership(player) {
-        if(player){
+        if (player) {
             if (this.owner.resources.gold < 0) {
                 const goldToGive = Math.min(this.owner.resources.gold, randomUtils.int(1, 2 * this.neighbours.length));
                 this.owner._gold -= goldToGive;
                 player._gold += goldToGive;
             }
+            player.changeReputationWith(this.owner, -15);
             this.defenders.forEach(d => d.onDie()); // in case there's any left
             this.owner.removeRegion(this);
             player.addRegion(this);
             this._reCalculateUnitSides();
             this._siegeProgress--;
-            player.changeReputationWith(this.owner, -15);
         }
     }
 
@@ -219,7 +219,7 @@ class Region extends GameInteractible {
             const actualKilled = Math.min(defendersLeftToKill, d.number);
             d.number = d.number - actualKilled;
             defendersLeftToKill = defendersLeftToKill - actualKilled;
-            attackerOwners.forEach(p => p.changeReputationWith(d.owner, -1 * actualKilled));
+            attackerOwners.forEach(p => p && d?.owner && p.changeReputationWith(d.owner, -1 * actualKilled));
             if (d.number <= 0) {
                 d.onDie();
             }
@@ -228,7 +228,7 @@ class Region extends GameInteractible {
             const actualKilled = Math.min(attackersLeftToKill, a.number);
             a.number = a.number - actualKilled;
             attackersLeftToKill = attackersLeftToKill - actualKilled;
-            defenderOwners.forEach(p => p.changeReputationWith(a.owner, -1 * actualKilled));
+            defenderOwners.forEach(p => p && a?.owner && p.changeReputationWith(a.owner, -1 * actualKilled));
             if (a.number <= 0) {
                 a.onDie();
             }
@@ -245,8 +245,7 @@ class Region extends GameInteractible {
 
     killEnemyAmbassadors() {
         //This is called -after- the region is conquered!
-        const ambassadorsToRemove = this.ambassadors.filter(a => !Object.keys(this.owner.alliedPlayers).includes(a));
-        ambassadorsToRemove.forEach(a => {
+        this.ambassadors.forEach(a => {
             a.owner.changeReputationWith(this.owner, -1);
             a.die();
         });
