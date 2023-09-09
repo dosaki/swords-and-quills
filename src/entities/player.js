@@ -268,9 +268,9 @@ class Player {
                 }
             }
             const chosenTarget = pick(...this.attackTargets);
-            let fringeRegions = chosenTarget?.regions.filter(r => neighbouringForeignRegions.includes(r));
-            fringeRegions = fringeRegions.length ? fringeRegions : chosenTarget.regions;
-            if (fringeRegions) {
+            let fringeRegions = chosenTarget?.regions?.filter(r => neighbouringForeignRegions.includes(r));
+            fringeRegions = fringeRegions && fringeRegions.length ? fringeRegions : chosenTarget?.regions;
+            if (fringeRegions && fringeRegions.length) {
                 currentArea = 0;
                 movedTo = {};
                 armies = this.units.filter(u => u instanceof Army && u.region);

@@ -32,7 +32,7 @@ class Drawable {
     _verticesByShape() { }
 
     changeColour(colour, strokeColour) {
-        const fullColour = colour.length === 4 ? `#${colour[1]}${colour[1]}${colour[2]}${colour[2]}${colour[3]}${colour[3]}` : colour;
+        const fullColour = (colour||"#000").length === 4 ? `#${colour[1]}${colour[1]}${colour[2]}${colour[2]}${colour[3]}${colour[3]}` : colour;
         this._colour = fullColour;
         this._strokeColour = strokeColour || "#000000";
     }
@@ -89,7 +89,7 @@ class Interactible extends Drawable {
     }
 
     changeColour(colour, strokeColour) {
-        const fullColour = colour.length === 4 ? `#${colour[1]}${colour[1]}${colour[2]}${colour[2]}${colour[3]}${colour[3]}` : colour;
+        const fullColour = (colour||"#000").length === 4 ? `#${colour[1]}${colour[1]}${colour[2]}${colour[2]}${colour[3]}${colour[3]}` : colour;
         this._colour = fullColour;
         this._hoverColour = adjust(fullColour, 50);
         this._clickColour = adjust(fullColour, -50);
