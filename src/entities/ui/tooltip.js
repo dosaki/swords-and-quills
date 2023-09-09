@@ -274,9 +274,9 @@ class Tooltip {
         if (this.region.owner !== window.player) {
             const regionPrice = this.region.getPriceFor(window.player);
             const buyIsDisabled = !this.region.owner.wouldSellTo(window.player) || this.region._siegeProgress > 0 || this.region == this.region.owner.isCapital;
-            const buyButtonHelp = this.region === this.region.owner.capital ? `${this.region.owner.name} cannot sell you their capital!` : !this.region.owner.wouldSellTo(window.player) ? [`${this.region.owner.name} does not want to sell to you`, 'Increase your reputation with them via Ambassadors'] : this.region._siegeProgress > 0 ? `${this.region.owner.name} is under siege` : `Buy ${this.region.name} for ${regionPrice}🟡`;
+            const buyButtonHelp = this.region === this.region.owner.capital ? `${this.region.owner.name} cannot sell you their capital!` : !this.region.owner.wouldSellTo(window.player) ? [`${this.region.owner.name} does not want to sell to you`, 'Persuade them with Ambassadors'] : this.region._siegeProgress > 0 ? `${this.region.owner.name} is under siege` : `Buy ${this.region.name} for ${regionPrice}🟡`;
             const allyIsDisabled = !this.region.owner.wouldAllyWith(window.player);
-            const allyButtonHelp = this.region.owner.wouldAllyWith(window.player) ? `Ally with ${this.region.owner.name}` : [`${this.region.owner.name} does not want to ally with you`, 'Increase your reputation with them via Ambassadors'];
+            const allyButtonHelp = this.region.owner.wouldAllyWith(window.player) ? `Ally with ${this.region.owner.name}` : [`${this.region.owner.name} does not want to ally with you`, 'Persuade them with Ambassadors'];
             const allyButtonText = (this.region.owner.isAlliedWith(window.player) ? 'Break Alliance' : 'Make Alliance');
             const buttons = {
                 'Buy land': [() => {
@@ -323,7 +323,7 @@ class Tooltip {
                     const button = this._addInteractible(new UiInteractible([[0, 0], [33, 0], [33, 33], [0, 33]], x + 52, y + 230, 2));
                     button.changeColour('#000030', '#ffd700');
                     button.text = '...';
-                    button.help = `Too many armies. Merge yours.`;
+                    button.help = `Merge your Armies`;
                     button.onClick = () => {
                         this.region.mergeArmies(window.player);
                     };

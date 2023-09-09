@@ -200,12 +200,6 @@ class Player {
                         } else if (player.style === 'friendly') {
                             this.changeReputationWith(player, 20);
                         }
-                    } else if (this.style === 'neutral') {
-                        if (player.style === 'aggressive') {
-                            this.changeReputationWith(player, -1);
-                        } else if (player.style === 'friendly') {
-                            this.changeReputationWith(player, 1);
-                        }
                     }
                 });
             }

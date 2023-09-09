@@ -253,8 +253,8 @@ class Region extends GameInteractible {
     killEnemyAmbassadors() {
         //This is called -after- the region is conquered!
         this.ambassadors.forEach(a => {
-            a.owner.changeReputationWith(this.owner, -1);
-            a.onDie();
+            a?.owner?.changeReputationWith(this.owner, -1);
+            a?.onDie();
         });
     }
 }
