@@ -83,6 +83,7 @@ class Player {
         }
         if (this.hasLost) {
             this.units.forEach(unit => unit.onDie());
+            this.units = [];
         }
         this.regions.forEach(region => region.onTick());
         this.units.forEach(unit => unit.onTick());
@@ -187,7 +188,7 @@ class Player {
             const foreignRegions = this.findNeighbouringForeignRegions();
             const neighboringPlayers = this.findNeighboringPlayers(foreignRegions);
             const alliedPlayerRegions = this.type === "neutral" ? [] : neighboringPlayers.filter(p => this.isAlliedWith(p)).map(p => p.regions).flat();
-            const unprotectedAreas = [...this.regions.filter(r => r.attackerPower > r.defenderPower), ...alliedPlayerRegions];
+            const unprotectedAreas = [...this.regions, ...alliedPlayerRegions].filter(r => r.attackerPower > r.defenderPower);
             if (!this.firstTimeSetUp) {
                 this.firstTimeSetUp = true;
                 neighboringPlayers.forEach(player => {
@@ -266,7 +267,9 @@ class Player {
                     this.attackTargets.push(potentialTarget);
                 }
             }
-            const fringeRegions = pick(...this.attackTargets)?.regions.filter(r => neighbouringForeignRegions.includes(r));
+            const chosenTarget = pick(...this.attackTargets);
+            let fringeRegions = chosenTarget?.regions.filter(r => neighbouringForeignRegions.includes(r));
+            fringeRegions = fringeRegions.length ? fringeRegions : chosenTarget.regions;
             if (fringeRegions) {
                 currentArea = 0;
                 movedTo = {};

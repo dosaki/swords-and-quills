@@ -275,6 +275,9 @@ class Army extends Citizen {
     }
 
     onTick() {
+        if(!this.owner){
+            this.onDie();
+        }
         if (this.region && this.region.owner !== this.owner) {
             if (this.region.defenders.length === 0) {
                 this.region._siegeProgress++;
@@ -314,6 +317,9 @@ class Ambassador extends Citizen {
     }
 
     onTick() {
+        if(!this.owner){
+            this.onDie();
+        }
         if (this.region && this.region.ambassadors.includes(this)) {
             this.owner._gold--;
             this.region.owner._gold++;

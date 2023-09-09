@@ -330,9 +330,9 @@ class Tooltip {
                     return;
                 }
                 const button = this._addInteractible(new UiInteractible([[0, 0], [33, 0], [33, 33], [0, 33]], x + 52, y + 230, 2));
-                button.changeColour(d.owner.colour, d.owner.strokeColour);
+                button.changeColour(d.owner?.colour, d.owner?.strokeColour);
                 button.text = d.number;
-                button.help = `Army of ${d.number} soldiers from ${d.owner.country}`;
+                button.help = `Army of ${d.number} soldiers from ${d.owner?.country}`;
                 if (window.player === d.owner) {
                     button.help = `Click to move ${d.number} soldiers`;
                     button.onClick = () => {

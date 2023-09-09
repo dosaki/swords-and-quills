@@ -98,7 +98,7 @@ class Region extends GameInteractible {
         building.onRemoval();
         this.buildings = this.buildings.filter(b => b !== building);
         if (this.ambassadors.length > 0) {
-            this.ambassadors.slice(this.ambassadorSlots).forEach(a => a.die());
+            this.ambassadors.slice(this.ambassadorSlots).forEach(a => a.onDie());
         }
     }
 
@@ -118,6 +118,10 @@ class Region extends GameInteractible {
         this.defenders = [];
         this.attackers = [];
         allUnits.forEach(unit => {
+            if(!unit.owner){
+                unit.onDie();
+                return;
+            }
             if (unit.owner === this.owner || unit.owner.isAlliedWith(this.owner)) {
                 this.defenders.push(unit);
             } else {
@@ -241,13 +245,16 @@ class Region extends GameInteractible {
         if (!this.attackerPower && this._siegeProgress) {
             this._siegeProgress--;
         }
+        while(this.buildings.length > this.buildingLimit){
+            this.removeBuilding(this.buildings[0]);
+        }
     }
 
     killEnemyAmbassadors() {
         //This is called -after- the region is conquered!
         this.ambassadors.forEach(a => {
             a.owner.changeReputationWith(this.owner, -1);
-            a.die();
+            a.onDie();
         });
     }
 }

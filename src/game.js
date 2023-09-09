@@ -84,7 +84,7 @@ const makeRegions = () => {
                 bgw.style.background = "#216288";
             } else if (window.placingArmy) {
                 window.placingArmy.targetRegion = region;
-                window.placingArmy.routeToRegion = window.regionGraph.findShortestPath(window.placingArmy.region.id, region.id);
+                window.placingArmy.routeToRegion = window.regionGraph.findShortestPath((window.placingArmy.region||window.player.capital).id, region.id);
                 window.placingArmy.routeToRegion.pop();
                 window.placingArmy = null;
                 window.tooltip.refreshContent();
@@ -365,7 +365,7 @@ window.main = function (now) {
                 if (selectedShape.owner === window.player) {
                     moveLineColour = "#090";
                 } else if (window.player.isAlliedWith(selectedShape.owner)) {
-                    moveLineColour = "#009";
+                    moveLineColour = "#03b";
                 } else {
                     moveLineColour = "#900";
                 }
