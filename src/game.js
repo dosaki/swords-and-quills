@@ -84,7 +84,7 @@ const makeRegions = () => {
                 bgw.style.background = "#216288";
             } else if (window.placingArmy) {
                 window.placingArmy.targetRegion = region;
-                window.placingArmy.routeToRegion = window.regionGraph.findShortestPath((window.placingArmy.region||window.player.capital).id, region.id);
+                window.placingArmy.routeToRegion = window.regionGraph.findShortestPath((window.placingArmy.region || window.player.capital).id, region.id);
                 window.placingArmy.routeToRegion.pop();
                 window.placingArmy = null;
                 window.tooltip.refreshContent();
@@ -301,15 +301,15 @@ const onTick = () => {
     }
 };
 
-const drawLostScreen = () => {
+const drawEndScreen = (text) => {
     uictx.clearRect(0, 0, cg.width, cg.height);
     uictx.fillStyle = "#1d1d4d";
     uictx.fillRect(0, 0, cg.width, cg.height);
     uictx.fillStyle = "#fff";
 
     uictx.font = "30px Arial";
-    const { width } = uictx.measureText("You were defeated!");
-    uictx.fillText("You were defeated!", (cg.width / 2) - (width / 2), (cg.height / 2) - 30);
+    const { width } = uictx.measureText(`You ${text}!`);
+    uictx.fillText(`You ${text}!`, (cg.width / 2) - (width / 2), (cg.height / 2) - 30);
 
     uictx.font = "20px Arial";
     const { width: width2 } = uictx.measureText("At the height of your power you had:");
@@ -328,9 +328,16 @@ setupGame();
 
 let lastTick = 0;
 window.main = function (now) {
+    const alivePlayers = players.filter(p => !p.hasLost);
     if (player?.hasLost) {
-        drawLostScreen();
+        drawEndScreen("were defeated");
         return;
+    } else if(player) {
+        const enemyAlivePlayers = alivePlayers.filter(p => !p.isAlliedWith(player) && p !== player);
+        if (alivePlayers.includes(player) && enemyAlivePlayers.length === 0) {
+            drawEndScreen("have prevailed");
+            return;
+        }
     }
     const tickDiff = now - lastTick;
     if (resourcesBar.currentSpeed && tickDiff >= (1500 * resourcesBar.currentSpeed)) {

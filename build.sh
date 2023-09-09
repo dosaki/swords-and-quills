@@ -28,7 +28,7 @@ else
     ./node_modules/webpack/bin/webpack.js
     npx -y uglify-js --compress --mangle -- ./app/js/game.js > ./app/js/game.tmp.js
     mv ./app/js/game.tmp.js ./app/js/game.js
-    npx roadroller ./app/js/game.js -o ./app/js/game.tmp.js
+    npx roadroller ./app/js/game.js -O2 -o ./app/js/game.tmp.js
     mv ./app/js/game.tmp.js ./app/js/game.js
 fi
 

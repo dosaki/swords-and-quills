@@ -138,7 +138,7 @@ class Region extends GameInteractible {
                 player._gold += goldToGive;
             }
             player.changeReputationWith(this.owner, -15);
-            this.defenders.forEach(d => d.onDie()); // in case there's any left
+            this.defenders.forEach(d => d.onDie()); // in case there are any left
             this.owner.removeRegion(this);
             player.addRegion(this);
             this._reCalculateUnitSides();
