@@ -1,25 +1,25 @@
 const { Drawable } = require('../drawable');
 const { pick } = require('../../utils/random');
 const ambassadorPaths = {
-    "m 8,6 h 1 v 1 H 8 Z": ["#e9c9a5", null],
-    "M 3,6 H 2 v 1 h 1 v 3 H 4 V 9 h 2 v 1 H 7 V 7 H 8 V 6 H 7 Z": ["#694726", null],
-    "m 3,2 4,0 V 6 H 3 Z": ["#e9c9a5", null],
-    "M 4,4 V 3": [null, "#000000"],
-    "M 3,9 C 5,9 7,8 7,6": [null, "-"],
-    "M 6,4 V 3": [null, "#000000"],
-    "M 1,6 H 2 V 7 H 1 Z": ["#e9c9a5", null],
-    "M 3,1 H 7 V 2 H 3 Z": ["-", "-"]
+    'm 8,6 h 1 v 1 H 8 Z': ['#e9c9a5', null],
+    'M 3,6 H 2 v 1 h 1 v 3 H 4 V 9 h 2 v 1 H 7 V 7 H 8 V 6 H 7 Z': ['#694726', null],
+    'm 3,2 4,0 V 6 H 3 Z': ['#e9c9a5', null],
+    'M 4,4 V 3': [null, '#000000'],
+    'M 3,9 C 5,9 7,8 7,6': [null, '-'],
+    'M 6,4 V 3': [null, '#000000'],
+    'M 1,6 H 2 V 7 H 1 Z': ['#e9c9a5', null],
+    'M 3,1 H 7 V 2 H 3 Z': ['-', '-']
 };
 
 const soldierPaths = {
-    "m 3,6 v 4 H 4 V 9 h 2 v 1 H 7 V 7 H 9 V 6 H 7 Z": ["#808080", null],
-    "M 3,2 H 7 V 6 H 3 Z": ["#000000", null],
-    "M 9,1 V 6": [null, "#808080"],
-    "M 9,7 V 6": [null, "#85633f"],
-    "M 5,2 V 5": [null, "#808080"],
-    "M 7,6 V 2 H 3 v 4": [null, "#808080"],
-    "M 3,8 H 7": [null, "-"],
-    "M 0,6 2,4 4,6 2,10 Z": ["-", "#9b9b9b"]
+    'm 3,6 v 4 H 4 V 9 h 2 v 1 H 7 V 7 H 9 V 6 H 7 Z': ['#808080', null],
+    'M 3,2 H 7 V 6 H 3 Z': ['#000000', null],
+    'M 9,1 V 6': [null, '#808080'],
+    'M 9,7 V 6': [null, '#85633f'],
+    'M 5,2 V 5': [null, '#808080'],
+    'M 7,6 V 2 H 3 v 4': [null, '#808080'],
+    'M 3,8 H 7': [null, '-'],
+    'M 0,6 2,4 4,6 2,10 Z': ['-', '#9b9b9b']
 };
 
 
@@ -36,9 +36,9 @@ const isNearPoint = ([x, y], [cx, cy], radius) => {
 };
 
 class Citizen extends Drawable {
-    static name = "Citizen";
-    static description = "";
-    static icon = "";
+    static name = 'Citizen';
+    static description = '';
+    static icon = '';
     static cost = 0;
     static foodCost = 1;
     static paths = {};
@@ -66,11 +66,11 @@ class Citizen extends Drawable {
             const path = new Path2D(p);
             const [fill, stroke] = this.paths[p];
             if (fill) {
-                ctx.fillStyle = fill === "-" ? owner.colour : fill;
+                ctx.fillStyle = fill === '-' ? owner.colour : fill;
                 ctx.fill(path);
             }
             if (stroke) {
-                ctx.strokeStyle = stroke === "-" ? owner.colour : stroke;
+                ctx.strokeStyle = stroke === '-' ? owner.colour : stroke;
                 ctx.stroke(path);
             }
         });
@@ -79,14 +79,14 @@ class Citizen extends Drawable {
 
     static makeSvgPaths(owner) {
         return Object.keys(this.paths).map(p => {
-            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            path.setAttribute("d", p);
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', p);
             const [fill, stroke] = this.paths[p];
             if (fill) {
-                path.setAttribute("fill", fill === "-" ? owner.colour : fill);
+                path.setAttribute('fill', fill === '-' ? owner.colour : fill);
             }
             if (stroke) {
-                path.setAttribute("stroke", stroke === "-" ? owner.colour : stroke);
+                path.setAttribute('stroke', stroke === '-' ? owner.colour : stroke);
             }
             return path;
         });
@@ -95,7 +95,7 @@ class Citizen extends Drawable {
     static drawToSvgG(gElement, costElement, owner) {
         this.makeSvgPaths(owner).forEach(p => gElement.appendChild(p));
         if (costElement) {
-            gElement.parentElement.parentElement.setAttribute("title", `${this.name}: ${this.description}`);
+            gElement.parentElement.parentElement.setAttribute('title', `${this.name}: ${this.description}`);
         }
         if (costElement) {
             costElement.innerHTML = `${this.cost}🟡 ${this.foodCost}🍖`;
@@ -202,8 +202,8 @@ class Citizen extends Drawable {
 }
 
 class Army extends Citizen {
-    static name = "Army";
-    static description = "+5🗡️, +5🛡️";
+    static name = 'Army';
+    static description = '+5🗡️, +5🛡️';
     static paths = soldierPaths;
     static cost = 40;
     static foodCost = 5;
@@ -227,11 +227,11 @@ class Army extends Citizen {
             ctx.save();
             ctx.translate(...this.currentCoordinates);
             // show number of soldiers
-            ctx.fillStyle = "#fff";
-            ctx.strokeStyle = "#000";
+            ctx.fillStyle = '#fff';
+            ctx.strokeStyle = '#000';
             ctx.lineWidth = 1;
-            ctx.font = "2px Arial";
-            ctx.textAlign = "center";
+            ctx.font = '2px Arial';
+            ctx.textAlign = 'center';
             ctx.strokeText(this.number, -1.5, 2);
             ctx.fillText(this.number, -1.5, 2);
             ctx.restore();
@@ -291,8 +291,8 @@ class Army extends Citizen {
 }
 
 class Ambassador extends Citizen {
-    static name = "Ambassador";
-    static description = "+1🪶/week, -1🟡/week";
+    static name = 'Ambassador';
+    static description = '+1🪶/week, -1🟡/week';
     static paths = ambassadorPaths;
     static cost = 10;
 

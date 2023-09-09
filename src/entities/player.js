@@ -1,6 +1,6 @@
-const { int, pick } = require("../utils/random");
-const { Farm, Mine } = require("./game-objects/buildings");
-const { Army, Ambassador } = require("./game-objects/units");
+const { int, pick } = require('../utils/random');
+const { Farm, Mine } = require('./game-objects/buildings');
+const { Army, Ambassador } = require('./game-objects/units');
 
 class Player {
     constructor(country) {
@@ -17,11 +17,11 @@ class Player {
         this._gold = 0;
         this._sellMood = 0;
         this.isHuman = false;
-        this.style = pick("aggressive", "friendly", "neutral", "aggressive");
+        this.style = pick('aggressive', 'friendly', 'neutral', 'aggressive');
         this.firstTimeSetUp = false;
         this.attackTargets = [];
-        this.colour = "#000";
-        this.strokeColour = "#000";
+        this.colour = '#000';
+        this.strokeColour = '#000';
         this.maxStats = {
             Score: 0,
             Regions: 0,
@@ -137,15 +137,15 @@ class Player {
     attitudeWith(player) {
         const reputation = this.reputationWith(player);
         if (reputation < -50) {
-            return "Hostile";
+            return 'Hostile';
         }
         if (reputation < 0) {
-            return "Unfriendly";
+            return 'Unfriendly';
         }
         if (reputation < 50) {
-            return "Neutral";
+            return 'Neutral';
         }
-        return this.isAlliedWith(player) ? "Ally" : "Friendly";
+        return this.isAlliedWith(player) ? 'Ally' : 'Friendly';
     }
 
     wouldSellTo(player) {
@@ -187,23 +187,23 @@ class Player {
             this._sellMood = 0;
             const foreignRegions = this.findNeighbouringForeignRegions();
             const neighboringPlayers = this.findNeighboringPlayers(foreignRegions);
-            const alliedPlayerRegions = this.type === "neutral" ? [] : neighboringPlayers.filter(p => this.isAlliedWith(p)).map(p => p.regions).flat();
+            const alliedPlayerRegions = this.type === 'neutral' ? [] : neighboringPlayers.filter(p => this.isAlliedWith(p)).map(p => p.regions).flat();
             const unprotectedAreas = [...this.regions, ...alliedPlayerRegions].filter(r => r.attackerPower > r.defenderPower);
             if (!this.firstTimeSetUp) {
                 this.firstTimeSetUp = true;
                 neighboringPlayers.forEach(player => {
-                    if (this.style === "aggressive") {
+                    if (this.style === 'aggressive') {
                         this.changeReputationWith(player, -25);
-                    } else if (this.style === "friendly") {
-                        if (player.style === "aggressive") {
+                    } else if (this.style === 'friendly') {
+                        if (player.style === 'aggressive') {
                             this.changeReputationWith(player, -5);
-                        } else if (player.style === "friendly") {
+                        } else if (player.style === 'friendly') {
                             this.changeReputationWith(player, 20);
                         }
-                    } else if (this.style === "neutral") {
-                        if (player.style === "aggressive") {
+                    } else if (this.style === 'neutral') {
+                        if (player.style === 'aggressive') {
                             this.changeReputationWith(player, -1);
-                        } else if (player.style === "friendly") {
+                        } else if (player.style === 'friendly') {
                             this.changeReputationWith(player, 1);
                         }
                     }
@@ -224,9 +224,9 @@ class Player {
             }
         });
 
-        if (pick(0, 1, this.type === "aggressive") && Army.canBeAffordedBy(this)) {
+        if (pick(0, 1, this.type === 'aggressive') && Army.canBeAffordedBy(this)) {
             this.capital.addUnit(new Army(this));
-        } else if (pick(0, 1) && this.type === "friendly" && Ambassador.canBeAffordedBy(this)) {
+        } else if (pick(0, 1) && this.type === 'friendly' && Ambassador.canBeAffordedBy(this)) {
             const potentialAmbassadorTargets = neighbours.filter(n => !n.isAlliedWith(this) && n.reputationWith(this) > -25);
             if (potentialAmbassadorTargets.length) {
                 const foreignRegion = pick(...potentialAmbassadorTargets).capital;
@@ -261,7 +261,7 @@ class Player {
         if (pick(0, 1)) {
             if (!this.attackTargets.length || pick(0, 0, 0, 1)) {
                 const potentialTarget = pick(...neighbours.filter(n => {
-                    return !n.isAlliedWith(this) && (this.type === "aggressive" || n.reputationWith(this) < -20);
+                    return !n.isAlliedWith(this) && (this.type === 'aggressive' || n.reputationWith(this) < -20);
                 }));
                 if (potentialTarget) {
                     this.attackTargets.push(potentialTarget);

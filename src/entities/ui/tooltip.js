@@ -48,19 +48,19 @@ class Tooltip {
         // Panel
         ctx.lineWidth = 10;
 
-        ctx.strokeStyle = "#0008";
-        ctx.filter = "blur(4px)";
+        ctx.strokeStyle = '#0008';
+        ctx.filter = 'blur(4px)';
         ctx.beginPath();
         ctx.moveTo(340, -2);
         ctx.lineTo(340, cui.height);
         ctx.stroke();
-        ctx.filter = "none";
+        ctx.filter = 'none';
 
-        ctx.fillStyle = "#18243d";
+        ctx.fillStyle = '#18243d';
         ctx.fillRect(0, 0, 340, cui.height);
 
         ctx.lineWidth = 2;
-        ctx.strokeStyle = window.resourcesBar.currentSpeed ? "#ffd700" : "#ff0000";
+        ctx.strokeStyle = window.resourcesBar.currentSpeed ? '#ffd700' : '#ff0000';
         ctx.beginPath();
         ctx.moveTo(0, -2);
         ctx.lineTo(340, -2);
@@ -69,17 +69,17 @@ class Tooltip {
 
         // Name
         ctx.translate(10, 75);
-        ctx.fillStyle = "#fff";
-        ctx.font = "32px Arial";
+        ctx.fillStyle = '#fff';
+        ctx.font = '32px Arial';
         ctx.fillText(this.region.owner.name, 0, 32);
-        ctx.font = "16px Arial";
+        ctx.font = '16px Arial';
         if (this.region.owner.name !== this.region.owner.country) {
             ctx.fillText(`of ${this.region.owner.country}`, 0, 48);
         }
 
         // Icon
         ctx.translate(0, 64);
-        ctx.fillStyle = "#000";
+        ctx.fillStyle = '#000';
         ctx.fillRect(0, 0, 150, 150);
         ctx.fillStyle = this.region._colour;
         ctx.strokeStyle = this.region._strokeColour;
@@ -92,28 +92,28 @@ class Tooltip {
         ctx.stroke(this.region.dPath);
         ctx.restore();
         // Background for region name
-        ctx.fillStyle = "#fff5";
+        ctx.fillStyle = '#fff5';
         ctx.fillRect(0, 0, 150, 25);
         // Siege progress
-        ctx.fillStyle = "#f44";
+        ctx.fillStyle = '#f44';
         ctx.fillRect(0, 125, 125 * (this.region._siegeProgress / this.region.defence), 25);
         // Icon border
-        ctx.strokeStyle = "#ffd700";
+        ctx.strokeStyle = '#ffd700';
         ctx.strokeRect(0, 0, 150, 150);
 
-        ctx.fillStyle = "#fff";
-        ctx.fillText(this.region.name + (this.region.isCapital ? " 👑" : ""), 5, 20);
+        ctx.fillStyle = '#fff';
+        ctx.fillText(this.region.name + (this.region.isCapital ? ' 👑' : ''), 5, 20);
 
-        ctx.fillStyle = "#ffd700";
-        this._drawSectionTitle("Armies", 220, ctx);
+        ctx.fillStyle = '#ffd700';
+        this._drawSectionTitle('Armies', 220, ctx);
         if (this.region.owner === window.player) {
-            this._drawSectionTitle("Build", 370, ctx);
-            this._drawSectionTitle("Train", 480, ctx);
+            this._drawSectionTitle('Build', 370, ctx);
+            this._drawSectionTitle('Train', 480, ctx);
         } else {
-            this._drawSectionTitle("Diplomacy", 370, ctx);
-            ctx.fillStyle = "#fff";
+            this._drawSectionTitle('Diplomacy', 370, ctx);
+            ctx.fillStyle = '#fff';
             ctx.fillText(this.region.owner.attitudeWith(window.player), 200, 400);
-            ctx.font = "32px Arial";
+            ctx.font = '32px Arial';
             ctx.fillText(`${this.region.owner.reputationWith(window.player)}🪶`, 200, 440);
         }
 
@@ -163,8 +163,8 @@ class Tooltip {
 
     _populateSellBuildings() {
         this.region.buildings.forEach((b, i) => {
-            const [x, y] = i.toString(2).padStart(2, "0").split("").map(n => Number(n) * 80);
-            const button = this._addInteractible(new UiInteractible([[170, 0], [240, 0], [240, 70], [170, 70]], x, y, 2, b.icon, ["#000030", "#ffd700"]));
+            const [x, y] = i.toString(2).padStart(2, '0').split('').map(n => Number(n) * 80);
+            const button = this._addInteractible(new UiInteractible([[170, 0], [240, 0], [240, 70], [170, 70]], x, y, 2, b.icon, ['#000030', '#ffd700']));
             button.textSize = 50;
             button.help = `${b.name}`;
             if (this.region.owner === window.player) {
@@ -178,8 +178,8 @@ class Tooltip {
             }
         });
         for (let i = this.region.buildings.length; i < this.region.buildingLimit; i++) {
-            const [x, y] = i.toString(2).padStart(2, "0").split("").map(n => Number(n) * 80);
-            const button = this._addInteractible(new UiInteractible([[170, 0], [240, 0], [240, 70], [170, 70]], x, y, 2, null, ["#000030", "#ffd700"]));
+            const [x, y] = i.toString(2).padStart(2, '0').split('').map(n => Number(n) * 80);
+            const button = this._addInteractible(new UiInteractible([[170, 0], [240, 0], [240, 70], [170, 70]], x, y, 2, null, ['#000030', '#ffd700']));
             button.help = `Empty plot`;
         }
     }
@@ -187,19 +187,19 @@ class Tooltip {
     _makeBuildBuildings() {
         if (this.region.owner === window.player) {
             [Farm, Mine, Castle].forEach((B, i) => {
-                const button = this._addInteractible(new UiInteractible([[0, 0], [70, 0], [70, 70], [0, 70]], i * 124, 380, 2, B.icon, ["#000030", "#ffd700"]));
+                const button = this._addInteractible(new UiInteractible([[0, 0], [70, 0], [70, 70], [0, 70]], i * 124, 380, 2, B.icon, ['#000030', '#ffd700']));
                 button.disabled = !(B.canBeAffordedBy(window.player) && this.region.buildings.length < this.region.buildingLimit);
                 button.textSize = 50;
                 if (button.disabled) {
                     button.help = [
                         `${B.name}: ${B.cost}🟡`,
                         B.description,
-                        "",
-                        [this.region.buildings.length >= this.region.buildingLimit ? "Not enough plots" : "Not enough 🟡", "#f88"]
+                        '',
+                        [this.region.buildings.length >= this.region.buildingLimit ? 'Not enough plots' : 'Not enough 🟡', '#f88']
                     ];
-                    button.textColour = "#0006";
-                    button.textOutline = "transparent";
-                    button.changeColour("#2c2c40", "#ffd700");
+                    button.textColour = '#0006';
+                    button.textOutline = 'transparent';
+                    button.changeColour('#2c2c40', '#ffd700');
                     button.forceShowHelp = true;
                 } else {
                     button.help = [`${B.name}: ${B.cost}🟡`, B.description];
@@ -216,7 +216,7 @@ class Tooltip {
 
     _populateAmbassadors() {
         this.region.ambassadors.forEach((a, i) => {
-            const button = this._addInteractible(new UiInteractible([[0, 0], [33, 0], [33, 33], [0, 33]], i * 41, 160, 2, "🪶", ["#000030", "#ffd700"]));
+            const button = this._addInteractible(new UiInteractible([[0, 0], [33, 0], [33, 33], [0, 33]], i * 41, 160, 2, '🪶', ['#000030', '#ffd700']));
             button.textSize = 20;
             button.help = `Ambassador from ${a.owner.country}`;
             if (a.owner === window.player || this.region.owner === window.player) {
@@ -228,7 +228,7 @@ class Tooltip {
         });
         if (this.region.maxAmbassadors) {
             for (let i = this.region.ambassadors.length; i < this.region.maxAmbassadors; i++) {
-                const button = this._addInteractible(new UiInteractible([[0, 0], [33, 0], [33, 33], [0, 33]], i * 41, 160, 2, null, ["#000030", "#ffd700"]));
+                const button = this._addInteractible(new UiInteractible([[0, 0], [33, 0], [33, 33], [0, 33]], i * 41, 160, 2, null, ['#000030', '#ffd700']));
                 button.help = `Empty ambassador seat`;
             }
         }
@@ -238,7 +238,7 @@ class Tooltip {
     _makeTrainUnits() {
         if (this.region.owner == window.player) {
             [Army, Ambassador].forEach((U, i) => {
-                const button = this._addInteractible(new UiInteractible([[62, 0], [132, 0], [132, 70], [62, 70]], i * 124, 490, 2, null, ["#000030", "#ffd700"]));
+                const button = this._addInteractible(new UiInteractible([[62, 0], [132, 0], [132, 70], [62, 70]], i * 124, 490, 2, null, ['#000030', '#ffd700']));
                 button.disabled = !U.canBeAffordedBy(window.player);
                 button.classWithIcon = U;
                 button.textSize = 50;
@@ -246,12 +246,12 @@ class Tooltip {
                     button.help = [
                         `${U.name}: ${U.cost}🟡 ${U.foodCost}🍖`,
                         U.description,
-                        "",
-                        ["Not enough 🟡 or 🍖", "#f88"]
+                        '',
+                        ['Not enough 🟡 or 🍖', '#f88']
                     ];
-                    button.textColour = "#0006";
-                    button.textOutline = "transparent";
-                    button.changeColour("#2c2c40", "#ffd700");
+                    button.textColour = '#0006';
+                    button.textOutline = 'transparent';
+                    button.changeColour('#2c2c40', '#ffd700');
                     button.forceShowHelp = true;
                 } else {
                     button.help = [`${U.name}: ${U.cost}🟡 ${U.foodCost}🍖`, U.description];
@@ -274,12 +274,12 @@ class Tooltip {
         if (this.region.owner !== window.player) {
             const regionPrice = this.region.getPriceFor(window.player);
             const buyIsDisabled = !this.region.owner.wouldSellTo(window.player) || this.region._siegeProgress > 0 || this.region == this.region.owner.isCapital;
-            const buyButtonHelp = this.region === this.region.owner.capital ? `${this.region.owner.name} cannot sell you their capital!` : !this.region.owner.wouldSellTo(window.player) ? [`${this.region.owner.name} does not want to sell to you`, "Increase your reputation with them via Ambassadors"] : this.region._siegeProgress > 0 ? `${this.region.owner.name} is under siege` : `Buy ${this.region.name} for ${regionPrice}🟡`;
+            const buyButtonHelp = this.region === this.region.owner.capital ? `${this.region.owner.name} cannot sell you their capital!` : !this.region.owner.wouldSellTo(window.player) ? [`${this.region.owner.name} does not want to sell to you`, 'Increase your reputation with them via Ambassadors'] : this.region._siegeProgress > 0 ? `${this.region.owner.name} is under siege` : `Buy ${this.region.name} for ${regionPrice}🟡`;
             const allyIsDisabled = !this.region.owner.wouldAllyWith(window.player);
-            const allyButtonHelp = this.region.owner.wouldAllyWith(window.player) ? `Ally with ${this.region.owner.name}` : [`${this.region.owner.name} does not want to ally with you`, "Increase your reputation with them via Ambassadors"];
-            const allyButtonText = (this.region.owner.isAlliedWith(window.player) ? "Break Alliance" : "Make Alliance");
+            const allyButtonHelp = this.region.owner.wouldAllyWith(window.player) ? `Ally with ${this.region.owner.name}` : [`${this.region.owner.name} does not want to ally with you`, 'Increase your reputation with them via Ambassadors'];
+            const allyButtonText = (this.region.owner.isAlliedWith(window.player) ? 'Break Alliance' : 'Make Alliance');
             const buttons = {
-                "Buy land": [() => {
+                'Buy land': [() => {
                     if (this.region.owner !== window.player && this.region.owner.wouldSellTo(window.player) && this.region._siegeProgress <= 0) {
                         this.region.sellTo(window.player, regionPrice);
                     }
@@ -294,15 +294,15 @@ class Tooltip {
                 }, allyButtonHelp, allyIsDisabled],
             };
             Object.keys(buttons).forEach((text, i) => {
-                const button = this._addInteractible(new UiInteractible([[0, 0], [130, 0], [130, 40], [0, 40]], 0, i * 50 + 385, 2, text, ["#000030", "#ffd700"], buttons[text][0]));
+                const button = this._addInteractible(new UiInteractible([[0, 0], [130, 0], [130, 40], [0, 40]], 0, i * 50 + 385, 2, text, ['#000030', '#ffd700'], buttons[text][0]));
                 button.textSize = 18;
                 button.help = buttons[text][1];
                 button.disabled = buttons[text][2];
                 button.forceShowHelp = true;
                 if (button.disabled) {
-                    button.textColour = "#fff6";
-                    button.textOutline = "transparent";
-                    button.changeColour("#2c2c40", "#ffd700");
+                    button.textColour = '#fff6';
+                    button.textOutline = 'transparent';
+                    button.changeColour('#2c2c40', '#ffd700');
                 }
             });
         }
@@ -321,8 +321,8 @@ class Tooltip {
                 }
                 if (Math.floor(i % 7) === 6 && Math.floor(i / 7) === 2 && i < allArmies.length - 2) {
                     const button = this._addInteractible(new UiInteractible([[0, 0], [33, 0], [33, 33], [0, 33]], x + 52, y + 230, 2));
-                    button.changeColour("#000030", "#ffd700");
-                    button.text = "...";
+                    button.changeColour('#000030', '#ffd700');
+                    button.text = '...';
                     button.help = `Too many armies. Merge yours.`;
                     button.onClick = () => {
                         this.region.mergeArmies(window.player);
@@ -346,29 +346,29 @@ class Tooltip {
     _armyButtons() {
         const playerArmies = [...this.region.defenders, ...this.region.attackers].filter(u => u.owner === window.player);
         const mergeButton = this._addInteractible(new UiInteractible([[0, 0], [40, 0], [40, 40], [0, 40]], 0, 230, 2));
-        mergeButton.compoundText = [["⇒", -9, -8], ["⇐", 9, 8]];
+        mergeButton.compoundText = [['⇒', -9, -8], ['⇐', 9, 8]];
         mergeButton.textSize = 18;
-        mergeButton.changeColour("#000030", "#ffd700");
-        mergeButton.help = "Merge Armies";
+        mergeButton.changeColour('#000030', '#ffd700');
+        mergeButton.help = 'Merge Armies';
         mergeButton.disabled = playerArmies.length <= 1;
         if (mergeButton.disabled) {
-            mergeButton.textColour = "#fff6";
-            mergeButton.textOutline = "transparent";
-            mergeButton.changeColour("#2c2c40", "#ffd700");
+            mergeButton.textColour = '#fff6';
+            mergeButton.textOutline = 'transparent';
+            mergeButton.changeColour('#2c2c40', '#ffd700');
         }
         mergeButton.onClick = () => {
             this.region.mergeArmies(window.player);
         };
         const splitButton = this._addInteractible(new UiInteractible([[0, 0], [40, 0], [40, 40], [0, 40]], 0, 280, 2));
-        splitButton.compoundText = [["⇒", 8, 9], ["⇐", -8, -9]];
+        splitButton.compoundText = [['⇒', 8, 9], ['⇐', -8, -9]];
         splitButton.textSize = 18;
-        splitButton.changeColour("#000030", "#ffd700");
-        splitButton.help = "Split Armies";
+        splitButton.changeColour('#000030', '#ffd700');
+        splitButton.help = 'Split Armies';
         splitButton.disabled = !playerArmies.length;
         if (splitButton.disabled) {
-            splitButton.textColour = "#fff6";
-            splitButton.textOutline = "transparent";
-            splitButton.changeColour("#2c2c40", "#ffd700");
+            splitButton.textColour = '#fff6';
+            splitButton.textOutline = 'transparent';
+            splitButton.changeColour('#2c2c40', '#ffd700');
         }
         splitButton.onClick = () => {
             this.region.splitArmies(window.player);

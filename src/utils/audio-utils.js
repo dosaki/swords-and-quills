@@ -1,8 +1,6 @@
 let context = null;
 const AudioContext = window.AudioContext || window.webkitAudioContext;
-
 const isFirefox = typeof InstallTrigger !== 'undefined'; // This is because firefox has a bug with exponentialRampToValueAtTime
-let muted = 0;
 
 const play = (frequency, duration, trail, initialVolume, type) => {
     if (!context) {
@@ -23,7 +21,7 @@ const play = (frequency, duration, trail, initialVolume, type) => {
     } else {
         volume.gain.exponentialRampToValueAtTime(0.00001, context.currentTime + _trail);
     }
-    oscillator.type = type || "sine";
+    oscillator.type = type || 'sine';
     oscillator.frequency.value = _frequency;
     oscillator.start();
     if (_duration) {
@@ -39,8 +37,6 @@ const noteFrequencies = {
     'b': 30.87,
 };
 
-export const toggleSound = () => muted = !muted;
-
 export class Note {
     constructor(frequency, trail, duration) {
         this.f = frequency;
@@ -49,9 +45,6 @@ export class Note {
     }
 
     play(volume, type) {
-        if(muted){
-            return;
-        }
         play(this.f, this.d, this.t, volume, type);
     }
 

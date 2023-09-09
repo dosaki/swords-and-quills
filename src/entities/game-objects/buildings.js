@@ -1,9 +1,9 @@
 const { Drawable } = require('../drawable');
 
 class Building extends Drawable {
-    static name = "";
-    static description = "";
-    static icon = "";
+    static name = '';
+    static description = '';
+    static icon = '';
     static cost = 0;
     static modifiers = {
         foreignAmbassadors: 0,
@@ -64,10 +64,10 @@ class Building extends Drawable {
 }
 
 class Farm extends Building {
-    static name = "Farm";
-    static description = "+3🍖";
+    static name = 'Farm';
+    static description = '+3🍖';
     static cost = 100;
-    static icon = "🌽";
+    static icon = '🌽';
     static modifiers = {
         foreignAmbassadors: 0,
         gold: 0,
@@ -77,10 +77,10 @@ class Farm extends Building {
 }
 
 class Mine extends Building {
-    static name = "Mine";
-    static description = "+1🟡/week";
+    static name = 'Mine';
+    static description = '+1🟡/week';
     static cost = 70;
-    static icon = "🗻";
+    static icon = '🗻';
 
     onTick() {
         this.owner._gold++;
@@ -88,10 +88,10 @@ class Mine extends Building {
 }
 
 class Castle extends Building {
-    static name = "Castle";
-    static description = "+2🟡/week, +6🛡️, +2🪶 slots";
+    static name = 'Castle';
+    static description = '+2🟡/week, +6🛡️, +2🪶 slots';
     static cost = 500;
-    static icon = "🏰";
+    static icon = '🏰';
     static modifiers = {
         foreignAmbassadors: 2,
         gold: 0,

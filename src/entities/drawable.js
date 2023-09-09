@@ -1,4 +1,4 @@
-const { adjust } = require("../utils/colour");
+const { adjust } = require('../utils/colour');
 
 class Drawable {
     /**
@@ -7,8 +7,8 @@ class Drawable {
      */
 
     constructor() {
-        this._colour = "#aaaaaa";
-        this._strokecolour = "#aaaaaa";
+        this._colour = '#aaaaaa';
+        this._strokecolour = '#aaaaaa';
 
         //cache
         this._vertices = null;
@@ -32,11 +32,11 @@ class Drawable {
     _verticesByShape() { }
 
     changeColour(_colour, _strokeColour) {
-        const colour = _colour || "#000";
-        const strokeColour = _strokeColour || "#000";
-        const fullColour = (colour||"#000").length === 4 ? `#${colour[1]}${colour[1]}${colour[2]}${colour[2]}${colour[3]}${colour[3]}` : colour;
+        const colour = _colour || '#000';
+        const strokeColour = _strokeColour || '#000';
+        const fullColour = (colour||'#000').length === 4 ? `#${colour[1]}${colour[1]}${colour[2]}${colour[2]}${colour[3]}${colour[3]}` : colour;
         this._colour = fullColour;
-        this._strokeColour = strokeColour || "#000000";
+        this._strokeColour = strokeColour || '#000000';
     }
 
     draw(ctx) {
@@ -72,10 +72,10 @@ class Interactible extends Drawable {
         this.onClick = () => { };
         this.onUnClick = () => { };
 
-        this._hoverColour = "#fff";
-        this._clickColour = "#000";
-        this._strokehoverColour = "#fff";
-        this._strokeclickColour = "#000";
+        this._hoverColour = '#fff';
+        this._clickColour = '#000';
+        this._strokehoverColour = '#fff';
+        this._strokeclickColour = '#000';
         this.isHovering = false;
         this.isClicked = false;
 
@@ -91,9 +91,9 @@ class Interactible extends Drawable {
     }
 
     changeColour(_colour, _strokeColour) {
-        const colour = _colour || "#000";
-        const strokeColour = _strokeColour || "#000";
-        const fullColour = (colour||"#000").length === 4 ? `#${colour[1]}${colour[1]}${colour[2]}${colour[2]}${colour[3]}${colour[3]}` : colour;
+        const colour = _colour || '#000';
+        const strokeColour = _strokeColour || '#000';
+        const fullColour = (colour||'#000').length === 4 ? `#${colour[1]}${colour[1]}${colour[2]}${colour[2]}${colour[3]}${colour[3]}` : colour;
         this._colour = fullColour;
         this._hoverColour = adjust(fullColour, 50);
         this._clickColour = adjust(fullColour, -50);

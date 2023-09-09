@@ -1,5 +1,5 @@
-const { Interactible } = require("../drawable");
-const { Note } = require("../../utils/audio-utils");
+const { Interactible } = require('../drawable');
+const { Note } = require('../../utils/audio-utils');
 
 const transformPoint = (x, y, transform) => {
     if (!transform || transform.isIdentity) {
@@ -25,8 +25,8 @@ class UiInteractible extends Interactible {
         this.transformationOnDraw = null;
         this._help = [];
         this.disabled = false;
-        this.textColour = "#fff";
-        this.textOutline = "#000";
+        this.textColour = '#fff';
+        this.textOutline = '#000';
         this.forceShowHelp = false;
         this.classWithIcon = null;
         colour && this.changeColour(...colour);
@@ -48,9 +48,9 @@ class UiInteractible extends Interactible {
         if (this.disabled) {
             return;
         }
-        Note.new("c", 2, 0.1).play(1);
+        Note.new('c', 2, 0.1).play(1);
         setTimeout(() => {
-            Note.new("f#", 3, 0.1).play(0.9);
+            Note.new('f#', 3, 0.1).play(0.9);
         }, 100);
         super.click(e);
     }
@@ -96,8 +96,8 @@ class UiInteractible extends Interactible {
     draw(ctx) {
         ctx.save();
         if (this.isHovering) {
-            ctx.strokeStyle = "#ffd700";
-            ctx.filter = "blur(8px)";
+            ctx.strokeStyle = '#ffd700';
+            ctx.filter = 'blur(8px)';
             ctx.lineWidth = this.lineWidth * 4;
             ctx.beginPath();
             ctx.moveTo(this.vertices[0][0], this.vertices[1][1]);
@@ -105,7 +105,7 @@ class UiInteractible extends Interactible {
                 .forEach(([x, y]) => ctx.lineTo(x, y));
             ctx.closePath();
             ctx.stroke();
-            ctx.filter = "none";
+            ctx.filter = 'none';
         }
         ctx.strokeStyle = this.strokeColour;
         ctx.fillStyle = this._colour;
@@ -142,8 +142,8 @@ class UiInteractible extends Interactible {
 
     drawTooltip(ctx) {
         const { width, height } = this._calculateBBox();
-        ctx.fillStyle = "#1d1d4ddd";
-        ctx.strokeStyle = "#ffd700";
+        ctx.fillStyle = '#1d1d4ddd';
+        ctx.strokeStyle = '#ffd700';
         ctx.lineWidth = 2;
         const textMetrics = this.help.map((helpText, i) => {
             ctx.font = !i ? `16px Arial` : `14px Arial`;
@@ -152,13 +152,13 @@ class UiInteractible extends Interactible {
         const maxWidth = Math.max(...textMetrics.map(tm => tm.width));
         ctx.fillRect(this.x + width, this.y - height / 2, maxWidth + 20, 36 + (20 * (textMetrics.length - 1)));
         ctx.strokeRect(this.x + width, this.y - height / 2, maxWidth + 20, 36 + (20 * (textMetrics.length - 1)));
-        ctx.fillStyle = "#fff";
+        ctx.fillStyle = '#fff';
         this.help.forEach((helpText, i) => {
             ctx.font = !i ? `16px Arial` : `14px Arial`;
             if (Array.isArray(helpText)) {
                 ctx.fillStyle = helpText[1];
                 ctx.fillText(helpText[0], this.x + 10 + width, this.y + 24 - height / 2 + 20 * i);
-                ctx.fillStyle = "#fff";
+                ctx.fillStyle = '#fff';
             } else {
                 ctx.fillText(helpText, this.x + 10 + width, this.y + 24 - height / 2 + 20 * i);
             }

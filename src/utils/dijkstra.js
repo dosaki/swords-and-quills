@@ -11,7 +11,7 @@ class Graph {
             keys;
 
         let addToOpen = function (cost, vertex) {
-            let key = "" + cost;
+            let key = '' + cost;
             if (!open[key]) open[key] = [];
             open[key].push(vertex);
         };

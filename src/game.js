@@ -1,10 +1,10 @@
-const { loadRegions, loadJoinedRegionPaths } = require("./loader/region-loader");
-const Player = require("./entities/player");
-const ResourcesBar = require("./entities/ui/resources");
-const Tooltip = require("./entities/ui/tooltip");
-const { Castle } = require("./entities/game-objects/buildings");
+const { loadRegions, loadJoinedRegionPaths } = require('./loader/region-loader');
+const Player = require('./entities/player');
+const ResourcesBar = require('./entities/ui/resources');
+const Tooltip = require('./entities/ui/tooltip');
+const { Castle } = require('./entities/game-objects/buildings');
 const Region = require('./entities/game-objects/region');
-import { Music, Note, Track } from './utils/audio-utils';
+import { Note } from './utils/audio-utils';
 
 const mapShadow = loadJoinedRegionPaths();
 
@@ -12,7 +12,7 @@ cui.width = cg.width = window.innerWidth;
 cui.height = cg.height = window.innerHeight;
 window.tooltip = new Tooltip();
 
-window.addEventListener("resize", () => {
+window.addEventListener('resize', () => {
     cui.width = cg.width = window.innerWidth;
     cui.height = cg.height = window.innerHeight;
 });
@@ -37,15 +37,15 @@ window.uiShapes = [];
 window.resourcesBar = new ResourcesBar();
 window.resourcesBar.currentSpeed = 0;
 
-let playerName = "Sir Teencen Tury";
-let playerNationName = "Javascriptland";
+let playerName = 'Sir Teencen Tury';
+let playerNationName = 'Javascriptland';
 let isPickingNation = true;
 
 // Get player name and stuff
 bp.addEventListener('click', () => {
     tt.value && tn.value && (playerName = `${tt.value} ${tn.value}`);
     tc.value && (playerNationName = tc.value);
-    m.setAttribute("n", "");
+    m.setAttribute('n', '');
 });
 // ------------------------------
 
@@ -70,8 +70,8 @@ const makeRegions = () => {
                 window.player.country = playerNationName;
                 window.player.conquestPoints = -window.player.score; // To adjust starting with a big nation
                 isPickingNation = false;
-                bnr.setAttribute("fill", region._colour);
-                bnr.setAttribute("stroke", region._strokeColour);
+                bnr.setAttribute('fill', region._colour);
+                bnr.setAttribute('stroke', region._strokeColour);
                 bnrc.style.top = 0;
                 window.resourcesBar.currentSpeed = 1;
                 window.resourcesBar.timeButtons[0].isSelected = false;
@@ -81,7 +81,7 @@ const makeRegions = () => {
             if (placingAmbassador && region.owner !== placingAmbassador.owner && region.freeAmbassadorSlots > 0) {
                 region.addUnit(placingAmbassador);
                 placingAmbassador = null;
-                bgw.style.background = "#216288";
+                bgw.style.background = '#216288';
             } else if (window.placingArmy) {
                 window.placingArmy.targetRegion = region;
                 window.placingArmy.routeToRegion = window.regionGraph.findShortestPath((window.placingArmy.region || window.player.capital).id, region.id);
@@ -117,7 +117,7 @@ const drawMap = () => {
     } else {
         ctx.filter = `blur(${16 * (currentWaveValue)}px)`;
     }
-    ctx.strokeStyle = "#3c789b";
+    ctx.strokeStyle = '#3c789b';
     ctx.lineWidth = 10 * currentWaveValue;
     ctx.stroke(mapShadow);
     if (placingAmbassador) {
@@ -125,7 +125,7 @@ const drawMap = () => {
     } else {
         ctx.filter = `blur(${8 * (currentWaveValue)}px)`;
     }
-    ctx.strokeStyle = "#4f94bf";
+    ctx.strokeStyle = '#4f94bf';
     ctx.lineWidth = 8 * currentWaveValue;
     ctx.stroke(mapShadow);
     // End Shores
@@ -177,7 +177,7 @@ const addMovementListeners = () => {
 };
 
 
-let moveLineColour = "#333";
+let moveLineColour = '#333';
 const addSharedListeners = () => {
     cui.addEventListener('mousemove', (e) => {
         updateCursor([e.offsetX / window.zoomLevel, e.offsetY / window.zoomLevel]);
@@ -221,8 +221,8 @@ const addGenericShapeListeners = () => {
         e.stopPropagation();
         if (placingAmbassador || window.placingArmy) {
             placingAmbassador = window.placingArmy = null;
-            bgw.style.background = "#216288";
-            Note.new("b", 0.01, 1).play(0.5);
+            bgw.style.background = '#216288';
+            Note.new('b', 0.01, 1).play(0.5);
         }
     });
 };
@@ -243,8 +243,6 @@ const drawGame = (now) => {
     ctx.scale(window.zoomLevel, window.zoomLevel);
     drawMap(now);
     window.players.forEach(p => p.units.forEach(u => u.draw(ctx)));
-    // uictx.fillStyle = "#000";
-    // uictx.fillRect(...window.gameCursor.map(c=>c*window.zoomLevel), 2, 2);
     ctx.restore();
 };
 
@@ -270,16 +268,16 @@ const drawUi = () => {
         const end = window.placingArmy.currentCoordinates.map((c, i) => (c * window.zoomLevel + window.pan[i]) - 5);
         const dist = distance(start, end);
         const mid = findD(start, end, dist * 0.1);
-        uictx.strokeStyle = "#0008";
+        uictx.strokeStyle = '#0008';
         uictx.lineWidth = 8;
-        uictx.filter = "blur(4px)";
+        uictx.filter = 'blur(4px)';
         uictx.beginPath();
         uictx.moveTo(...start);
         uictx.lineTo(...end);
         uictx.stroke();
         uictx.lineDashOffset = lineAnim;
         uictx.setLineDash([30, 40]);
-        uictx.filter = "none";
+        uictx.filter = 'none';
         uictx.strokeStyle = moveLineColour;
         uictx.beginPath();
         uictx.moveTo(...start);
@@ -303,25 +301,25 @@ const onTick = () => {
 
 const drawEndScreen = (text) => {
     uictx.clearRect(0, 0, cg.width, cg.height);
-    uictx.fillStyle = "#1d1d4d";
+    uictx.fillStyle = '#1d1d4d';
     uictx.fillRect(0, 0, cg.width, cg.height);
-    uictx.fillStyle = "#fff";
+    uictx.fillStyle = '#fff';
 
-    uictx.font = "30px Arial";
+    uictx.font = '30px Arial';
     const { width } = uictx.measureText(`You ${text}!`);
     uictx.fillText(`You ${text}!`, (cg.width / 2) - (width / 2), (cg.height / 2) - 30);
 
-    uictx.font = "20px Arial";
-    const { width: width2 } = uictx.measureText("At the height of your power you had:");
-    uictx.fillText("At the height of your power you had:", (cg.width / 2) - (width2 / 2), cg.height / 2);
+    uictx.font = '20px Arial';
+    const { width: width2 } = uictx.measureText('At the height of your power you had:');
+    uictx.fillText('At the height of your power you had:', (cg.width / 2) - (width2 / 2), cg.height / 2);
     Object.keys(window.player.maxStats).forEach((stat, i) => {
         const text = `${stat}: ${window.player.maxStats[stat]}`;
         const { width } = uictx.measureText(text);
         uictx.fillText(text, (cg.width / 2) - (width / 2), cg.height / 2 + 30 + (i * 20));
     });
-    uictx.font = "16px Arial";
-    const { width: width3 } = uictx.measureText("Press F5 to restart");
-    uictx.fillText("Press F5 to restart", (cg.width / 2) - (width3 / 2), cg.height / 2 + 30 + (Object.keys(window.player.maxStats).length * 20) + 30);
+    uictx.font = '16px Arial';
+    const { width: width3 } = uictx.measureText('Press F5 to restart');
+    uictx.fillText('Press F5 to restart', (cg.width / 2) - (width3 / 2), cg.height / 2 + 30 + (Object.keys(window.player.maxStats).length * 20) + 30);
 };
 
 setupGame();
@@ -330,12 +328,15 @@ let lastTick = 0;
 window.main = function (now) {
     const alivePlayers = players.filter(p => !p.hasLost);
     if (player?.hasLost) {
-        drawEndScreen("were defeated");
+        drawEndScreen('were defeated');
+        return;
+    } else if(resourcesBar.currentDate.getFullYear() >= 1300) {
+        drawEndScreen('r time is up');
         return;
     } else if(player) {
         const enemyAlivePlayers = alivePlayers.filter(p => !p.isAlliedWith(player) && p !== player);
         if (alivePlayers.includes(player) && enemyAlivePlayers.length === 0) {
-            drawEndScreen("have prevailed");
+            drawEndScreen('have prevailed');
             return;
         }
     }
@@ -365,16 +366,16 @@ window.main = function (now) {
                 shape.mouseOut({});
             }
         });
-        moveLineColour = "#333";
+        moveLineColour = '#333';
         if (selectedShape) {
             selectedShape.hover({});
             if (window.player && selectedShape instanceof Region) {
                 if (selectedShape.owner === window.player) {
-                    moveLineColour = "#090";
+                    moveLineColour = '#090';
                 } else if (window.player.isAlliedWith(selectedShape.owner)) {
-                    moveLineColour = "#03b";
+                    moveLineColour = '#03b';
                 } else {
-                    moveLineColour = "#900";
+                    moveLineColour = '#900';
                 }
             }
         }

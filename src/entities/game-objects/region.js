@@ -1,5 +1,5 @@
-const { GameInteractible } = require("./game-objects");
-const randomUtils = require("../../utils/random");
+const { GameInteractible } = require('./game-objects');
+const randomUtils = require('../../utils/random');
 
 class Region extends GameInteractible {
     constructor({ id, name, group, d }) {
@@ -71,12 +71,12 @@ class Region extends GameInteractible {
     draw(ctx, isPlacingAmbassador) {
         ctx.save();
         if (isPlacingAmbassador && !this.isCapital) {
-            ctx.filter = "grayscale(0.9) contrast(0.5) brightness(0.5)";
+            ctx.filter = 'grayscale(0.9) contrast(0.5) brightness(0.5)';
         }
         super.draw(ctx);
         if (this.isCapital) {
-            ctx.fillStyle = "#000";
-            ctx.strokeStyle = "#fff9";
+            ctx.fillStyle = '#000';
+            ctx.strokeStyle = '#fff9';
             ctx.lineWidth = 0.2;
             const [x, y] = this.centroid;
             ctx.beginPath();

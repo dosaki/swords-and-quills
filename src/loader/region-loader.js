@@ -1,5 +1,5 @@
-const { newColour } = require("../utils/colour");
-const Region = require("../entities/game-objects/region");
+const { newColour } = require('../utils/colour');
+const Region = require('../entities/game-objects/region');
 const Graph = require('../utils/dijkstra');
 
 const centroid = (polygon) => {
@@ -13,51 +13,51 @@ const centroid = (polygon) => {
 };
 
 const regionConfig = {
-    "regions": [
-        { "id": "242", "name": "Gwynedd", "group": "Wales", "d": "m 83,87 -12,1 -5,5 4,1 2,3 5,-3 1,-2 4,1 3,-3 z" },
-        { "id": "4120", "name": "Leinster", "group": "Leinster", "d": "m 47,73 -5,2 v 4 l -5,-2 -3,2 -3,7 v 4 h 6 l 5,3 -3,7 1,2 2,-1 1,1 5,-1 -1,-1 5,-9 -3,-5 2,-4 -3,-6 2,1 3,-3 z" },
-        { "id": "4121", "name": "Ulster", "group": "Ulster", "d": "m 39,56 -3,6 -2,-4 -8,5 2,1 -5,2 5,3 h 3 l 5,2 1,6 5,2 v -4 l 5,-2 6,1 3,-2 -1,-4 3,3 -2,-5 -3,1 2,-2 -5,-6 -11,2 z" },
-        { "id": "248", "name": "Lothian", "group": "Scotland", "d": "m 76,34 -10,4 -8,-1 v 3 l 2,1 h -3 l -3,17 3,-4 3,-9 v 4 l 2,2 24,-1 4,-2 h -6 l -7,-1 6,-3 3,1 1,-2 -4,-2 -3,1 2,-2 z" },
-        { "id": "245", "name": "York", "group": "England", "d": "m 94,69 h -2 l -2,4 5,10 h 9 l 3,1 4,-2 v -1 l 3,1 h 2 l -4,-4 2,-3 -3,-1 -7,-6 h -6 z" },
-        { "id": "4373", "name": "Cornwall", "group": "England", "d": "m 71,115 -2,4 h -2 v 3 l -4,2 -4,6 h -3 l -1,2 3,-1 2,2 11,-6 3,2 8,-6 -7,-7 z" },
-        { "id": "4110", "name": "Sutherland", "group": "Isles", "d": "m 60,13 2,-5 4,2 1,-2 5,1 8,-2 2,4 -11,9 3,1 -4,5 -13,3 v -3 h -4 l 2,-2 -1,-4 2,1 v -2 l 4,-1 -2,-5 z" },
-        { "id": "253", "name": "Hebrides", "group": "Isles", "d": "m 48,9 -6,4 -2,2 v 3 l 1,1 h 4 2 l 1,-2 -1,-2 2,-3 z m 1,12 -5,4 8,5 v 2 l 3,-3 -5,-2 z m -10,0 -3,2 4,1 z m -2,4 -1,3 3,2 1,-4 z m 10,10 -2,1 v 1 h 3 z m -4,3 h -1 l -2,2 h 4 z m 6,0 1,3 1,1 4,-1 z m -2,13 h 2 v 2 l 5,-8 z" },
-        { "id": "251", "name": "Aberdeen", "group": "Aberdeen", "d": "m 78,22 16,-1 2,2 -4,11 -10,6 -6,-6 5,-3 -8,-7 z" },
-        { "id": "252", "name": "Inverness", "group": "Scotland", "d": "m 73,24 8,7 -5,3 -10,4 -8,-1 -2,3 -4,-3 1,-2 2,-1 h -3 l 5,-5 13,-3 z" },
-        { "id": "249", "name": "Ayrshire", "group": "Scotland", "d": "m 62,51 4,4 -6,9 2,1 2,-1 4,3 v -4 l 2,2 6,-1 1,-2 3,1 13,-13 -3,-2 -4,2 z" },
-        { "id": "246", "name": "Northumberland", "group": "Northumberland", "d": "m 93,50 -13,13 -4,6 3,2 -1,4 12,-2 2,-4 h 2 l 4,-1 h 6 L 98,54 95,53 Z" },
-        { "id": "4119", "name": "Connaught", "group": "Connaught", "d": "m 31,69 h -3 l -4,2 1,2 -5,-1 -1,2 -7,-3 -1,7 h 3 l -6,6 4,1 v 2 l 3,-1 -1,2 7,-1 7,-3 3,2 3,-7 3,-2 -1,-6 z" },
-        { "id": "4365", "name": "Mann", "group": "Isles", "d": "m 72,73 -5,5 -4,-3 4,-6 z" },
-        { "id": "244", "name": "Lancashire", "group": "England", "d": "m 84,74 -2,5 1,3 v 2 l -1,2 1,1 2,3 h 3 l 2,1 3,-3 h 2 l -2,-2 2,-3 -5,-10 z" },
-        { "id": "243", "name": "Lincolnshire", "group": "England", "d": "m 111,82 -4,2 -3,-1 h -9 l -2,3 2,2 7,9 v 5 l 6,-1 2,-6 6,-1 -1,-2 3,-3 z" },
-        { "id": "375", "name": "Munster", "group": "Munster", "d": "m 21,87 -5,3 1,2 -6,4 h 11 l -15,6 5,1 -6,5 h 4 l 5,-2 -6,4 5,-1 -2,2 h 4 l 11,-3 1,-2 1,2 3,-2 h 3 l 1,-3 4,-1 -1,-2 3,-7 -5,-3 h -6 v -4 l -3,-2 z" },
-        { "id": "4372", "name": "Coventry", "group": "England", "d": "m 90,91 -2,-1 h -3 l -3,3 1,3 -2,1 5,13 h 2 l -2,2 5,1 5,-3 2,-6 4,-2 v -5 l -7,-9 h -2 z" },
-        { "id": "1860", "name": "Norfolk", "group": "England", "d": "m 118,94 h -2 l -6,1 -2,6 3,4 5,-1 v 2 l -1,2 5,3 h 4 v -3 h 3 l 1,-3 3,-2 2,-9 h -3 l -8,-4 z" },
-        { "id": "4366", "name": "Montgomery", "group": "Marcher", "d": "m 77,94 -5,3 -6,6 -7,2 2,2 1,4 3,-2 h 5 l -1,2 5,-1 2,3 5,1 1,-2 4,-2 -5,-13 2,-1 -1,-3 -4,-1 z" },
-        { "id": "237", "name": "Oxford", "group": "England", "d": "m 108,101 -6,1 -4,2 -2,6 -5,3 4,10 9,-2 2,-4 v -4 l 3,-1 2,-7 z" },
-        { "id": "236", "name": "London", "group": "England", "d": "m 111,105 -2,7 -3,1 v 4 l -2,4 1,2 2,-1 h 11 l 3,-2 7,-2 2,-2 -11,-3 1,-2 -5,-3 1,-2 v -2 z" },
-        { "id": "4130", "name": "Somerset", "group": "England", "d": "m 86,112 -4,5 -7,-1 7,7 3,-1 9,3 1,-2 -4,-10 z" }
+    'regions': [
+        { 'id': '242', 'name': 'Gwynedd', 'group': 'Wales', 'd': 'm 83,87 -12,1 -5,5 4,1 2,3 5,-3 1,-2 4,1 3,-3 z' },
+        { 'id': '4120', 'name': 'Leinster', 'group': 'Leinster', 'd': 'm 47,73 -5,2 v 4 l -5,-2 -3,2 -3,7 v 4 h 6 l 5,3 -3,7 1,2 2,-1 1,1 5,-1 -1,-1 5,-9 -3,-5 2,-4 -3,-6 2,1 3,-3 z' },
+        { 'id': '4121', 'name': 'Ulster', 'group': 'Ulster', 'd': 'm 39,56 -3,6 -2,-4 -8,5 2,1 -5,2 5,3 h 3 l 5,2 1,6 5,2 v -4 l 5,-2 6,1 3,-2 -1,-4 3,3 -2,-5 -3,1 2,-2 -5,-6 -11,2 z' },
+        { 'id': '248', 'name': 'Lothian', 'group': 'Scotland', 'd': 'm 76,34 -10,4 -8,-1 v 3 l 2,1 h -3 l -3,17 3,-4 3,-9 v 4 l 2,2 24,-1 4,-2 h -6 l -7,-1 6,-3 3,1 1,-2 -4,-2 -3,1 2,-2 z' },
+        { 'id': '245', 'name': 'York', 'group': 'England', 'd': 'm 94,69 h -2 l -2,4 5,10 h 9 l 3,1 4,-2 v -1 l 3,1 h 2 l -4,-4 2,-3 -3,-1 -7,-6 h -6 z' },
+        { 'id': '4373', 'name': 'Cornwall', 'group': 'England', 'd': 'm 71,115 -2,4 h -2 v 3 l -4,2 -4,6 h -3 l -1,2 3,-1 2,2 11,-6 3,2 8,-6 -7,-7 z' },
+        { 'id': '4110', 'name': 'Sutherland', 'group': 'Isles', 'd': 'm 60,13 2,-5 4,2 1,-2 5,1 8,-2 2,4 -11,9 3,1 -4,5 -13,3 v -3 h -4 l 2,-2 -1,-4 2,1 v -2 l 4,-1 -2,-5 z' },
+        { 'id': '253', 'name': 'Hebrides', 'group': 'Isles', 'd': 'm 48,9 -6,4 -2,2 v 3 l 1,1 h 4 2 l 1,-2 -1,-2 2,-3 z m 1,12 -5,4 8,5 v 2 l 3,-3 -5,-2 z m -10,0 -3,2 4,1 z m -2,4 -1,3 3,2 1,-4 z m 10,10 -2,1 v 1 h 3 z m -4,3 h -1 l -2,2 h 4 z m 6,0 1,3 1,1 4,-1 z m -2,13 h 2 v 2 l 5,-8 z' },
+        { 'id': '251', 'name': 'Aberdeen', 'group': 'Aberdeen', 'd': 'm 78,22 16,-1 2,2 -4,11 -10,6 -6,-6 5,-3 -8,-7 z' },
+        { 'id': '252', 'name': 'Inverness', 'group': 'Scotland', 'd': 'm 73,24 8,7 -5,3 -10,4 -8,-1 -2,3 -4,-3 1,-2 2,-1 h -3 l 5,-5 13,-3 z' },
+        { 'id': '249', 'name': 'Ayrshire', 'group': 'Scotland', 'd': 'm 62,51 4,4 -6,9 2,1 2,-1 4,3 v -4 l 2,2 6,-1 1,-2 3,1 13,-13 -3,-2 -4,2 z' },
+        { 'id': '246', 'name': 'Northumberland', 'group': 'Northumberland', 'd': 'm 93,50 -13,13 -4,6 3,2 -1,4 12,-2 2,-4 h 2 l 4,-1 h 6 L 98,54 95,53 Z' },
+        { 'id': '4119', 'name': 'Connaught', 'group': 'Connaught', 'd': 'm 31,69 h -3 l -4,2 1,2 -5,-1 -1,2 -7,-3 -1,7 h 3 l -6,6 4,1 v 2 l 3,-1 -1,2 7,-1 7,-3 3,2 3,-7 3,-2 -1,-6 z' },
+        { 'id': '4365', 'name': 'Mann', 'group': 'Isles', 'd': 'm 72,73 -5,5 -4,-3 4,-6 z' },
+        { 'id': '244', 'name': 'Lancashire', 'group': 'England', 'd': 'm 84,74 -2,5 1,3 v 2 l -1,2 1,1 2,3 h 3 l 2,1 3,-3 h 2 l -2,-2 2,-3 -5,-10 z' },
+        { 'id': '243', 'name': 'Lincolnshire', 'group': 'England', 'd': 'm 111,82 -4,2 -3,-1 h -9 l -2,3 2,2 7,9 v 5 l 6,-1 2,-6 6,-1 -1,-2 3,-3 z' },
+        { 'id': '375', 'name': 'Munster', 'group': 'Munster', 'd': 'm 21,87 -5,3 1,2 -6,4 h 11 l -15,6 5,1 -6,5 h 4 l 5,-2 -6,4 5,-1 -2,2 h 4 l 11,-3 1,-2 1,2 3,-2 h 3 l 1,-3 4,-1 -1,-2 3,-7 -5,-3 h -6 v -4 l -3,-2 z' },
+        { 'id': '4372', 'name': 'Coventry', 'group': 'England', 'd': 'm 90,91 -2,-1 h -3 l -3,3 1,3 -2,1 5,13 h 2 l -2,2 5,1 5,-3 2,-6 4,-2 v -5 l -7,-9 h -2 z' },
+        { 'id': '1860', 'name': 'Norfolk', 'group': 'England', 'd': 'm 118,94 h -2 l -6,1 -2,6 3,4 5,-1 v 2 l -1,2 5,3 h 4 v -3 h 3 l 1,-3 3,-2 2,-9 h -3 l -8,-4 z' },
+        { 'id': '4366', 'name': 'Montgomery', 'group': 'Marcher', 'd': 'm 77,94 -5,3 -6,6 -7,2 2,2 1,4 3,-2 h 5 l -1,2 5,-1 2,3 5,1 1,-2 4,-2 -5,-13 2,-1 -1,-3 -4,-1 z' },
+        { 'id': '237', 'name': 'Oxford', 'group': 'England', 'd': 'm 108,101 -6,1 -4,2 -2,6 -5,3 4,10 9,-2 2,-4 v -4 l 3,-1 2,-7 z' },
+        { 'id': '236', 'name': 'London', 'group': 'England', 'd': 'm 111,105 -2,7 -3,1 v 4 l -2,4 1,2 2,-1 h 11 l 3,-2 7,-2 2,-2 -11,-3 1,-2 -5,-3 1,-2 v -2 z' },
+        { 'id': '4130', 'name': 'Somerset', 'group': 'England', 'd': 'm 86,112 -4,5 -7,-1 7,7 3,-1 9,3 1,-2 -4,-10 z' }
     ],
-    "neighbours": {
-        "4110": ["253", "251", "252"],
-        "252": ["253", "248", "251"],
-        "251": ["253", "248"],
-        "248": ["251", "253", "4121", "249"],
-        "249": ["246", "4121", "4365"],
+    'neighbours': {
+        '4110': ['253', '251', '252'],
+        '252': ['253', '248', '251'],
+        '251': ['253', '248'],
+        '248': ['251', '253', '4121', '249'],
+        '249': ['246', '4121', '4365'],
 
-        "4121": ["4119", "4120"],
-        "4119": ["4120", "375"],
-        "4120": ["375", "4366"],
+        '4121': ['4119', '4120'],
+        '4119': ['4120', '375'],
+        '4120': ['375', '4366'],
 
-        "246": ["244", "245", "4365"],
-        "245": ["243", "4372"],
-        "244": ["245", "242", "4372"],
-        "243": ["4372", "237", "1860"],
-        "242": ["4372", "4366", "4372"],
-        "4372": ["4366", "4130", "237"],
-        "4130": ["4366", "237", "4373"],
-        "1860": ["237", "236"],
-        "236": ["237"]
+        '246': ['244', '245', '4365'],
+        '245': ['243', '4372'],
+        '244': ['245', '242', '4372'],
+        '243': ['4372', '237', '1860'],
+        '242': ['4372', '4366', '4372'],
+        '4372': ['4366', '4130', '237'],
+        '4130': ['4366', '237', '4373'],
+        '1860': ['237', '236'],
+        '236': ['237']
     }
 };
 
@@ -66,18 +66,18 @@ window.regionGraph = new Graph();
 window.regionLookup = {};
 
 const loadRegions = () => {
-    const regions = regionConfig["regions"].map(region => new Region(region));
-    Object.keys(regionConfig["neighbours"]).forEach(region => {
-        regionConfig["neighbours"][region].forEach(neighbour => {
+    const regions = regionConfig['regions'].map(region => new Region(region));
+    Object.keys(regionConfig['neighbours']).forEach(region => {
+        regionConfig['neighbours'][region].forEach(neighbour => {
             window.regionGraph.addEdge(region, neighbour);
         });
     });
-    const numberOfGroups = [...new Set(regionConfig["regions"].map(r => r.group))].length;
+    const numberOfGroups = [...new Set(regionConfig['regions'].map(r => r.group))].length;
     const increment = 1 / numberOfGroups;
     let lastGroup = 0;
     regions.forEach(region => {
         window.regionLookup[region.id] = region;
-        const newRegions = (regionConfig["neighbours"][region.id] || []).map(id => regions.find(r => r.id === id));
+        const newRegions = (regionConfig['neighbours'][region.id] || []).map(id => regions.find(r => r.id === id));
         newRegions.forEach(newRegion => newRegion.neighbours = [...new Set([...newRegion.neighbours, region])]);
         region.neighbours = [...new Set([...region.neighbours, ...newRegions])];
         region.isCapital = !colours[region.group];
@@ -95,7 +95,7 @@ const loadRegions = () => {
 
 const loadJoinedRegionPaths = () => {
     const path = new Path2D();
-    regionConfig["regions"].forEach(r => {
+    regionConfig['regions'].forEach(r => {
         path.addPath(new Path2D(r.d));
     });
     return path;

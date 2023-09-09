@@ -1,12 +1,12 @@
-const { Note } = require("../../utils/audio-utils");
-const { Interactible } = require("../drawable");
+const { Note } = require('../../utils/audio-utils');
+const { Interactible } = require('../drawable');
 
 class GameInteractible extends Interactible {
     constructor(d) {
         super();
         this.d = d;
         this.dPath = new Path2D(this.d);
-        measurer.setAttribute("d", this.d);
+        measurer.setAttribute('d', this.d);
         this.bBox = measurer.getBBox();
     }
 
@@ -18,7 +18,7 @@ class GameInteractible extends Interactible {
     }
 
     click(e) {
-        Note.new("f#", 3, 0.2).play(0.4);
+        Note.new('f#', 3, 0.2).play(0.4);
         super.click(e);
     }
 
@@ -40,26 +40,26 @@ class GameInteractible extends Interactible {
         let previousVertex = [0, 0];
         return this.d.split(/m/i).slice(1).map(d => {
             let previousInstruction = this.d[0];
-            const svgD = d.replace(/z/i, "").trim().split(" ");
+            const svgD = d.replace(/z/i, '').trim().split(' ');
             const vertices = [];
             svgD.forEach(element => {
-                if (["h", "v", "l"].includes(element.toLowerCase())) {
+                if (['h', 'v', 'l'].includes(element.toLowerCase())) {
                     previousInstruction = element;
                 } else {
                     const [x0, y0] = previousVertex;
-                    if (["m", "l"].includes(previousInstruction)) {
-                        const [x, y] = element.split(",").map(Number);
+                    if (['m', 'l'].includes(previousInstruction)) {
+                        const [x, y] = element.split(',').map(Number);
                         vertices.push([x0 + x, y0 + y]);
-                    } else if (previousInstruction === "h") {
+                    } else if (previousInstruction === 'h') {
                         vertices.push([x0 + Number(element), y0]);
-                    } else if (previousInstruction === "v") {
+                    } else if (previousInstruction === 'v') {
                         vertices.push([x0, y0 + Number(element)]);
-                    } else if (["M", "L"].includes(previousInstruction)) {
-                        const [x, y] = element.split(",").map(Number);
+                    } else if (['M', 'L'].includes(previousInstruction)) {
+                        const [x, y] = element.split(',').map(Number);
                         vertices.push([x, y]);
-                    } else if (previousInstruction === "H") {
+                    } else if (previousInstruction === 'H') {
                         vertices.push([Number(element), y0]);
-                    } else if (previousInstruction === "V") {
+                    } else if (previousInstruction === 'V') {
                         vertices.push([x0, Number(element)]);
                     }
                     previousVertex = vertices[vertices.length - 1];
