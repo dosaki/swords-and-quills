@@ -83,9 +83,7 @@ const makeRegions = () => {
                 placingAmbassador = null;
                 bgw.style.background = '#216288';
             } else if (window.placingArmy) {
-                window.placingArmy.targetRegion = region;
-                window.placingArmy.routeToRegion = window.regionGraph.findShortestPath((window.placingArmy.region || window.player.capital).id, region.id);
-                window.placingArmy.routeToRegion.pop();
+                window.placingArmy.moveTo(region);
                 window.placingArmy = null;
                 window.tooltip.refreshContent();
             }

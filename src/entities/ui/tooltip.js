@@ -273,7 +273,7 @@ class Tooltip {
     _setDiplomacyView() {
         if (this.region.owner !== window.player) {
             const regionPrice = this.region.getPriceFor(window.player);
-            const buyIsDisabled = !this.region.owner.wouldSellTo(window.player) || this.region._siegeProgress > 0 || this.region == this.region.owner.isCapital;
+            const buyIsDisabled = !this.region.owner.wouldSellTo(window.player) || this.region._siegeProgress > 0 || this.region == this.region.owner.capital;
             const buyButtonHelp = this.region === this.region.owner.capital ? `${this.region.owner.name} cannot sell you their capital!` : !this.region.owner.wouldSellTo(window.player) ? [`${this.region.owner.name} does not want to sell to you`, 'Persuade them with Ambassadors'] : this.region._siegeProgress > 0 ? `${this.region.owner.name} is under siege` : `Buy ${this.region.name} for ${regionPrice}🟡`;
             const allyIsDisabled = !this.region.owner.wouldAllyWith(window.player);
             const allyButtonHelp = this.region.owner.wouldAllyWith(window.player) ? `Ally with ${this.region.owner.name}` : [`${this.region.owner.name} does not want to ally with you`, 'Persuade them with Ambassadors'];

@@ -220,7 +220,7 @@ class Player {
 
         if (pick(0, 1, this.type === 'aggressive') && Army.canBeAffordedBy(this)) {
             this.capital.addUnit(new Army(this));
-        } else if (pick(0, 1) && this.type === 'friendly' && Ambassador.canBeAffordedBy(this)) {
+        } else if (pick(0, 1, this.type === 'friendly') && Ambassador.canBeAffordedBy(this)) {
             const potentialAmbassadorTargets = neighbours.filter(n => !n.isAlliedWith(this) && n.reputationWith(this) > -25);
             if (potentialAmbassadorTargets.length) {
                 const foreignRegion = pick(...potentialAmbassadorTargets).capital;

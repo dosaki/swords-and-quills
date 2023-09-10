@@ -161,6 +161,9 @@ class Citizen extends Drawable {
     }
 
     moveTo(target) {
+        if(!this.region){
+            this.onDie();
+        }
         this.targetRegion = target;
         this.routeToRegion = window.regionGraph.findShortestPath(this.region.id, target.id);
         this.routeToRegion.pop();

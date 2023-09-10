@@ -118,7 +118,7 @@ class Region extends GameInteractible {
         this.defenders = [];
         this.attackers = [];
         allUnits.forEach(unit => {
-            if(!unit.owner){
+            if (!unit.owner) {
                 unit.onDie();
                 return;
             }
@@ -142,8 +142,7 @@ class Region extends GameInteractible {
             this.owner.removeRegion(this);
             player.addRegion(this);
             this._reCalculateUnitSides();
-            this._siegeProgress--;
-        }
+            this._siegeProgress--;        }
     }
 
     getPriceFor(player) {
@@ -159,6 +158,7 @@ class Region extends GameInteractible {
             player.addRegion(this);
             this._reCalculateUnitSides();
             this._siegeProgress = 0;
+            [...this.defenders, ...this.attackers].forEach(a => a.moveTo(a.owner.capital));
         }
     }
 
@@ -237,16 +237,16 @@ class Region extends GameInteractible {
                 a.onDie();
             }
         });
-        this.defenders = this.defenders.filter(d => d.number > 0);
-        this.attackers = this.attackers.filter(a => a.number > 0);
+        this.defenders = this.defenders.filter(d => d.number > 0 && d.region === this);
+        this.attackers = this.attackers.filter(a => a.number > 0 && a.region === this);
         if (!defenderPower && this.siegeProgress <= 0 && this.attackers[0]) {
             this.transferOwnership(this.attackers[0].owner);
         }
         if (!this.attackerPower && this._siegeProgress) {
             this._siegeProgress--;
         }
-        while(this.buildings.length > this.buildingLimit){
-            this.removeBuilding(this.buildings[0]);
+        while (this.buildings.length > this.buildingLimit) {
+            this.removeBuilding(this.buildings[this.buildings.length - 1]);
         }
     }
 
