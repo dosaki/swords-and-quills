@@ -112,7 +112,7 @@ class Tooltip {
         this._drawSectionTitle('Armies', 220, ctx);
         if (this.region.owner === window.player) {
             this._drawSectionTitle('Build', 370, ctx);
-            this._drawSectionTitle('Train', 480, ctx);
+            this._drawSectionTitle('Unit', 480, ctx);
         } else {
             this._drawSectionTitle('Diplomacy', 370, ctx);
             ctx.fillStyle = '#fff';
