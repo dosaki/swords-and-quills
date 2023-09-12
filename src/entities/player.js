@@ -23,10 +23,10 @@ class Player {
         this.colour = '#000';
         this.strokeColour = '#000';
         this.maxStats = {
-            Score: 0,
-            Regions: 0,
-            Armies: 0,
-            Ambassadors: 0
+            "Score": 0,
+            "Regions": 0,
+            "Armies": 0,
+            "Ambassadors": 0
         };
     }
 
@@ -75,10 +75,10 @@ class Player {
     onTick() {
         if (this.maxStats.Score < this.score) {
             this.maxStats = {
-                Score: this.score,
-                Regions: this.regions.length,
-                Armies: this.units.filter(u => u instanceof Army).length,
-                Ambassadors: this.units.filter(u => u instanceof Ambassador).length
+                "Score": this.score,
+                "Regions": this.regions.length,
+                "Armies": this.units.filter(u => u instanceof Army).length,
+                "Ambassadors": this.units.filter(u => u instanceof Ambassador).length
             };
         }
         if (this.hasLost) {

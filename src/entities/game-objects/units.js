@@ -178,7 +178,7 @@ class Citizen extends Drawable {
                 this.currentCoordinates[1] += velY;
 
                 if (isNearPoint(this.currentCoordinates, targetRegion.centroid, 4)) {
-                    this.onArrival(targetRegion);
+                    this.onArrival(targetRegion, this.routeToRegion.length);
                 }
                 if (isNearPoint(this.currentCoordinates, targetRegion.centroid, 2)) {
                     this.routeToRegion.pop();
