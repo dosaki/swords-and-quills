@@ -92,16 +92,6 @@ class Citizen extends Drawable {
         });
     }
 
-    static drawToSvgG(gElement, costElement, owner) {
-        this.makeSvgPaths(owner).forEach(p => gElement.appendChild(p));
-        if (costElement) {
-            gElement.parentElement.parentElement.setAttribute('title', `${this.name}: ${this.description}`);
-        }
-        if (costElement) {
-            costElement.innerHTML = `${this.cost}🟡 ${this.foodCost}🍖`;
-        }
-    }
-
     get name() {
         return this.constructor.name;
     }
@@ -137,9 +127,6 @@ class Citizen extends Drawable {
         this.drawAt(ctx, ...this.currentCoordinates);
     }
 
-    drawToSvgG(gElement) {
-        return this.constructor.drawToSvgG(gElement, null, this.owner);
-    }
 
     onPlacement(region) {
         this.owner._gold -= this.cost;
@@ -171,6 +158,9 @@ class Citizen extends Drawable {
 
     moveUnit(velocity) {
         if (this.isAlive) {
+            if(this.region?.hasEnemiesOf(this)){
+                return;
+            }
             if (this.routeToRegion.length > 0) {
                 if (this.region) {
                     this.onLeave();
@@ -297,7 +287,7 @@ class Ambassador extends Citizen {
     static name = 'Ambassador';
     static description = '+1🪶/week, -1🟡/week';
     static paths = ambassadorPaths;
-    static cost = 10;
+    static cost = 100;
 
     onPlacement(region) {
         super.onPlacement(region);

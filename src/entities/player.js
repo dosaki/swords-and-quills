@@ -214,17 +214,20 @@ class Player {
     tryTraining(neighbours, unprotectedAreas) {
         unprotectedAreas.forEach(region => {
             while (Army.canBeAffordedBy(this) && region.owner === this && region.attackers.length > region.defenders.length) {
+                if(region._siegeProgress > 0 && !region.defenders.length){
+                    break;
+                }
                 region.addUnit(new Army(this));
             }
         });
 
         if (pick(0, 1, this.type === 'aggressive') && Army.canBeAffordedBy(this)) {
             this.capital.addUnit(new Army(this));
-        } else if (pick(0, 1, this.type === 'friendly') && Ambassador.canBeAffordedBy(this)) {
+        } else if (pick(0, 0, 0, 0, 0, 1) && Ambassador.canBeAffordedBy(this)) {
             const potentialAmbassadorTargets = neighbours.filter(n => !n.isAlliedWith(this) && n.reputationWith(this) > -25);
             if (potentialAmbassadorTargets.length) {
                 const foreignRegion = pick(...potentialAmbassadorTargets).capital;
-                if (foreignRegion.freeAmbassadorSlots > 0) {
+                if (foreignRegion.freeAmbassadorSlots > 0 && !foreignRegion.ambassadors.find(a => a.owner === this)) {
                     foreignRegion.addUnit(new Ambassador(this));
                 }
             }
@@ -255,7 +258,7 @@ class Player {
         if (pick(0, 1)) {
             if (!this.attackTargets.length || pick(0, 0, 0, 1)) {
                 const potentialTarget = pick(...neighbours.filter(n => {
-                    return !n.isAlliedWith(this) && (this.type === 'aggressive' || n.reputationWith(this) < -20);
+                    return !n.isAlliedWith(this) && (this.type === 'aggressive' || n.reputationWith(this) <= 0);
                 }));
                 if (potentialTarget) {
                     this.attackTargets.push(potentialTarget);

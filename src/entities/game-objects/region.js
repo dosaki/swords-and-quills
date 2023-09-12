@@ -257,6 +257,15 @@ class Region extends GameInteractible {
             a?.onDie();
         });
     }
+
+    hasEnemiesOf(unit) {
+        if(this.attackers.includes(unit)){
+            return this.defenders.length > 0;
+        } else if(this.defenders.includes(unit)){
+            return this.attackers.length > 0;
+        }
+        return false;
+    }
 }
 
 module.exports = Region;

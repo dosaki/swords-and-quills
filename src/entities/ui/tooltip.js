@@ -71,10 +71,14 @@ class Tooltip {
         ctx.translate(10, 75);
         ctx.fillStyle = '#fff';
         ctx.font = '32px Arial';
-        ctx.fillText(this.region.owner.name, 0, 32);
-        ctx.font = '16px Arial';
+        if(ctx.measureText(this.region.owner.name).width >= 320){
+            ctx.fillText(this.region.owner.name.split(" ").slice(0,2).join(" "), 0, 32);
+        } else {
+            ctx.fillText(this.region.owner.name, 0, 32);
+        }
+        ctx.font = '15px Arial';
         if (this.region.owner.name !== this.region.owner.country) {
-            ctx.fillText(`of ${this.region.owner.country}`, 0, 48);
+            ctx.fillText(`of ${this.region.owner.country}`, 0, 50);
         }
 
         // Icon
