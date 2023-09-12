@@ -127,7 +127,6 @@ class Citizen extends Drawable {
         this.drawAt(ctx, ...this.currentCoordinates);
     }
 
-
     onPlacement(region) {
         this.owner._gold -= this.cost;
         this.region = region;
@@ -178,7 +177,7 @@ class Citizen extends Drawable {
                 this.currentCoordinates[0] += velX;
                 this.currentCoordinates[1] += velY;
 
-                if (isNearPoint(this.currentCoordinates, targetRegion.centroid, 5)) {
+                if (isNearPoint(this.currentCoordinates, targetRegion.centroid, 4)) {
                     this.onArrival(targetRegion);
                 }
                 if (isNearPoint(this.currentCoordinates, targetRegion.centroid, 2)) {
@@ -242,9 +241,9 @@ class Army extends Citizen {
     onArrival(region, stayInOriginalCoords) {
         super.onArrival(region, stayInOriginalCoords);
         if (region.owner === this.owner || region.owner.isAlliedWith(this.owner)) {
-            region.defenders.push(this);
+            !region.defenders.includes(this) && region.defenders.push(this);
         } else {
-            region.attackers.push(this);
+            !region.attackers.includes(this) && region.attackers.push(this);
         }
         tooltip.refreshContent();
     }

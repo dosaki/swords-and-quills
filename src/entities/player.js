@@ -158,6 +158,8 @@ class Player {
 
     enterAllianceWith(player) {
         this.alliedPlayers[player.name] = player.alliedPlayers[this.name] = true;
+        player.regions.forEach(r => r._reCalculateUnitSides());
+        this.regions.forEach(r => r._reCalculateUnitSides());
     }
 
     dissolveAllianceWith(player) {
