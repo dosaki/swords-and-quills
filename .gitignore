@@ -2,5 +2,7 @@ app
 dist
 gifs
 node_modules
-publish.sh
 .DS_Store
+.idea
+terraform/.terraform
+terraform/.terraform.lock.hcl

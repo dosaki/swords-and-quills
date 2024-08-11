@@ -40,7 +40,7 @@ Or a mix of both!
 
 ## Units
 ### Armies
-When you create an army it appears in the region sidebar as a square with the number of individuals in that army. Clicks it to move the army to another territory.
+When you create an army it appears in the region sidebar as a square with the number of individuals in that army. Click it to move the army to another territory.
 
 To the left side of the army list, you can merge and split your armies further.
 
