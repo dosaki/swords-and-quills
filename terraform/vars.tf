@@ -17,7 +17,7 @@ variable "content_path" {
 }
 
 variable "hosted_zone_id" {
-  default = "Z09121021LFWFUARXHIR2"
+  default = ""
 }
 
 variable "cert_arn" {
